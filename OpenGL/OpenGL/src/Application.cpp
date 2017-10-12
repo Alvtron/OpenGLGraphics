@@ -21,7 +21,7 @@
 
 // Presets
 #define DEBUG true
-#define FULLSCREEN true
+#define FULLSCREEN false
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 
@@ -229,16 +229,16 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (firstMouse)
 	{
-		lastX = xpos;
-		lastY = ypos;
+		lastX = (float)xpos;
+		lastY = (float)ypos;
 		firstMouse = false;
 	}
 
 	double xoffset = xpos - lastX;
 	double yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-	lastX = xpos;
-	lastY = ypos;
+	lastX = (float)xpos;
+	lastY = (float)ypos;
 
 	camera.ProcessMouseMovement(xoffset, yoffset);
 }

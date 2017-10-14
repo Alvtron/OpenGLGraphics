@@ -134,6 +134,7 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Cube.cpp" />
     <ClCompile Include="src\Dungeon.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Rectangle.cpp" />
     <ClCompile Include="src\stb_image.c" />
   </ItemGroup>
@@ -141,6 +142,7 @@
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\Cube.h" />
     <ClInclude Include="src\Dungeon.h" />
+    <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Rectangle.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\stb_image.h" />

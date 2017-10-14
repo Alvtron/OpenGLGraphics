@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 // STB: Texture loader for several different types of image files
 #include "stb_image.h"
-// GLM: Matrix and vector math-library 
+// GLM: Matrix and vector math-library (temporary) 
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
@@ -25,17 +25,19 @@
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 
-const char window_title[] = "ITF21215 OpenGL group project";
-const int openGL_min = 4, openGL_max = 4;
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 unsigned int loadTexture(const char *path);
 
+// Window
+const char window_title[] = "ITF21215 OpenGL group project";
+const int openGL_min = 4, openGL_max = 4;
+
 // Camera
 Camera camera;
+const glm::vec3 SPAWN_POSITION = glm::vec3(0.0f, 2.0f, 3.0f);
 double lastX = WINDOW_WIDTH / 2.0f;
 double lastY = WINDOW_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -53,29 +55,28 @@ glm::vec3 lightPosition = glm::vec3(0.0f, 5.0f, 0.0f);
 
 int main(void)
 {
-	// Creating a camera for player movement, set spawn position
-	camera = Camera(glm::vec3(0.0f, 2.0f, 3.0f));
+	if (DEBUG) std::cout << "[DEBUG MODUS]" << std::endl;
 
-	glfwInit();
+	// Initialize GLFW
+	int glfw = glfwInit();
+	if (glfw == GLFW_FALSE)
+	{
+		std::cout << "Error: Failed to initialize GLFW" << std::endl;
+		return -1;
+	}
 	// Set GLFW to use OpenGL version 4.5, both minor and major
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, openGL_max);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, openGL_min);
 	// Get access to a smaller subset of OpenGL features (no backwards-compatibility)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	GLFWwindow* window;
-
-	// Initialize the library
-	if (!glfwInit())
-		return -1;
-
+	
 	// Create a window and it's OpenGL context
+	GLFWwindow* window;
 	if (FULLSCREEN) window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, window_title, glfwGetPrimaryMonitor(), NULL);
 	else window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, window_title, NULL, NULL);
-
 	if (!window)
 	{
-		std::cout << "Failed to create GLFW window" << std::endl;
+		std::cout << "Error: Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
@@ -93,8 +94,20 @@ int main(void)
 	glEnable(GL_DEPTH_TEST);
 
 	// Initialize GLEW and check if it's OK
-	if (glewInit() != GLEW_OK)
-		std::cout << "GLEW ERROR" << std::endl;
+	GLenum glew = glewInit();
+	if (GLEW_OK != glew)
+	{
+		std::cout << "Error: " << glewGetErrorString(glew) << std::endl;
+		return -1;
+	}
+	if (DEBUG) {
+		std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
+	}
+
+	// ===========================================================================================
+	// CAMERA - for player movement, sets spawn position
+	// ===========================================================================================
+	camera = Camera(SPAWN_POSITION);
 
 	// ===========================================================================================
 	// SHADER - Build and compile the shader program (with LearnOpenGL's provided shader class)
@@ -109,7 +122,7 @@ int main(void)
 	Cube cube = Cube();
 	cube.storeOnGPU();
 
-	Rect plane = Rect();
+	Rect plane = Rect(4.0f, 4.0f);
 	plane.storeOnGPU();
 
 	// ===========================================================================================
@@ -190,11 +203,6 @@ int main(void)
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
-	// De-allocate all resources once they've outlived their purpose:
-	plane.deAllocate();
-	cube.deAllocate();
-
 	// GLFW: terminate, clearing all previously allocated GLFW resources.
 	glfwTerminate();
 	return 0;
@@ -248,10 +256,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.setFOV((float)yoffset);
 }
-
-// ===========================================================================================
-// OTHER FUNCTIONS
-// ===========================================================================================
 
 // Utillity function for loading a 2D texture from file (Created by Joey de Vries, copied the 27.09.2017 from https://learnopengl.com/) 
 unsigned int loadTexture(char const * path)

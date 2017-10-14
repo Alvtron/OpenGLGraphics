@@ -69,8 +69,6 @@ public:
 		
 		// 2. compile shaders
 		unsigned int vertex, fragment;
-		int success;
-		char infoLog[512];
 		// Create vertex shader
 		vertex = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertex, 1, &vShaderCode, NULL);

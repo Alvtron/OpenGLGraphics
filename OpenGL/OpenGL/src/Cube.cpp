@@ -3,13 +3,9 @@
 
 unsigned int Cube::num_cubes = 0;
 
-Cube::Cube()
+Cube::Cube() : Mesh()
 {
-	vertices = VERTICES;
-	normals = NORMALS;
-	colors = COLORS;
-	textures = TEXTURES;
-	indices = INDICES;
+	Mesh::createVertexData(VERTICES, NORMALS, COLORS, TEXTURES, INDICES);
 	num_cubes++;
 }
 

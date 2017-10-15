@@ -3,13 +3,9 @@
 
 unsigned int Rect::num_rectangles = 0;
 
-Rect::Rect()
+Rect::Rect() : Mesh()
 {
-	Mesh::vertices = this->vertices;
-	Mesh::normals = this->NORMALS;
-	Mesh::colors = this->colors;
-	Mesh::textures = this->TEXTURES;
-	Mesh::indices = this->INDICES;
+	Mesh::createVertexData(vertices, NORMALS, colors, TEXTURES, INDICES);
 	num_rectangles++;
 }
 
@@ -23,11 +19,7 @@ Rect::Rect(float width, float height)
 	this->vertices[Cy] = (height / 2.0f);
 	this->vertices[Dx] = -(width / 2.0f);
 	this->vertices[Dy] = (height / 2.0f);
-	Mesh::vertices = this->vertices;
-	Mesh::normals = this->NORMALS;
-	Mesh::colors = this->colors;
-	Mesh::textures = this->TEXTURES;
-	Mesh::indices = this->INDICES;
+	Mesh::createVertexData(vertices, NORMALS, colors, TEXTURES, INDICES);
 	num_rectangles++;
 }
 

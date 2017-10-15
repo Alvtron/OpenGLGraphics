@@ -80,9 +80,10 @@ int main(void)
 		glfwTerminate();
 		return -1;
 	}
-
-	// Set actionlisteners for window resize, mouse and scrolling
 	glfwMakeContextCurrent(window);
+	if (DEBUG) std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl;
+	
+	// Set actionlisteners for window resize, mouse and scrolling
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -100,9 +101,7 @@ int main(void)
 		std::cout << "Error: " << glewGetErrorString(glew) << std::endl;
 		return -1;
 	}
-	if (DEBUG) {
-		std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-	}
+	if (DEBUG) std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
 
 	// ===========================================================================================
 	// CAMERA - for player movement, sets spawn position

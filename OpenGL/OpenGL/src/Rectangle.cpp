@@ -9,7 +9,7 @@ Rect::Rect() : Mesh()
 	num_rectangles++;
 }
 
-Rect::Rect(float width, float height)
+Rect::Rect(float width, float height) : Mesh()
 {
 	this->vertices[Ax] = -(width / 2.0f);
 	this->vertices[Ay] = -(height / 2.0f);

@@ -137,6 +137,7 @@
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Rectangle.cpp" />
     <ClCompile Include="src\stb_image.c" />
+    <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.h" />
@@ -146,6 +147,7 @@
     <ClInclude Include="src\Rectangle.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\stb_image.h" />
+    <ClInclude Include="src\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\fragment_shader.frag" />

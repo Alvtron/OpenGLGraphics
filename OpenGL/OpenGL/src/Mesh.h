@@ -15,18 +15,38 @@
 class Mesh
 {
 private:
+	static const std::vector<float> EMPTY_FLOAT_VECTOR;
+	static const std::vector<unsigned int> EMPTY_UINT_VECTOR;
 	unsigned int VBO, VAO, EBO;
 	static unsigned int num_meshes;
+	bool hasVertices = false, hasNormals = false, hasColors = false, hasTextures = false, hasIndices = false;
 	std::vector<float> vertex_data;
 	std::vector<unsigned int> indices;
 public:
+	enum VERTEX_DATA_TYPE : char {
+		MESH_VERTICE = 'V',
+		MESH_NORMAL = 'N',
+		MESH_COLOR = 'C',
+		MESH_TEXTURE = 'T',
+		MESH_INDICE = 'I'
+	};
 	Mesh();
 	~Mesh();
 	void createVertexData(const std::vector<float>& vertices, const std::vector<float>& normals, const std::vector<float>& colors, const std::vector<float>& textures, const std::vector<unsigned int>& indices);
+	void addVertexData(const std::vector<float>& vertices, VERTEX_DATA_TYPE data_type);
+	void addIndices(const std::vector<unsigned int>& indices);
 	void storeOnGPU();
-	void drawObject(Shader * shader, glm::vec3 position, glm::vec3 scale_vector, unsigned int texture_diffuse, unsigned int texture_specular);
 	void drawObject(Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, unsigned int texture_diffuse, unsigned int texture_specular);
+	void drawObject(Shader * shader, glm::vec3 position, float rotation_degrees, glm::vec3 rotation_vector, unsigned int texture_diffuse, unsigned int texture_specular);
+	void drawObject(Shader * shader, glm::vec3 position, glm::vec3 scale_vector, unsigned int texture_diffuse, unsigned int texture_specular);
+	void drawObject(Shader * shader, glm::vec3 position, unsigned int texture_diffuse, unsigned int texture_specular);
+	void drawObject(Shader * shader, unsigned int texture_diffuse, unsigned int texture_specular);
 	void deAllocate();
+	unsigned int stride();
+	unsigned int VerticeStride();
+	unsigned int normalStride();
+	unsigned int colorStride();
+	unsigned int textureStride();
 	void printVertices();
 	void printNormals();
 	void printColors();

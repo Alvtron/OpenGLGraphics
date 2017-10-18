@@ -14,10 +14,12 @@
 // 3D Object classes
 #include "Rectangle.h"
 #include "Cube.h"
+#include "Texture.h"
 // General C++ (and C++11) libraries
 #include <iostream>
 #include <string>
 #include <vector>
+#include <time.h>
 
 // Presets
 #define DEBUG true
@@ -29,11 +31,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
-unsigned int loadTexture(const char *path);
+double getTimeSeconds(clock_t startTime, clock_t endTime);
 
 // Window
 const char window_title[] = "ITF21215 OpenGL group project";
 const int openGL_min = 4, openGL_max = 4;
+
+clock_t start_time_init, start_time_shaders, start_time_meshes, time_textures;
 
 // Camera
 Camera camera;
@@ -55,7 +59,10 @@ glm::vec3 lightPosition = glm::vec3(0.0f, 5.0f, 0.0f);
 
 int main(void)
 {
-	if (DEBUG) std::cout << "[DEBUG MODUS]" << std::endl;
+	if (DEBUG) {
+		std::cout << "[DEBUG MODUS]" << std::endl;
+		start_time_init = clock();
+	}
 
 	// Initialize GLFW
 	int glfw = glfwInit();
@@ -69,7 +76,7 @@ int main(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, openGL_min);
 	// Get access to a smaller subset of OpenGL features (no backwards-compatibility)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	
+
 	// Create a window and it's OpenGL context
 	GLFWwindow* window;
 	if (FULLSCREEN) window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, window_title, glfwGetPrimaryMonitor(), NULL);
@@ -81,8 +88,7 @@ int main(void)
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	if (DEBUG) std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl;
-	
+
 	// Set actionlisteners for window resize, mouse and scrolling
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
@@ -101,7 +107,11 @@ int main(void)
 		std::cout << "Error: " << glewGetErrorString(glew) << std::endl;
 		return -1;
 	}
-	if (DEBUG) std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
+	if (DEBUG) {
+		std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl;
+		std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
+		std::cout << "Initialation time: " << getTimeSeconds(start_time_init, clock()) << " seconds" << std::endl;
+	}
 
 	// ===========================================================================================
 	// CAMERA - for player movement, sets spawn position
@@ -111,30 +121,38 @@ int main(void)
 	// ===========================================================================================
 	// SHADER - Build and compile the shader program (with LearnOpenGL's provided shader class)
 	// ===========================================================================================
+	if (DEBUG) start_time_shaders = clock();
+	
 	Shader shader("src/shaders/vertex_shader.vert", "src/shaders/fragment_shader.frag");
 	Shader lightShader("src/shaders/light_shader.vert", "src/shaders/light_shader.frag");
-
+	
+	if (DEBUG) std::cout << "Shader create time: " << getTimeSeconds(start_time_shaders, clock()) << " seconds" << std::endl;
 	// ===========================================================================================
 	// 3D OBJECTS - Set up vertex data and buffers and configure vertex attributes
 	// ===========================================================================================
+	if (DEBUG) start_time_meshes = clock();
 
 	Cube cube = Cube();
 	cube.storeOnGPU();
-
 	Rect plane = Rect(4.0f, 4.0f);
 	plane.storeOnGPU();
 
+	if (DEBUG) std::cout << "Mesh create/store time: " << getTimeSeconds(start_time_meshes, clock()) << " seconds" << std::endl;
 	// ===========================================================================================
 	// LOAD TEXTURES
 	// ===========================================================================================
-	unsigned int tx_diff = loadTexture(std::string("src/resources/textures/1857-diffuse.jpg").c_str());
-	unsigned int tx_spec = loadTexture(std::string("src/resources/textures/1857-specexponent.jpg").c_str());
+	if (DEBUG) time_textures = clock();
+
+	Texture metal = Texture();
+	metal.addDiffuse("src/resources/textures/1857-diffuse.jpg");
+	metal.addSpecular("src/resources/textures/1857-specexponent.jpg");
 
 	// Texture shading configuration
 	shader.use();
 	shader.setInt("material.diffuse", 0);
 	shader.setInt("material.specular", 1);
 
+	if (DEBUG) std::cout << "Texture create time: " << getTimeSeconds(time_textures, clock()) << " seconds" << std::endl;
 	// ===========================================================================================
 	// RENDER LOOP
 	// ===========================================================================================
@@ -176,12 +194,7 @@ int main(void)
 		// DRAW OBJECTS (see Rectangle/Cube class for draw functions)
 		// -------------------------------------------------------------------------------------------
 
-		cube.drawObject(
-			&shader,
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(1.0f, 1.0f, 1.0f),
-			tx_diff, tx_spec
-		);
+		cube.drawObject(&shader, metal.diffuse(), metal.specular());
 
 		// Activate light shader and configure it
 		lightShader.use();
@@ -189,14 +202,7 @@ int main(void)
 		lightShader.setMat4("view", view);
 
 		// Draw light object
-		plane.drawObject(
-			&lightShader,
-			lightPosition,
-			glm::vec3(1.0f, 1.0f, 1.0f),
-			90.0f,
-			glm::vec3(1.0f, 0.0f, 0.0f),
-			tx_diff, tx_spec
-		);
+		plane.drawObject(&lightShader, lightPosition, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), metal.diffuse(), metal.specular());
 
 		// GLFW: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
@@ -256,39 +262,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	camera.setFOV((float)yoffset);
 }
 
-// Utillity function for loading a 2D texture from file (Created by Joey de Vries, copied the 27.09.2017 from https://learnopengl.com/) 
-unsigned int loadTexture(char const * path)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrComponents;
-	unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
-	if (data) {
-		GLenum format;
-		if (nrComponents == 1)
-			format = GL_RED;
-		else if (nrComponents == 3)
-			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	}
-	else
-	{
-		std::cout << "Texture failed to load at path: " << path << std::endl;
-		stbi_image_free(data);
-	}
-
-	return textureID;
+// Calculate time passed between two timestamps and return it in seconds
+double getTimeSeconds(clock_t time_begin, clock_t time_end) {
+	return double(time_end - time_begin) / CLOCKS_PER_SEC;
 }

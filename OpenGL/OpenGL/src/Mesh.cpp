@@ -2,13 +2,15 @@
 
 unsigned int Mesh::num_meshes = 0;
 
+
 Mesh::Mesh()
 {
-	glGenVertexArrays(1, &VAO); // Create VAO that stores the buffer objects.
-	glGenBuffers(1, &VBO); // Create VBO that stores vertex data
-	glGenBuffers(1, &EBO); // Create EBO that stores indices
+	//glGenVertexArrays(1, &VAO); // Create VAO that stores the buffer objects.
+	//glGenBuffers(1, &VBO); // Create VBO that stores vertex data
+	//glGenBuffers(1, &EBO); // Create EBO that stores indices
 	num_meshes++;
 }
+
 
 Mesh::~Mesh()
 {

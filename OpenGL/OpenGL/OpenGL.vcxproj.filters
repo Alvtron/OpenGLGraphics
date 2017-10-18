@@ -16,6 +16,12 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{48448d6c-5d13-4f85-91aa-e5e7c158d3b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Levels">
+      <UniqueIdentifier>{f184fbc4-757f-42fd-803a-465008e9d259}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Levels">
+      <UniqueIdentifier>{72d24c7c-95da-4e49-992d-89551fc4782c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">
@@ -38,6 +44,15 @@
     </ClCompile>
     <ClCompile Include="src\Texture.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ThomasLevel.cpp">
+      <Filter>Source Files\Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="VegardLevel.cpp">
+      <Filter>Source Files\Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="VetleLevel.cpp">
+      <Filter>Source Files\Levels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +79,18 @@
     </ClInclude>
     <ClInclude Include="src\Texture.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ThomasLevel.h">
+      <Filter>Header Files\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="VegardLevel.h">
+      <Filter>Header Files\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="VetleLevel.h">
+      <Filter>Header Files\Levels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -20,6 +20,12 @@ https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/shader_s.h 
 class Shader
 {
 public:
+
+	//Vegard added Constructor
+	Shader() {
+
+	}
+
 	unsigned int ID;
 	// Constructor generates the shader on the fly
 	Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr) {

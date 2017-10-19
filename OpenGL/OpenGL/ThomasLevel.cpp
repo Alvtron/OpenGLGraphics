@@ -37,6 +37,7 @@ glm::vec3 lightPosition = glm::vec3(0.0f, 5.0f, 0.0f);
 glm::vec3 lightColor = glm::vec3(1.0f, 0.5f, 1.0f);
 
 // 3D Objects
+CubeMap cubemap = CubeMap();
 Cube cube = Cube();
 Rect plane = Rect();
 
@@ -44,8 +45,9 @@ Rect plane = Rect();
 Texture metal, tile;
 
 // Shaders
-Shader shader, lightShader;
-
+CubeMapShader cubeMapShader;
+ObjectShader shader;
+LightShader lightShader;
 
 void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 {
@@ -72,19 +74,29 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	// ===========================================================================================
 	// SHADER - Build and compile the shader program (with LearnOpenGL's provided shader class)
 	// ===========================================================================================
-	shader = Shader("shaders/vertex_shader.vert", "shaders/fragment_shader.frag");
-	lightShader = Shader("shaders/light_shader.vert", "shaders/light_shader.frag");
+	cubeMapShader = CubeMapShader("shaders/cubemap.vert", "shaders/cubemap.frag");
+	shader = ObjectShader("shaders/object.vert", "shaders/object.frag");
+	lightShader = LightShader("shaders/light.vert", "shaders/light.frag", lightColor);
 
 	// ===========================================================================================
 	// 3D OBJECTS - Set up vertex data and buffers and configure vertex attributes
 	// ===========================================================================================
-
+	cubemap.storeOnGPU();
 	cube.storeOnGPU();
 	plane.storeOnGPU();
 
 	// ===========================================================================================
 	// LOAD TEXTURES
 	// ===========================================================================================
+	cubemap.loadCubemapTexture(
+		"resources/skybox/right.jpg",
+		"resources/skybox/left.jpg",
+		"resources/skybox/top.jpg",
+		"resources/skybox/bottom.jpg",
+		"resources/skybox/back.jpg",
+		"resources/skybox/front.jpg"
+	);
+
 	metal = Texture();
 	metal.addDiffuse("resources/textures/1857-diffuse.jpg");
 	metal.addSpecular("resources/textures/1857-specexponent.jpg");
@@ -95,9 +107,6 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	tile.addSpecular("resources/textures/10744-specstrength.jpg");
 	tile.addNormal("resources/textures/10744-normal.jpg");
 	tile.addAO("resources/textures/10744-ambientocclusion.jpg");
-
-	Texture::SetShaderSampler(&shader);
-	Texture::SetLightColor(&lightShader, lightColor);
 }
 
 void ThomasLevel::loop()
@@ -149,11 +158,13 @@ void ThomasLevel::loop()
 	// Draw light object
 	plane.drawObject(&lightShader, lightPosition, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), metal);
 
+	// Draw cubemap (this must AFTER all other objects last or it will decrease peformance)
+	cubemap.drawCubemap(&cubeMapShader, &camera, view, projection);
+
 	// GLFW: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
-
 
 // ===========================================================================================
 // PLAYER INPUTS

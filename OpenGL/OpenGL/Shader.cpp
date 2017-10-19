@@ -1,13 +1,12 @@
-#include "shader.h"
+#include "Shader.h"
 
-//Vegard added Constructor
-Shader::Shader() {
+/* Default constructor */
+Shader::Shader(){}
 
-}
-
-Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath) {
-
-	// 1. Get the vertex/fragment source code from filePath
+/* Create a shader object. Provide the filepath to the GLSL code. Required: Vertex Shader, Fragment Shader. Unrequired: Geometry Shader */
+Shader::Shader(const char * vertexPath, const char * fragmentPath, const char * geometryPath)
+{
+	/* Get the vertex/fragment source code from filePath */
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::string geometryCode;
@@ -50,7 +49,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geo
 	const char* vShaderCode = vertexCode.c_str();
 	const char * fShaderCode = fragmentCode.c_str();
 
-	// 2. compile shaders
+	/* Compile shaders */
 	unsigned int vertex, fragment;
 	// Create vertex shader
 	vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -73,7 +72,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geo
 		checkCompileErrors(geometry, "GEOMETRY");
 	}
 
-	// Create shader Program
+	/* Create shader Program */
 	ID = glCreateProgram();
 	glAttachShader(ID, vertex);
 	glAttachShader(ID, fragment);
@@ -90,12 +89,10 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geo
 
 }
 
-// Activate the shader program
+/* Activate the shader program */
 void Shader::use() {
 	glUseProgram(ID);
 }
-
-// Utility uniform functions
 
 void Shader::setBool(const std::string &name, bool value) const {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
@@ -145,7 +142,7 @@ void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const {
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-// Utility function for checking shader compilation/linking errors.
+/* Utility function for checking shader compilation/linking errors. */
 void Shader::checkCompileErrors(GLuint shader, std::string type)
 {
 	GLint success;

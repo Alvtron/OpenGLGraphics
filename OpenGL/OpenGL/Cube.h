@@ -1,6 +1,4 @@
-#ifndef CUBE_HEADER
-#define CUBE_HEADER
-
+#pragma once
 #include "Mesh.h"
 
 class Cube : public Mesh
@@ -161,10 +159,7 @@ public:
 	static const unsigned int COLORS_ARRAY_SIZE = 72;
 	static const unsigned int TEXTURES_ARRAY_SIZE = 48;
 	static const unsigned int INDICES_ARRAY_SIZE = 36;
-
 	Cube();
 	~Cube();
 	int getNumCubes();
 };
-
-#endif

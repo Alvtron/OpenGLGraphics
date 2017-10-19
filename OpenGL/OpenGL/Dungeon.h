@@ -12,9 +12,7 @@ My dungeon generator is written entirely by me, but based on Nystrom's guide.
 
 */
 
-#ifndef DUNGEON_H
-#define DUNGEON_H
-
+#pragma once
 #include <iostream>
 #include <string>
 #include <vector>
@@ -185,8 +183,6 @@ public:
 	};
 
 private:
-
-	// Dungeon defaults
 	const std::string DEFAULT_NAME = "Dungeon";
 	const int WIDTH = 50;
 	const int HEIGHT = 50;
@@ -195,25 +191,20 @@ private:
 	const int MAX_ROOM_WIDTH = 10;
 	const int MIN_ROOM_HEIGHT = 6;
 	const int MAX_ROOM_HEIGHT = 10;
-
 	std::string name;
 	int width, height, attempts, minRoomWidth, maxRoomWidth, minRoomHeight, maxRoomheight, numberOfRooms = 0, numberOfRegions = 0, numberOfteleporters = 0;
-
 	std::vector<std::vector<Cell>> blueprint;
 	std::vector<Room> roomList;
 	std::vector<Door> doorList;
 	std::vector<std::vector<bool>> regionConnectedToRoom;
-
 	std::mt19937 generator;
 	clock_t time_begin, time_end;
-
 public:
 	Dungeon::Dungeon();
 	Dungeon::Dungeon(int width, int height, int attempts);
 	Dungeon::Dungeon(int width, int height, int attempts, int minRoomWidth, int maxRoomWidth, int minRoomHeight, int maxRoomheight);
 	Dungeon::Dungeon(std::string name, int width, int height, int attempts, int minRoomWidth, int maxRoomWidth, int minRoomHeight, int maxRoomheight);
 	Dungeon::~Dungeon();
-
 	void Dungeon::generate();
 	void Dungeon::fillAllEmptyWith(char fill);
 	void Dungeon::insertRooms();
@@ -249,5 +240,3 @@ public:
 	void Dungeon::printWithDetails();
 	void Dungeon::print();
 };
-
-#endif

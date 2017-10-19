@@ -1,6 +1,4 @@
-#ifndef TEXTURE_HEADER
-#define TEXTURE_HEADER
-
+#pragma once
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
@@ -14,6 +12,7 @@ private:
 	static unsigned int num_textures;
 	unsigned int diffuse_id, specular_id, normal_id, displacement_id, ao_id;
 	bool diffuseBound = false, specularBound = false, normalBound = false, displacementBound = false, AOBound = false;
+	bool bindTexture(char const * path, unsigned int & id);
 public:
 	enum TEXTURE_TYPE : unsigned int {
 		TXT_DIFFUSE = 0,
@@ -24,9 +23,6 @@ public:
 	};
 	Texture();
 	~Texture();
-	static void SetShaderSampler(Shader * shader);
-	static void SetLightColor(Shader * shader, glm::vec3 light);
-	bool bindTexture(char const * path, unsigned int & id);
 	bool addTexture(const std::string path, const TEXTURE_TYPE type);
 	bool addDiffuse(const std::string path);
 	bool addSpecular(const std::string path);
@@ -45,4 +41,3 @@ public:
 	unsigned int getAO();
 	static unsigned int getNumTextures();
 };
-#endif

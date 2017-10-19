@@ -2,17 +2,13 @@
 
 unsigned int Mesh::num_meshes = 0;
 
+/* Create a Mesh object that stores vertex data: vertices, normals, colors, textures and indices. Call createVertexData(...) to change vertex data. */
 Mesh::Mesh()
 {
 	num_meshes++;
 }
 
-Mesh::~Mesh()
-{
-	num_meshes--;
-	deAllocate();
-}
-
+/* Create a Mesh object that stores vertex data: vertices, normals, colors, textures and indices. Call createVertexData(...) to change vertex data. */
 void Mesh::createVertexData(const std::vector<float>& vertices, const  std::vector<float>& normals, const  std::vector<float>& colors, const  std::vector<float>& textures, const  std::vector<unsigned int>& indices)
 {
 	vertex_data.reserve(vertices.size() + normals.size() + colors.size() + textures.size());
@@ -38,6 +34,14 @@ void Mesh::createVertexData(const std::vector<float>& vertices, const  std::vect
 	hasIndices = true;
 }
 
+/* Deconstructor */
+Mesh::~Mesh()
+{
+	num_meshes--;
+	deAllocate();
+}
+
+/* Change or add vertex data. Specify vertex datatype, VERTEX_DATA_TYPE{MESH_VERTICE, MESH_NORMAL, MESH_COLOR, MESH_TEXTURE or MESH_INDICE}. If data already exists, it will just overwrite it. */
 void Mesh::addVertexData(const std::vector<float> &data, VERTEX_DATA_TYPE data_type)
 {
 	if (data_type != MESH_INDICE)
@@ -93,12 +97,14 @@ void Mesh::addVertexData(const std::vector<float> &data, VERTEX_DATA_TYPE data_t
 	}
 }
 
+/* Add/replace indices */
 void Mesh::addIndices(const std::vector<unsigned int> &indices)
 {
 	this->indices = indices;
 	hasIndices = true;
 }
 
+/* Generate buffers and store vertex data on the GPU. Call drawObject(...) to draw it */
 void Mesh::storeOnGPU()
 {
 	glGenVertexArrays(1, &VAO); // Create VAO that stores the buffer objects.
@@ -142,6 +148,7 @@ void Mesh::storeOnGPU()
 	}
 }
 
+/* Draw vertex data from GPU */
 void Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, Texture texture)
 {
 	// Bind diffuse map
@@ -187,27 +194,31 @@ void Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale
 	else glDrawArrays(GL_TRIANGLES, 0, vertex_data.size() / stride());
 }
 
+/* Draw vertex data from GPU */
 void Mesh::drawObject(const Shader * shader, glm::vec3 position, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture)
 {
 	drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), rotation_degrees, rotation_vector, texture);
 }
 
+/* Draw vertex data from GPU */
 void Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, const Texture texture)
 {
 	drawObject(shader, position, scale_vector, 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture);
 }
 
+/* Draw vertex data from GPU */
 void Mesh::drawObject(const Shader * shader, glm::vec3 position, const Texture texture)
 {
 	drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture);
 }
 
+/* Draw vertex data from GPU */
 void Mesh::drawObject(const Shader * shader, const Texture texture)
 {
 	drawObject(shader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture);
 }
 
-// De-allocate mesh once it has outlived it's purpose
+/* De-allocate vertex data once it has outlived it's purpose */
 void Mesh::deAllocate()
 {
 	glDeleteVertexArrays(1, &VAO);
@@ -215,6 +226,7 @@ void Mesh::deAllocate()
 	glDeleteBuffers(1, &EBO);
 }
 
+/* Returns the stride in vertex data*/
 unsigned int Mesh::stride() {
 	unsigned int stride = 0;
 	if (hasVertices) stride += 3;
@@ -224,16 +236,19 @@ unsigned int Mesh::stride() {
 	return stride;
 }
 
+/* Returns the stride in vertex data*/
 unsigned int Mesh::VerticeStride() {
 	return 0;
 }
 
+/* Returns the first index of the first normal in the vertex data. */
 unsigned int Mesh::normalStride() {
 	unsigned int stride = 3;
 	if (!hasVertices) stride -= 3;
 	return stride;
 }
 
+/* Returns the first index of the first color in the vertex data. */
 unsigned int Mesh::colorStride() {
 	unsigned int stride = 6;
 	if (!hasVertices) stride -= 3;
@@ -241,6 +256,7 @@ unsigned int Mesh::colorStride() {
 	return stride;
 }
 
+/* Returns the first index of the first texture in the vertex data. */
 unsigned int Mesh::textureStride() {
 	unsigned int stride = 9;
 	if (!hasVertices) stride -= 3;
@@ -249,36 +265,42 @@ unsigned int Mesh::textureStride() {
 	return stride;
 }
 
+/* Prints all vertices in a human-readable format */
 void Mesh::printVertices()
 {
 	for (int i = 0; i < vertex_data.size(); i += 11)
 		std::cout << std::fixed << std::setprecision(1) << vertex_data[i] << ", " << vertex_data[i + 1] << ", " << vertex_data[i + 2] << std::endl;
 }
 
+/* Prints all normals in a human-readable format */
 void Mesh::printNormals()
 {
 	for (int i = 0; i < vertex_data.size(); i += 11)
 		std::cout << std::fixed << std::setprecision(1) << vertex_data[i + 3] << ", " << vertex_data[i + 4] << ", " << vertex_data[i + 5] << std::endl;
 }
 
+/* Prints all colors in a human-readable format */
 void Mesh::printColors()
 {
 	for (int i = 0; i < vertex_data.size(); i += 11)
 		std::cout << std::fixed << std::setprecision(1) << vertex_data[i + 6] << ", " << vertex_data[i + 7] << ", " << vertex_data[i + 8] << std::endl;
 }
 
+/* Prints all textures in a human-readable format */
 void Mesh::printTextures()
 {
 	for (int i = 0; i < vertex_data.size(); i += 11)
 		std::cout << std::fixed << std::setprecision(1) << vertex_data[i + 9] << ", " << vertex_data[i + 10] << std::endl;
 }
 
+/* Prints all indices in a human-readable format */
 void Mesh::printIndices()
 {
 	for (int i = 0; i < indices.size(); i += 3)
 		std::cout << indices[i] << ", " << indices[i + 1] << ", " << indices[i + 2] << std::endl;
 }
 
+/* Prints vertex data in a human-readable format */
 void Mesh::printVertexData()
 {
 	unsigned int vertices_index = 0, normals_index = 0, colors_index = 0, textures_index = 0;

@@ -1,6 +1,4 @@
-#ifndef SHADER_H
-#define SHADER_H
-
+#pragma once
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
@@ -31,4 +29,3 @@ public:
 	void setMat3(const std::string & name, const glm::mat3 & mat) const;
 	void setMat4(const std::string & name, const glm::mat4 & mat) const;
 };
-#endif

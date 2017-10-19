@@ -8,11 +8,14 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 // Shaders and camera class, based on Joey de Vries' camera and shader class from learnOpenGL.com.
-#include "shader.h"
+#include "ObjectShader.h"
+#include "LightShader.h"
+#include "CubeMapShader.h"
 #include "camera.h"
 // Dungeon class created by Thomas Angeland for creating random-generated dungeons in adjustable sizes.
 #include "Dungeon.h"
 // 3D Object classes
+#include "CubeMap.h"
 #include "Rectangle.h"
 #include "Cube.h"
 #include "Texture.h"

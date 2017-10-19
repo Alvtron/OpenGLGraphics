@@ -7,9 +7,7 @@ https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/camera.h (s
 
 */
 
-#ifndef CAMERA_H
-#define CAMERA_H
-
+#pragma once
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <vector>
@@ -154,4 +152,3 @@ private:
 		Up = glm::normalize(glm::cross(Right, Front));
 	}
 };
-#endif

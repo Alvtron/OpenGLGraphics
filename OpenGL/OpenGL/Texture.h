@@ -25,6 +25,7 @@ public:
 	Texture();
 	~Texture();
 	static void SetShaderSampler(Shader * shader);
+	static void SetLightColor(Shader * shader, glm::vec3 light);
 	bool bindTexture(char const * path, unsigned int & id);
 	bool addTexture(const std::string path, const TEXTURE_TYPE type);
 	bool addDiffuse(const std::string path);

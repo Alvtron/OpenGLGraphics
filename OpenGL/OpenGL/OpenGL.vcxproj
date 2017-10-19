@@ -136,6 +136,7 @@
     <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Rectangle.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.c" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ThomasLevel.cpp" />

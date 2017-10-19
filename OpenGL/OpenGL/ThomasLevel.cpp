@@ -34,6 +34,7 @@ float rotation = 0.0f;
 
 // Global positions
 glm::vec3 lightPosition = glm::vec3(0.0f, 5.0f, 0.0f);
+glm::vec3 lightColor = glm::vec3(1.0f, 0.5f, 1.0f);
 
 // 3D Objects
 Cube cube = Cube();
@@ -43,8 +44,8 @@ Rect plane = Rect();
 Texture metal, tile;
 
 // Shaders
-Shader shader;
-Shader lightShader;
+Shader shader, lightShader;
+
 
 void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 {
@@ -96,6 +97,7 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	tile.addAO("resources/textures/10744-ambientocclusion.jpg");
 
 	Texture::SetShaderSampler(&shader);
+	Texture::SetLightColor(&lightShader, lightColor);
 }
 
 void ThomasLevel::loop()
@@ -119,9 +121,9 @@ void ThomasLevel::loop()
 	shader.setVec3("viewPos", camera.Position);
 
 	// light properties
-	shader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-	shader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
-	shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+	shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f) + (lightColor * 0.1f));
+	shader.setVec3("light.diffuse", lightColor * 0.5f);
+	shader.setVec3("light.specular", lightColor);
 
 	// material properties
 	shader.setFloat("material.shininess", 64.0f);

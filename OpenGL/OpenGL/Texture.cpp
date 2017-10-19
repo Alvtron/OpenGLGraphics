@@ -22,6 +22,13 @@ void Texture::SetShaderSampler(Shader * shader) {
 	shader->setInt("material.ao", 4);
 }
 
+// Texture shading configuration
+void Texture::SetLightColor(Shader * shader, glm::vec3 light) {
+	shader->use();
+	shader->setVec3("lightColor", light);
+	shader->setBool("hasLightColor", true);
+}
+
 bool Texture::bindTexture(char const * path, unsigned int &id)
 {
 	glGenTextures(1, &id);

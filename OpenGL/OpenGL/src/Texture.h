@@ -1,6 +1,10 @@
+#ifndef TEXTURE_HEADER
+#define TEXTURE_HEADER
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
+#include "shader.h"
 #include <iostream>
 #include <string>
 
@@ -8,29 +12,36 @@ class Texture
 {
 private:
 	static unsigned int num_textures;
-	unsigned int diffuse_id, specular_id, normal_id, ao_id;
-	bool diffuseBound = false, specularBound = false, normalBound = false, AOBound = false;
+	unsigned int diffuse_id, specular_id, normal_id, displacement_id, ao_id;
+	bool diffuseBound = false, specularBound = false, normalBound = false, displacementBound = false, AOBound = false;
 public:
-	enum TEXTURE_TYPE : char {
-		TXT_DIFFUSE = 'D',
-		TXT_SPECULAR = 'S',
-		TXT_NORMAL = 'N',
-		TXT_AO = 'A'
+	enum TEXTURE_TYPE : unsigned int {
+		TXT_DIFFUSE = 0,
+		TXT_SPECULAR = 1,
+		TXT_NORMAL = 2,
+		TXT_DISPLACEMENT = 3,
+		TXT_AO = 4
 	};
 	Texture();
 	~Texture();
+	static void SetShaderSampler(Shader * shader);
 	bool bindTexture(char const * path, unsigned int & id);
-	bool addTexture(std::string path, TEXTURE_TYPE type);
-	bool addDiffuse(std::string path);
-	bool addSpecular(std::string path);
-	bool addNormal(std::string path);
-	bool addAO(std::string path);
+	bool addTexture(const std::string path, const TEXTURE_TYPE type);
+	bool addDiffuse(const std::string path);
+	bool addSpecular(const std::string path);
+	bool addNormal(const std::string path);
+	bool addDisplacement(const std::string path);
+	bool addAO(const std::string path);
 	bool hasDiffuse();
 	bool hasSpecular();
 	bool hasNormal();
+	bool hasDisplacement();
 	bool hasAO();
-	unsigned int diffuse();
-	unsigned int specular();
-	unsigned int normal();
-	unsigned int ao();
+	unsigned int getDiffuse();
+	unsigned int getSpecular();
+	unsigned int getNormal();
+	unsigned int getDisplacement();
+	unsigned int getAO();
+	static unsigned int getNumTextures();
 };
+#endif

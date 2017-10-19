@@ -12,6 +12,16 @@ Texture::~Texture()
 	num_textures--;
 }
 
+// Texture shading configuration
+void Texture::SetShaderSampler(Shader * shader) {
+	shader->use();
+	shader->setInt("material.diffuse", 0);
+	shader->setInt("material.specular", 1);
+	shader->setInt("material.normal", 2);
+	shader->setInt("material.displacement", 3);
+	shader->setInt("material.ao", 4);
+}
+
 bool Texture::bindTexture(char const * path, unsigned int &id)
 {
 	glGenTextures(1, &id);
@@ -47,34 +57,56 @@ bool Texture::bindTexture(char const * path, unsigned int &id)
 	}
 }
 
-bool Texture::addTexture(std::string path, TEXTURE_TYPE type)
+bool Texture::addTexture(const std::string path, const TEXTURE_TYPE type)
 {
-	if (type == TXT_DIFFUSE) return bindTexture(path.c_str(), diffuse_id);
-	else if (type == TXT_SPECULAR) return bindTexture(path.c_str(), specular_id);
-	else if (type == TXT_NORMAL) return bindTexture(path.c_str(), normal_id);
-	else if (type == TXT_AO) return bindTexture(path.c_str(), ao_id);
+	if (type == TXT_DIFFUSE)
+	{
+		return addDiffuse(path.c_str());
+	}
+	else if (type == TXT_SPECULAR)
+	{
+		return addSpecular(path.c_str());
+	}
+	else if (type == TXT_NORMAL)
+	{
+		return addNormal(path.c_str());
+	}
+	else if (type == TXT_DISPLACEMENT)
+	{
+		return addDisplacement(path.c_str());
+	}
+	else if (type == TXT_AO)
+	{
+		return addAO(path.c_str());
+	}
 	else return false;
 }
 
-bool Texture::addDiffuse(std::string path)
+bool Texture::addDiffuse(const std::string path)
 {
 	diffuseBound = bindTexture(path.c_str(), diffuse_id);
 	return diffuseBound;		
 }
 
-bool Texture::addSpecular(std::string path)
+bool Texture::addSpecular(const std::string path)
 {
 	specularBound = bindTexture(path.c_str(), specular_id);
 	return specularBound;
 }
 
-bool Texture::addNormal(std::string path)
+bool Texture::addNormal(const std::string path)
 {
 	normalBound = bindTexture(path.c_str(), normal_id);
 	return normalBound;
 }
 
-bool Texture::addAO(std::string path)
+bool Texture::addDisplacement(const std::string path)
+{
+	displacementBound = bindTexture(path.c_str(), displacement_id);
+	return displacementBound;
+}
+
+bool Texture::addAO(const std::string path)
 {
 	AOBound = bindTexture(path.c_str(), ao_id);
 	return AOBound;
@@ -94,20 +126,41 @@ bool Texture::hasNormal()
 	return normalBound;
 }
 
+bool Texture::hasDisplacement()
+{
+	return displacementBound;
+}
+
 bool Texture::hasAO()
 {
 	return AOBound;
 }
 
-unsigned int Texture::diffuse() {
+unsigned int Texture::getDiffuse()
+{
 	return diffuse_id;
 }
-unsigned int Texture::specular() {
+
+unsigned int Texture::getSpecular()
+{
 	return specular_id;
 }
-unsigned int Texture::normal() {
+
+unsigned int Texture::getNormal()
+{
 	return normal_id;
 }
-unsigned int Texture::ao() {
+
+unsigned int Texture::getDisplacement()
+{
+	return displacement_id;
+}
+
+unsigned int Texture::getAO() {
 	return ao_id;
+}
+
+unsigned int Texture::getNumTextures()
+{
+	return num_textures;
 }

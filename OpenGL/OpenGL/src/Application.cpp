@@ -146,11 +146,15 @@ int main(void)
 	Texture metal = Texture();
 	metal.addDiffuse("src/resources/textures/1857-diffuse.jpg");
 	metal.addSpecular("src/resources/textures/1857-specexponent.jpg");
+	metal.addNormal("src/resources/textures/1857-normal.jpg");
 
-	// Texture shading configuration
-	shader.use();
-	shader.setInt("material.diffuse", 0);
-	shader.setInt("material.specular", 1);
+	Texture tile = Texture();
+	tile.addDiffuse("src/resources/textures/10744-diffuse.jpg");
+	tile.addSpecular("src/resources/textures/10744-specstrength.jpg");
+	tile.addNormal("src/resources/textures/10744-normal.jpg");
+	tile.addAO("src/resources/textures/10744-ambientocclusion.jpg");
+	
+	Texture::SetShaderSampler(&shader);
 
 	if (DEBUG) std::cout << "Texture create time: " << getTimeSeconds(time_textures, clock()) << " seconds" << std::endl;
 	// ===========================================================================================
@@ -194,7 +198,8 @@ int main(void)
 		// DRAW OBJECTS (see Rectangle/Cube class for draw functions)
 		// -------------------------------------------------------------------------------------------
 
-		cube.drawObject(&shader, metal.diffuse(), metal.specular());
+		cube.drawObject(&shader, metal);
+		cube.drawObject(&shader, glm::vec3(2.0f, 0.0f, 2.0f) , tile);
 
 		// Activate light shader and configure it
 		lightShader.use();
@@ -202,7 +207,7 @@ int main(void)
 		lightShader.setMat4("view", view);
 
 		// Draw light object
-		plane.drawObject(&lightShader, lightPosition, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), metal.diffuse(), metal.specular());
+		plane.drawObject(&lightShader, lightPosition, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), metal);
 
 		// GLFW: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);

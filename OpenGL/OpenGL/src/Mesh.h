@@ -11,6 +11,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include "Texture.h"
 
 class Mesh
 {
@@ -36,11 +37,11 @@ public:
 	void addVertexData(const std::vector<float>& vertices, VERTEX_DATA_TYPE data_type);
 	void addIndices(const std::vector<unsigned int>& indices);
 	void storeOnGPU();
-	void drawObject(Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, unsigned int texture_diffuse, unsigned int texture_specular);
-	void drawObject(Shader * shader, glm::vec3 position, float rotation_degrees, glm::vec3 rotation_vector, unsigned int texture_diffuse, unsigned int texture_specular);
-	void drawObject(Shader * shader, glm::vec3 position, glm::vec3 scale_vector, unsigned int texture_diffuse, unsigned int texture_specular);
-	void drawObject(Shader * shader, glm::vec3 position, unsigned int texture_diffuse, unsigned int texture_specular);
-	void drawObject(Shader * shader, unsigned int texture_diffuse, unsigned int texture_specular);
+	void drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture);
+	void drawObject(const Shader * shader, glm::vec3 position, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture);
+	void drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, const Texture texture);
+	void drawObject(const Shader * shader, glm::vec3 position, const Texture texture);
+	void drawObject(const Shader * shader, const Texture texture);
 	void deAllocate();
 	unsigned int stride();
 	unsigned int VerticeStride();

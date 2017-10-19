@@ -141,14 +141,38 @@ void Mesh::storeOnGPU()
 	}
 }
 
-void Mesh::drawObject(Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, unsigned int texture_diffuse, unsigned int texture_specular)
+void Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, Texture texture)
 {
 	// Bind diffuse map
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture_diffuse);
+	if (texture.hasDiffuse())
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture.getDiffuse());
+	}
 	// Bind specular map
+	if (texture.hasSpecular())
+	{ 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture_specular);
+	glBindTexture(GL_TEXTURE_2D, texture.getSpecular());
+	}
+	// Bind normal map
+	if (texture.hasNormal())
+	{
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, texture.getNormal());
+	}
+	// Bind displacement map
+	if (texture.hasDisplacement())
+	{
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, texture.getDisplacement());
+	}
+	// Bind ambient oclusion map
+	if (texture.hasAO())
+	{
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_2D, texture.getAO());
+	}
 	// Bind VAO
 	glBindVertexArray(VAO);
 	// Calculate the model matrix for each object and pass it to shader before drawing
@@ -162,24 +186,24 @@ void Mesh::drawObject(Shader * shader, glm::vec3 position, glm::vec3 scale_vecto
 	else glDrawArrays(GL_TRIANGLES, 0, vertex_data.size() / stride());
 }
 
-void Mesh::drawObject(Shader * shader, glm::vec3 position, float rotation_degrees, glm::vec3 rotation_vector, unsigned int texture_diffuse, unsigned int texture_specular)
+void Mesh::drawObject(const Shader * shader, glm::vec3 position, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture)
 {
-	drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), rotation_degrees, rotation_vector, texture_diffuse, texture_specular);
+	drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), rotation_degrees, rotation_vector, texture);
 }
 
-void Mesh::drawObject(Shader * shader, glm::vec3 position, glm::vec3 scale_vector, unsigned int texture_diffuse, unsigned int texture_specular)
+void Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, const Texture texture)
 {
-	drawObject(shader, position, scale_vector, 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture_diffuse, texture_specular);
+	drawObject(shader, position, scale_vector, 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture);
 }
 
-void Mesh::drawObject(Shader * shader, glm::vec3 position, unsigned int texture_diffuse, unsigned int texture_specular)
+void Mesh::drawObject(const Shader * shader, glm::vec3 position, const Texture texture)
 {
-	drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture_diffuse, texture_specular);
+	drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture);
 }
 
-void Mesh::drawObject(Shader * shader, unsigned int texture_diffuse, unsigned int texture_specular)
+void Mesh::drawObject(const Shader * shader, const Texture texture)
 {
-	drawObject(shader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture_diffuse, texture_specular);
+	drawObject(shader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture);
 }
 
 // De-allocate mesh once it has outlived it's purpose

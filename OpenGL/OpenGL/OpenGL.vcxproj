@@ -131,36 +131,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\Cube.cpp" />
-    <ClCompile Include="src\Dungeon.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\Rectangle.cpp" />
-    <ClCompile Include="src\stb_image.c" />
-    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Dungeon.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Rectangle.cpp" />
+    <ClCompile Include="stb_image.c" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ThomasLevel.cpp" />
     <ClCompile Include="VegardLevel.cpp" />
     <ClCompile Include="VetleLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="Cube.h" />
+    <ClInclude Include="Dungeon.h" />
     <ClInclude Include="Level.h" />
-    <ClInclude Include="src\camera.h" />
-    <ClInclude Include="src\Cube.h" />
-    <ClInclude Include="src\Dungeon.h" />
-    <ClInclude Include="src\Mesh.h" />
-    <ClInclude Include="src\Rectangle.h" />
-    <ClInclude Include="src\shader.h" />
-    <ClInclude Include="src\stb_image.h" />
-    <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Rectangle.h" />
+    <ClInclude Include="shader.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="ThomasLevel.h" />
     <ClInclude Include="VegardLevel.h" />
     <ClInclude Include="VetleLevel.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\fragment_shader.frag" />
-    <None Include="src\shaders\light_shader.frag" />
-    <None Include="src\shaders\light_shader.vert" />
-    <None Include="src\shaders\vertex_shader.vert" />
+    <None Include="shaders\fragment_shader.frag" />
+    <None Include="shaders\light_shader.frag" />
+    <None Include="shaders\light_shader.vert" />
+    <None Include="shaders\vertex_shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,5 @@
 #pragma once 
-#include "..\OpenGL\VegardLevel.h"
-
+#include "VegardLevel.h"
 
 void VegardLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 {

@@ -2,15 +2,10 @@
 
 unsigned int Mesh::num_meshes = 0;
 
-
 Mesh::Mesh()
 {
-	//glGenVertexArrays(1, &VAO); // Create VAO that stores the buffer objects.
-	//glGenBuffers(1, &VBO); // Create VBO that stores vertex data
-	//glGenBuffers(1, &EBO); // Create EBO that stores indices
 	num_meshes++;
 }
-
 
 Mesh::~Mesh()
 {
@@ -106,10 +101,14 @@ void Mesh::addIndices(const std::vector<unsigned int> &indices)
 
 void Mesh::storeOnGPU()
 {
+	glGenVertexArrays(1, &VAO); // Create VAO that stores the buffer objects.
+	glGenBuffers(1, &VBO); // Create VBO that stores vertex data
+	glGenBuffers(1, &EBO); // Create EBO that stores indices
+
 	glBindVertexArray(VAO); // Bind the VAO before binding and configuring buffers
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); // Bind the VBO to the GL_ARRAY_BUFFER target
-	
-	// Copy vertex data into the VBO currently bound to the GL_ARRAY_BUFFER target
+
+										// Copy vertex data into the VBO currently bound to the GL_ARRAY_BUFFER target
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_data.size(), &vertex_data[0], GL_STATIC_DRAW);
 
 	if (hasVertices) {
@@ -134,7 +133,7 @@ void Mesh::storeOnGPU()
 		// Texture coordinate attribute
 		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, stride() * sizeof(float), (void*)(textureStride() * sizeof(float)));
 		glEnableVertexAttribArray(3);
-	}	
+	}
 	if (hasIndices) {
 		// Bind the EBO to the GL_ELEMENT_ARRAY_BUFFER target
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -153,9 +152,9 @@ void Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale
 	}
 	// Bind specular map
 	if (texture.hasSpecular())
-	{ 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture.getSpecular());
+	{
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture.getSpecular());
 	}
 	// Bind normal map
 	if (texture.hasNormal())

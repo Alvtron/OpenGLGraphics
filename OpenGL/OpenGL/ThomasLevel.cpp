@@ -1,70 +1,56 @@
 #pragma once
 #include "ThomasLevel.h"
 
-// STB: Texture loader for several different types of image files
-#include "..\OpenGL\src\stb_image.h"
-// GLM: Matrix and vector math-library (temporary) 
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
-// Shaders and camera class, based on Joey de Vries' camera and shader class from learnOpenGL.com.
-#include "..\OpenGL\src\shader.h"
-#include "..\OpenGL\src\camera.h"
-// Dungeon class created by Thomas Angeland for creating random-generated dungeons in adjustable sizes.
-#include "..\OpenGL\src\Dungeon.h"
-// 3D Object classes
-#include "..\OpenGL\src\Rectangle.h"
-#include "..\OpenGL\src\Cube.h"
-
-
-// General C++ (and C++11) libraries
-#include <iostream>
-#include <string>
-#include <vector>
-
+#define M_E        2.71828182845904523536
+#define M_LOG2E    1.44269504088896340736
+#define M_LOG10E   0.434294481903251827651
+#define M_LN2      0.693147180559945309417
+#define M_LN10     2.30258509299404568402
+#define M_PI       3.14159265358979323846
+#define M_PI_2     1.57079632679489661923
+#define M_PI_4     0.785398163397448309616
+#define M_1_PI     0.318309886183790671538
+#define M_2_PI     0.636619772367581343076
+#define M_2_SQRTPI 1.12837916709551257390
+#define M_SQRT2    1.41421356237309504880
+#define M_SQRT1_2  0.707106781186547524401
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
-unsigned int loadTexture(const char *path);
 
 // Camera
 Camera camera;
-const glm::vec3 SPAWN_POSITION = glm::vec3(0.0f, 2.0f, 3.0f);
+const glm::vec3 SPAWN_POSITION(0.0f, 2.0f, 2.0f);
 double lastX;
 double lastY;
 bool firstMouse = true;
 
-// Timing
-float deltaTime = 0.0f; // time between current frame and last frame
+// Timing - time between current frame and last frame
+float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+float rotation = 0.0f;
 
 // Global positions
 glm::vec3 lightPosition = glm::vec3(0.0f, 5.0f, 0.0f);
 
-
-
-//---------------------------------->VEGARD
+// 3D Objects
 Cube cube = Cube();
-Rect plane = Rect(4.0f, 4.0f);
+Rect plane = Rect();
 
-//------------------------------->VEGARD 
+// Textures
+Texture metal, tile;
+
+// Shaders
 Shader shader;
 Shader lightShader;
 
-unsigned int tx_diff;
-unsigned int tx_spec;
-
-
 void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 {
-
 	this->window = window;
 	this->WINDOW_HEIGHT = WINDOW_HEIGHT;
 	this->WINDOW_WIDTH = WINDOW_WIDTH;
-
-	//-------------------------------->VEGARD HER måtte jeg gjøre noe forandringer på dine globale variabler
 
 	lastX = WINDOW_WIDTH / 2.0f;
 	lastY = WINDOW_HEIGHT / 2.0f;
@@ -77,55 +63,50 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	// Tell GLFW to capture the players mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-
 	// ===========================================================================================
 	// CAMERA - for player movement, sets spawn position
 	// ===========================================================================================
 	camera = Camera(SPAWN_POSITION);
 
-
-
 	// ===========================================================================================
 	// SHADER - Build and compile the shader program (with LearnOpenGL's provided shader class)
 	// ===========================================================================================
-	shader = Shader("src/shaders/vertex_shader.vert", "src/shaders/fragment_shader.frag");
-	lightShader = Shader("src/shaders/light_shader.vert", "src/shaders/light_shader.frag");
+	shader = Shader("shaders/vertex_shader.vert", "shaders/fragment_shader.frag");
+	lightShader = Shader("shaders/light_shader.vert", "shaders/light_shader.frag");
 
 	// ===========================================================================================
 	// 3D OBJECTS - Set up vertex data and buffers and configure vertex attributes
 	// ===========================================================================================
 
-
 	cube.storeOnGPU();
-
 	plane.storeOnGPU();
 
 	// ===========================================================================================
 	// LOAD TEXTURES
 	// ===========================================================================================
-	tx_diff = loadTexture(std::string("src/resources/textures/1857-diffuse.jpg").c_str());
-	tx_spec = loadTexture(std::string("src/resources/textures/1857-specexponent.jpg").c_str());
+	metal = Texture();
+	metal.addDiffuse("resources/textures/1857-diffuse.jpg");
+	metal.addSpecular("resources/textures/1857-specexponent.jpg");
+	metal.addNormal("resources/textures/1857-normal.jpg");
 
-	// Texture shading configuration
-	shader.use();
-	shader.setInt("material.diffuse", 0);
-	shader.setInt("material.specular", 1);
+	tile = Texture();
+	tile.addDiffuse("resources/textures/10744-diffuse.jpg");
+	tile.addSpecular("resources/textures/10744-specstrength.jpg");
+	tile.addNormal("resources/textures/10744-normal.jpg");
+	tile.addAO("resources/textures/10744-ambientocclusion.jpg");
 
+	Texture::SetShaderSampler(&shader);
 }
 
 void ThomasLevel::loop()
 {
-	// ===========================================================================================
-	// RENDER LOOP
-	// ===========================================================================================
-
 	// Per-frame time logic
 	float currentFrame = (float)glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
 	// Process input (if any)
-	processInput(this->window);
+	processInput(window);
 
 	// Background color (world color)
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -133,8 +114,6 @@ void ThomasLevel::loop()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Activate shader when setting uniforms/drawing objects
-
-
 	shader.use();
 	shader.setVec3("light.position", lightPosition);
 	shader.setVec3("viewPos", camera.Position);
@@ -157,12 +136,8 @@ void ThomasLevel::loop()
 	// DRAW OBJECTS (see Rectangle/Cube class for draw functions)
 	// -------------------------------------------------------------------------------------------
 
-	cube.drawObject(
-		&shader,
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
-		tx_diff, tx_spec
-	);
+	cube.drawObject(&shader, metal);
+	cube.drawObject(&shader, glm::vec3(2.0f, 0.0f, 2.0f), tile);
 
 	// Activate light shader and configure it
 	lightShader.use();
@@ -170,19 +145,11 @@ void ThomasLevel::loop()
 	lightShader.setMat4("view", view);
 
 	// Draw light object
-	plane.drawObject(
-		&lightShader,
-		lightPosition,
-		glm::vec3(1.0f, 1.0f, 1.0f),
-		90.0f,
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		tx_diff, tx_spec
-	);
+	plane.drawObject(&lightShader, lightPosition, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), metal);
+
 	// GLFW: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-	glfwSwapBuffers(this->window);
+	glfwSwapBuffers(window);
 	glfwPollEvents();
-
-
 }
 
 
@@ -195,13 +162,33 @@ void processInput(GLFWwindow *window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, deltaTime);
+	{
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			camera.ProcessKeyboard(FORWARD, deltaTime, true);
+		else
+			camera.ProcessKeyboard(FORWARD, deltaTime);
+	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
+	{
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			camera.ProcessKeyboard(BACKWARD, deltaTime, true);
+		else
+			camera.ProcessKeyboard(BACKWARD, deltaTime);
+	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, deltaTime);
+	{
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			camera.ProcessKeyboard(LEFT, deltaTime, true);
+		else
+			camera.ProcessKeyboard(LEFT, deltaTime);
+	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, deltaTime);
+	{
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			camera.ProcessKeyboard(RIGHT, deltaTime, true);
+		else
+			camera.ProcessKeyboard(RIGHT, deltaTime);
+	}
 }
 
 // GLFW: whenever the window size changes, this callback function executes
@@ -233,41 +220,4 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.setFOV((float)yoffset);
-}
-
-// Utillity function for loading a 2D texture from file (Created by Joey de Vries, copied the 27.09.2017 from https://learnopengl.com/) 
-unsigned int loadTexture(char const * path)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrComponents;
-	unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
-	if (data) {
-		GLenum format;
-		if (nrComponents == 1)
-			format = GL_RED;
-		else if (nrComponents == 3)
-			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	}
-	else
-	{
-		std::cout << "Texture failed to load at path: " << path << std::endl;
-		stbi_image_free(data);
-	}
-
-	return textureID;
 }

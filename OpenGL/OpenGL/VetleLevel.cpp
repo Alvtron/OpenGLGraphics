@@ -1,6 +1,5 @@
 #include "VetleLevel.h"
 
-
 void VetleLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 {
 	this->window = window;

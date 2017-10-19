@@ -2,28 +2,29 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <vector>
-#include "..\Level.h"
-#include "..\VegardLevel.h"
-#include "..\VetleLevel.h"
-#include"..\ThomasLevel.h"
+#include "Level.h"
+#include "VegardLevel.h"
+#include "VetleLevel.h"
+#include "ThomasLevel.h"
+#include <time.h>
 //Levels
 
 // Presets
-#define DEBUG false
+#define DEBUG true
 #define FULLSCREEN false
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 
+double getTimeSeconds(clock_t time_begin, clock_t time_end);
+clock_t start_time_init;
+
 //Enables Vsync
 bool vsync = true;
-
 
 // Window
 const char window_title[] = "ITF21215 OpenGL group project";
 const int openGL_min = 4, openGL_max = 4;
 GLFWwindow* window;
-
-
 
 /*
 
@@ -63,16 +64,17 @@ Husk at det kun kan kjøres 1 level om gangen :) bare kommenter ut det levelklass
 
 */
 
-
-
-
 void initGLFWindow()
 {
 
-	if (DEBUG) std::cout << "[DEBUG MODUS]" << std::endl;
+	if (DEBUG) {
+		std::cout << "[DEBUG MODUS]" << std::endl;
+		start_time_init = clock();
+	}
 
 	// Initialize GLFW
 	int glfw = glfwInit();
+
 	if (glfw == GLFW_FALSE)
 	{
 		std::cout << "Error: Failed to initialize GLFW" << std::endl;
@@ -97,7 +99,6 @@ void initGLFWindow()
 	glfwMakeContextCurrent(window);
 	if (DEBUG) std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl;
 
-
 	//Enable vsync
 	glfwSwapInterval(vsync);
 
@@ -111,19 +112,19 @@ void initGLFWindow()
 		std::cout << "Error: " << glewGetErrorString(glew) << std::endl;
 		return;
 	}
-	if (DEBUG) std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-
-
+	if (DEBUG) {
+		std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl;
+		std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
+		std::cout << "Initialation time: " << getTimeSeconds(start_time_init, clock()) << " seconds" << std::endl;
+	}
 }
 
 
 void main()
 {
 
-	
 	//init GLFW window
 	initGLFWindow();
-
 	
 	ThomasLevel thomasLevel;
 	//VegardLevel vegardLevel;
@@ -143,4 +144,9 @@ void main()
 	}
 
 	glfwTerminate();
+}
+
+// Calculate time passed between two timestamps and return it in seconds
+double getTimeSeconds(clock_t time_begin, clock_t time_end) {
+	return double(time_end - time_begin) / CLOCKS_PER_SEC;
 }

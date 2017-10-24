@@ -131,6 +131,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\mat4.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\vec3.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\vec4.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="CubeMap.cpp" />
@@ -150,6 +153,10 @@
     <ClCompile Include="VetleLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\mat4.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\maths.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\vec3.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\vec4.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="CubeMap.h" />

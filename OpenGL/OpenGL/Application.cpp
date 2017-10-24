@@ -6,6 +6,7 @@
 #include "VegardLevel.h"
 #include "VetleLevel.h"
 #include "ThomasLevel.h"
+#include "TextExampleLevel.h"
 #include <time.h>
 //Levels
 
@@ -105,6 +106,8 @@ void initGLFWindow()
 	// Configure global OpenGL state
 	glEnable(GL_DEPTH_TEST);
 
+	glewExperimental = GL_TRUE;
+
 	// Initialize GLEW and check if it's OK
 	GLenum glew = glewInit();
 	if (GLEW_OK != glew)
@@ -126,22 +129,46 @@ void main()
 	//init GLFW window
 	initGLFWindow();
 	
-	ThomasLevel thomasLevel;
 	//VegardLevel vegardLevel;
-	//VetleLevel vetleLevel; 
+	//ThomasLevel thomasLevel;
+	//VetleLevel vetleLevel;
+	TextExampleLevel textExampleLevel;
 
-
-	thomasLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
-	//vegardLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
-	//vetleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
-
-	while (!glfwWindowShouldClose(window)) {
-
-		thomasLevel.loop();
-		//vegardLevel.loop();
-		//vetleLevel.loop();
+	try {
+		
+		//vegardLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
+		//thomasLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
+		//vetleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
+		textExampleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
 
 	}
+	catch (int e) {
+		std::cout << "Cannot init level Nr. " << e << std::endl;
+		system("PAUSE");
+		glfwTerminate();
+		return;
+	}
+
+	try {
+		while (!glfwWindowShouldClose(window)) {
+
+			//thomasLevel.loop();
+			//vegardLevel.loop();
+			//vetleLevel.loop();
+			textExampleLevel.loop();
+
+		}
+	}
+	catch (int e)
+	{
+		std::cout << "Cannot loop level Nr. " << e << std::endl;
+		system("PAUSE");
+		glfwTerminate();
+		return;
+	}
+	
+
+
 
 	glfwTerminate();
 }

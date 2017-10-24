@@ -22,6 +22,9 @@
     <Filter Include="Header Files\Levels">
       <UniqueIdentifier>{72d24c7c-95da-4e49-992d-89551fc4782c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fonts">
+      <UniqueIdentifier>{b555b7e3-909c-46ec-9503-a6fc64f1a961}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ThomasLevel.cpp">
@@ -68,6 +71,12 @@
     </ClCompile>
     <ClCompile Include="CubeMapShader.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextExampleLevel.cpp">
+      <Filter>Source Files\Levels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +125,12 @@
     <ClInclude Include="CubeMapShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextExampleLevel.h">
+      <Filter>Header Files\Levels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\cubemap.frag">
@@ -134,6 +149,15 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\light.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Arial">
+      <Filter>fonts</Filter>
+    </None>
+    <None Include="shaders\text.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\text.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

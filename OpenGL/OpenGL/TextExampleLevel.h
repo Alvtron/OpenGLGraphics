@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Text.h"
 
-class VegardLevel
+class TextExampleLevel
 {
 
 private:

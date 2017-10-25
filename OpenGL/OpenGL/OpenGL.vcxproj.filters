@@ -78,15 +78,6 @@
     <ClCompile Include="TextExampleLevel.cpp">
       <Filter>Source Files\Levels</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\mat4.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\vec3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\vec4.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ThomasLevel.h">
@@ -139,18 +130,6 @@
     </ClInclude>
     <ClInclude Include="TextExampleLevel.h">
       <Filter>Header Files\Levels</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\mat4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\maths.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\vec3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\OpenGL\Projects\Math_Lib_Testing\Math_Lib_Testing\vec4.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

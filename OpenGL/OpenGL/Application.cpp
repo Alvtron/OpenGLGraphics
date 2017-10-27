@@ -6,6 +6,7 @@
 #include "VegardLevel.h"
 #include "VetleLevel.h"
 #include "ThomasLevel.h"
+#include "TextExampleLevel.h"
 #include <time.h>
 //Levels
 
@@ -64,6 +65,13 @@ Husk at det kun kan kjøres 1 level om gangen :) bare kommenter ut det levelklass
 
 */
 
+/*
+	Melding fra Vetle: 
+	For å bruke matteklassen, bare bruk #include "maths.h", da får dere med alt.
+	Skal kommentere metodene etterhvert, forklare parametere og bruk etc.
+	Har tenkt å lage en ny metode for å hente view matrisa uten bruk av glm.
+*/
+
 void initGLFWindow()
 {
 
@@ -111,6 +119,8 @@ void initGLFWindow()
 	// Enable gamma correction with OpenGL built in sRGB buffer
 	glEnable(GL_FRAMEBUFFER_SRGB);
 
+	glewExperimental = GL_TRUE;
+
 	// Initialize GLEW and check if it's OK
 	GLenum glew = glewInit();
 	if (GLEW_OK != glew)
@@ -132,22 +142,46 @@ void main()
 	//init GLFW window
 	initGLFWindow();
 	
-	ThomasLevel thomasLevel;
 	//VegardLevel vegardLevel;
-	//VetleLevel vetleLevel; 
+	//ThomasLevel thomasLevel;
+	//VetleLevel vetleLevel;
+	TextExampleLevel textExampleLevel;
 
-
-	thomasLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
-	//vegardLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
-	//vetleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
-
-	while (!glfwWindowShouldClose(window)) {
-
-		thomasLevel.loop();
-		//vegardLevel.loop();
-		//vetleLevel.loop();
+	try {
+		
+		//vegardLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
+		//thomasLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
+		//vetleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
+		textExampleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
 
 	}
+	catch (int e) {
+		std::cout << "Cannot init level Nr. " << e << std::endl;
+		system("PAUSE");
+		glfwTerminate();
+		return;
+	}
+
+	try {
+		while (!glfwWindowShouldClose(window)) {
+
+			//thomasLevel.loop();
+			//vegardLevel.loop();
+			//vetleLevel.loop();
+			textExampleLevel.loop();
+
+		}
+	}
+	catch (int e)
+	{
+		std::cout << "Cannot loop level Nr. " << e << std::endl;
+		system("PAUSE");
+		glfwTerminate();
+		return;
+	}
+	
+
+
 
 	glfwTerminate();
 }

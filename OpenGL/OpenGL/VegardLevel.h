@@ -1,14 +1,15 @@
 #pragma once
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
+#include <iostream>
+#include "Text.h"
 
 class VegardLevel
 {
 
 private:
 	GLFWwindow *window;
-	int WINDOW_WIDTH, WINDOW_HEIGHT;
+	GLuint WINDOW_WIDTH, WINDOW_HEIGHT;
 
 public:
 	void init(GLFWwindow *window, int WINDOW_WIDTH, int WINDOW_HEIGHT);

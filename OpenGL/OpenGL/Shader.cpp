@@ -35,6 +35,7 @@ Shader::Shader(const char * vertexPath, const char * fragmentPath, const char * 
 		fragmentCode = fShaderStream.str();
 		// If geometry shader path is present, also load a geometry shader
 		if (geometryPath != nullptr) {
+
 			gShaderFile.open(geometryPath);
 			std::stringstream gShaderStream;
 			gShaderStream << gShaderFile.rdbuf();

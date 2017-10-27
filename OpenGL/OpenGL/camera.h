@@ -11,6 +11,7 @@ https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/camera.h (s
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <vector>
+#include "maths.h"
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement
@@ -72,6 +73,31 @@ public:
 	{
 		return glm::lookAt(Position, Position + Front, Up);
 	}
+
+	/*mat4 lookAt(vec3 eye, vec3 target, vec3 worldUp)
+	{
+		vec3 front = vec3::normalize(eye - target);					// The "front" vector.
+		vec3 right = vec3::normalize(vec3::cross(worldUp, front));	// The "right" vector.
+		vec3 up = vec3::cross(front, right);						// The "up" vector.
+										
+		mat4 viewMatrix;		// Create a 4x4 view matrix from the right, up, forward and eye position vectors
+		
+		viewMatrix.matrix[0 + 0 * 4] = right.x;
+		viewMatrix.matrix[0 + 1 * 4] = right.y;
+		viewMatrix.matrix[0 + 2 * 4] = right.z;
+		viewMatrix.matrix[0 + 3 * 4] = -vec3::dot(right, eye);
+		viewMatrix.matrix[1 + 0 * 4] = up.x;
+		viewMatrix.matrix[1 + 1 * 4] = up.y;
+		viewMatrix.matrix[1 + 2 * 4] = up.z;
+		viewMatrix.matrix[1 + 3 * 4] = -vec3::dot(up, eye);
+		viewMatrix.matrix[2 + 0 * 4] = front.x;
+		viewMatrix.matrix[2 + 1 * 4] = front.y;
+		viewMatrix.matrix[2 + 2 * 4] = front.z;
+		viewMatrix.matrix[2 + 3 * 4] = -vec3::dot(front, eye);
+		viewMatrix.matrix[3 + 3 * 4] = 1.0f;
+
+		return viewMatrix;
+	}*/
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
 	void ProcessKeyboard(Camera_Movement direction, float deltaTime)

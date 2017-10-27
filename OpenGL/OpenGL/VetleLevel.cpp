@@ -1,4 +1,5 @@
 #include "VetleLevel.h"
+#include "maths.h"
 
 void VetleLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 {

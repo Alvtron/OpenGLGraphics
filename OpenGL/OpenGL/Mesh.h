@@ -35,6 +35,7 @@ public:
 	void addVertexData(const std::vector<float>& vertices, VERTEX_DATA_TYPE data_type);
 	void addIndices(const std::vector<unsigned int>& indices);
 	void storeOnGPU();
+	void drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, Texture texture, int from_index, int to_index);
 	void drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture);
 	void drawObject(const Shader * shader, glm::vec3 position, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture);
 	void drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, const Texture texture);

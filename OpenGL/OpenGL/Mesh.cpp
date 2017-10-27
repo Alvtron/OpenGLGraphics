@@ -149,7 +149,7 @@ void Mesh::storeOnGPU()
 }
 
 /* Draw vertex data from GPU */
-void Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, Texture texture)
+void Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, Texture texture, int from_index, int to_index)
 {
 	// Bind diffuse map
 	if (texture.hasDiffuse())
@@ -191,31 +191,36 @@ void Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale
 	shader->setMat4("model", model);
 	// Draw mesh
 	if (hasIndices) glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-	else glDrawArrays(GL_TRIANGLES, 0, vertex_data.size() / stride());
+	else glDrawArrays(GL_TRIANGLES, from_index, to_index);
+}
+
+void Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture)
+{
+	drawObject(shader, position, scale_vector, rotation_degrees, rotation_vector, texture, 0, vertex_data.size() / stride());
 }
 
 /* Draw vertex data from GPU */
 void Mesh::drawObject(const Shader * shader, glm::vec3 position, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture)
 {
-	drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), rotation_degrees, rotation_vector, texture);
+	drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), rotation_degrees, rotation_vector, texture, 0, vertex_data.size() / stride());
 }
 
 /* Draw vertex data from GPU */
 void Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, const Texture texture)
 {
-	drawObject(shader, position, scale_vector, 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture);
+	drawObject(shader, position, scale_vector, 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture, 0, vertex_data.size() / stride());
 }
 
 /* Draw vertex data from GPU */
 void Mesh::drawObject(const Shader * shader, glm::vec3 position, const Texture texture)
 {
-	drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture);
+	drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture, 0, vertex_data.size() / stride());
 }
 
 /* Draw vertex data from GPU */
 void Mesh::drawObject(const Shader * shader, const Texture texture)
 {
-	drawObject(shader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture);
+	drawObject(shader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture, 0, vertex_data.size() / stride());
 }
 
 /* De-allocate vertex data once it has outlived it's purpose */

@@ -14,7 +14,7 @@
 #define FULLSCREEN false
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
-
+#define MSAA_SAMPLES 4
 double getTimeSeconds(clock_t time_begin, clock_t time_end);
 clock_t start_time_init;
 
@@ -85,6 +85,8 @@ void initGLFWindow()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, openGL_min);
 	// Get access to a smaller subset of OpenGL features (no backwards-compatibility)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// Use multisample buffer with 4 samples (MSAA)
+	glfwWindowHint(GLFW_SAMPLES, MSAA_SAMPLES);
 
 	// Create a window and it's OpenGL context
 
@@ -104,6 +106,10 @@ void initGLFWindow()
 
 	// Configure global OpenGL state
 	glEnable(GL_DEPTH_TEST);
+	// Enable MSAA Anti-Aliasing
+	glEnable(GL_MULTISAMPLE);
+	// Enable gamma correction with OpenGL built in sRGB buffer
+	glEnable(GL_FRAMEBUFFER_SRGB);
 
 	// Initialize GLEW and check if it's OK
 	GLenum glew = glewInit();

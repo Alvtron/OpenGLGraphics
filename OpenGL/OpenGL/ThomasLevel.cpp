@@ -1,20 +1,6 @@
 #pragma once
 #include "ThomasLevel.h"
 
-#define M_E        2.71828182845904523536
-#define M_LOG2E    1.44269504088896340736
-#define M_LOG10E   0.434294481903251827651
-#define M_LN2      0.693147180559945309417
-#define M_LN10     2.30258509299404568402
-#define M_PI       3.14159265358979323846
-#define M_PI_2     1.57079632679489661923
-#define M_PI_4     0.785398163397448309616
-#define M_1_PI     0.318309886183790671538
-#define M_2_PI     0.636619772367581343076
-#define M_2_SQRTPI 1.12837916709551257390
-#define M_SQRT2    1.41421356237309504880
-#define M_SQRT1_2  0.707106781186547524401
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -45,8 +31,8 @@ glm::vec3 lightColor = glm::vec3(1.0f, 0.5f, 1.0f);
 
 // 3D Objects
 CubeMap cubemap = CubeMap();
-Cube cube = Cube();
-Rect plane = Rect();
+Diamond cube = Diamond(1.0f);
+Sphere light = Sphere(0.5f, 3);
 
 // Textures
 Texture metal, tile;
@@ -81,16 +67,16 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	// ===========================================================================================
 	// SHADER - Build and compile the shader program (with LearnOpenGL's provided shader class)
 	// ===========================================================================================
-	cubeMapShader = CubeMapShader("shaders/cubemap.vert", "shaders/cubemap.frag");
-	shader = ObjectShader("shaders/object.vert", "shaders/object.frag");
-	lightShader = LightShader("shaders/light.vert", "shaders/light.frag", lightColor);
+	cubeMapShader = CubeMapShader("shaders/cubemap_vert.shader", "shaders/cubemap_frag.shader");
+	shader = ObjectShader("shaders/object_vert.shader", "shaders/object_frag.shader");
+	lightShader = LightShader("shaders/light_vert.shader", "shaders/light_frag.shader", lightColor);
 
 	// ===========================================================================================
 	// 3D OBJECTS - Set up vertex data and buffers and configure vertex attributes
 	// ===========================================================================================
 	cubemap.storeOnGPU();
 	cube.storeOnGPU();
-	plane.storeOnGPU();
+	light.storeOnGPU();
 
 	// ===========================================================================================
 	// LOAD TEXTURES
@@ -185,7 +171,7 @@ void ThomasLevel::loop()
 	for (int i = -10; i < 10; i++) {
 		for (int j = -10; j < 10; j+=2) {
 			cube.drawObject(&shader, glm::vec3(i, 0.0f, j), tile);
-			cube.drawObject(&shader, glm::vec3(i, 0.0f, j + 1), metal);
+			cube.drawObject(&shader, glm::vec3(i, -0.25f, j + 1), metal);
 		}
 	}
 
@@ -197,7 +183,7 @@ void ThomasLevel::loop()
 
 	// Draw light object
 	for (int i = 0; i < pointLightPositions.size(); i++) {
-		plane.drawObject(&lightShader, pointLightPositions[i], 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), metal);
+		light.drawObject(&lightShader, pointLightPositions[i], 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), metal);
 	}
 
 	// Draw cubemap (this must AFTER all other objects last or it will decrease peformance)

@@ -4,12 +4,14 @@
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
+#include "gtx\rotate_vector.hpp"
 #include <cmath>
 #include "Shader.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>
 #include "Texture.h"
+#include "MathDefinitions.h"
 
 class Mesh
 {
@@ -19,8 +21,10 @@ private:
 	unsigned int VBO, VAO, EBO;
 	static unsigned int num_meshes;
 	bool hasVertices = false, hasNormals = false, hasColors = false, hasTextures = false, hasIndices = false;
+	bool storedOnGPU = false;
 	std::vector<float> vertex_data;
 	std::vector<unsigned int> indices;
+	GLenum draw_mode = GL_TRIANGLES;
 public:
 	enum VERTEX_DATA_TYPE : char {
 		MESH_VERTICE = 'V',
@@ -31,19 +35,21 @@ public:
 	};
 	Mesh();
 	~Mesh();
-	void createVertexData(const std::vector<float>& vertices, const std::vector<float>& normals, const std::vector<float>& colors, const std::vector<float>& textures, const std::vector<unsigned int>& indices);
-	void addVertexData(const std::vector<float>& vertices, VERTEX_DATA_TYPE data_type);
-	void addIndices(const std::vector<unsigned int>& indices);
-	void storeOnGPU();
-	void drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, Texture texture, int from_index, int to_index);
-	void drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture);
-	void drawObject(const Shader * shader, glm::vec3 position, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture);
-	void drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, const Texture texture);
-	void drawObject(const Shader * shader, glm::vec3 position, const Texture texture);
-	void drawObject(const Shader * shader, const Texture texture);
-	void deAllocate();
+	bool createVertexData(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec3>& colors, const std::vector<glm::vec2>& textures, const std::vector<unsigned int>& indices);
+	bool createVertexData(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec3>& colors, const std::vector<glm::vec2>& textures);
+	bool addVertexData(const std::vector<glm::vec3>& data, VERTEX_DATA_TYPE data_type);
+	bool addIndices(const std::vector<unsigned int>& indices);
+	bool storeOnGPU();
+	bool setDrawMode(GLenum mode);
+	bool drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, Texture texture, int from_index, int to_index);
+	bool drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture);
+	bool drawObject(const Shader * shader, glm::vec3 position, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture);
+	bool drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, const Texture texture);
+	bool drawObject(const Shader * shader, glm::vec3 position, const Texture texture);
+	bool drawObject(const Shader * shader, const Texture texture);
+	bool deAllocate();
 	unsigned int stride();
-	unsigned int VerticeStride();
+	unsigned int verticeStride();
 	unsigned int normalStride();
 	unsigned int colorStride();
 	unsigned int textureStride();

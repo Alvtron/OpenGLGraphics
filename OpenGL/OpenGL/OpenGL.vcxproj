@@ -135,17 +135,20 @@
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="CubeMap.cpp" />
     <ClCompile Include="CubeMapShader.cpp" />
+    <ClCompile Include="Diamond.cpp" />
     <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="LightShader.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ObjectShader.cpp" />
     <ClCompile Include="Rectangle.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="stb_image.c" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextExampleLevel.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ThomasLevel.cpp" />
+    <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="VegardLevel.cpp" />
     <ClCompile Include="VetleLevel.cpp" />
   </ItemGroup>
@@ -154,30 +157,34 @@
     <ClInclude Include="Cube.h" />
     <ClInclude Include="CubeMap.h" />
     <ClInclude Include="CubeMapShader.h" />
+    <ClInclude Include="Diamond.h" />
     <ClInclude Include="Dungeon.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LightShader.h" />
+    <ClInclude Include="MathDefinitions.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ObjectShader.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextExampleLevel.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="ThomasLevel.h" />
+    <ClInclude Include="Triangle.h" />
     <ClInclude Include="VegardLevel.h" />
     <ClInclude Include="VetleLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Arial" />
-    <None Include="shaders\cubemap.frag" />
-    <None Include="shaders\cubemap.vert" />
-    <None Include="shaders\object.frag" />
-    <None Include="shaders\light.frag" />
-    <None Include="shaders\light.vert" />
-    <None Include="shaders\object.vert" />
-    <None Include="shaders\text.frag" />
-    <None Include="shaders\text.vert" />
+    <None Include="shaders\cubemap_frag.shader" />
+    <None Include="shaders\cubemap_vert.shader" />
+    <None Include="shaders\object_frag.shader" />
+    <None Include="shaders\light_frag.shader" />
+    <None Include="shaders\light_vert.shader" />
+    <None Include="shaders\object_vert.shader" />
+    <None Include="shaders\text_frag.shader" />
+    <None Include="shaders\text_vert.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

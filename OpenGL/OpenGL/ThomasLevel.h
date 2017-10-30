@@ -18,12 +18,17 @@
 #include "CubeMap.h"
 #include "Rectangle.h"
 #include "Cube.h"
+#include "Sphere.h"
+#include "Triangle.h"
+#include "Diamond.h"
 #include "Texture.h"
 // General C++ (and C++11) libraries
 #include <iostream>
 #include <string>
 #include <vector>
 #include <time.h>
+// Text renderer by Vegard Strand
+#include "Text.h"
 
 class ThomasLevel
 {

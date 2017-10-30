@@ -11,7 +11,7 @@
 void Text::initFonts(std::string fontPath, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 {
 
-	textShader = Shader("shaders/text.vert", "shaders/text.frag");
+	textShader = Shader("shaders/text_vert.shader", "shaders/text_frag.shader");
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(WINDOW_WIDTH), 0.0f, static_cast<GLfloat>(WINDOW_HEIGHT));
 	textShader.use();
 

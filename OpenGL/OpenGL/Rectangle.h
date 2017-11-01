@@ -5,53 +5,49 @@ class Rect : public Mesh
 {
 private:
 	const float WIDTH = 1.0f, HEIGHT = 1.0f;
-	const static unsigned int VERTICES_ARRAY_SIZE = 12;
-	const static unsigned int NORMALS_ARRAY_SIZE = 12;
-	const static unsigned int COLORS_ARRAY_SIZE = 12;
-	const static unsigned int TEXTURE_ARRAY_SIZE = 8;
-	const static unsigned int INDICES_ARRAY_SIZE = 6;
 	static unsigned int num_rectangles;
-	enum CORNERS : int
-	{
-		Ax = 0, Ay = 1, Az = 2,
-		Bx = 3, By = 4, Bz = 5,
-		Cx = 6, Cy = 7, Cz = 8,
-		Dx = 9, Dy = 10, Dz = 11
+	
+	std::vector<glm::vec3> vertices = {
+		glm::vec3(-(WIDTH / 2.0f), -(HEIGHT / 2.0f), 0.0f),
+		glm::vec3(+(WIDTH / 2.0f), -(HEIGHT / 2.0f), 0.0f),
+		glm::vec3(+(WIDTH / 2.0f), +(HEIGHT / 2.0f), 0.0f),
+		glm::vec3(-(WIDTH / 2.0f), +(HEIGHT / 2.0f), 0.0f)
 	};
-	std::vector<float> vertices = {
-		-(WIDTH / 2.0f), -(HEIGHT / 2.0f), 0.0f,
-		+(WIDTH / 2.0f), -(HEIGHT / 2.0f), 0.0f,
-		+(WIDTH / 2.0f), +(HEIGHT / 2.0f), 0.0f,
-		-(WIDTH / 2.0f), +(HEIGHT / 2.0f), 0.0f
-	};					 
-	const std::vector<float> NORMALS = {
-		+0.0f, +0.0f, -1.0f,
-		+0.0f, +0.0f, -1.0f,
-		+0.0f, +0.0f, -1.0f,
-		+0.0f, +0.0f, -1.0f
+	std::vector<glm::vec3> normals = {
+		glm::vec3(+0.0f, +0.0f, -1.0f),
+		glm::vec3(+0.0f, +0.0f, -1.0f),
+		glm::vec3(+0.0f, +0.0f, -1.0f),
+		glm::vec3(+0.0f, +0.0f, -1.0f)
 	};
-	std::vector<float> colors = {
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f
+	std::vector<glm::vec3> colors = {
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f)
 	};
-	const std::vector<float> TEXTURES = {
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f
+	std::vector<glm::vec2> textures = {
+		glm::vec2(0.0f, 0.0f),
+		glm::vec2(1.0f, 0.0f),
+		glm::vec2(1.0f, 1.0f),
+		glm::vec2(0.0f, 1.0f)
 	};
-	const std::vector<unsigned int> INDICES = {
-		0, 1, 2, // first triangle
-		2, 3, 0  // second triangle
+	std::vector<unsigned int> indices = {
+		0, 1, 2,
+		2, 3, 0
 	};
 public:
 	Rect();
 	Rect(float width, float height);
+	Rect(float width, float height, glm::vec3 position);
 	~Rect();
+	std::vector<glm::vec3> createRectangle(float width, float height, glm::vec3 position);
+	std::vector<glm::vec3> getVertices();
+	std::vector<glm::vec3> getNormals();
+	std::vector<glm::vec3> getColors();
+	std::vector<glm::vec2> getTextures();
+	std::vector<unsigned int> getIndices();
 	float getWidth();
 	float getHeight();
-	float getAreal();
+	float getArea();
 	int getNumRectangles();
 };

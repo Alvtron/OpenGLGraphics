@@ -16,7 +16,7 @@ Texture::~Texture()
 
 /* Private function: Bind a texture file to an specified ID */
 bool Texture::bindTexture(char const * path, unsigned int &id)
-{
+{ 
 	glGenTextures(1, &id);
 
 	int width, height, nrComponents;

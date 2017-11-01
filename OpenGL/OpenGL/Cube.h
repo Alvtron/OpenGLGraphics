@@ -6,139 +6,139 @@ class Cube : public Mesh
 private:
 	static unsigned int num_cubes;
 
-	const std::vector<float> VERTICES = {
+	std::vector<glm::vec3> vertices = {
 		// Front
-		-0.5f, -0.5f, -0.5f,	
-		+0.5f, -0.5f, -0.5f,	
-		+0.5f, +0.5f, -0.5f,	
-		-0.5f, +0.5f, -0.5f,	
+		glm::vec3(-0.5f, -0.5f, -0.5f),
+		glm::vec3(+0.5f, -0.5f, -0.5f),	
+		glm::vec3(+0.5f, +0.5f, -0.5f),	
+		glm::vec3(-0.5f, +0.5f, -0.5f),	
 		// Back
-		-0.5f, -0.5f, +0.5f,	
-		+0.5f, -0.5f, +0.5f,	
-		+0.5f, +0.5f, +0.5f,	
-		-0.5f, +0.5f, +0.5f,	
+		glm::vec3(-0.5f, -0.5f, +0.5f),	
+		glm::vec3(+0.5f, -0.5f, +0.5f),	
+		glm::vec3(+0.5f, +0.5f, +0.5f),	
+		glm::vec3(-0.5f, +0.5f, +0.5f),	
 		// Left
-		-0.5f, -0.5f, +0.5f,	
-		-0.5f, -0.5f, -0.5f,	
-		-0.5f, +0.5f, -0.5f,	
-		-0.5f, +0.5f, +0.5f,	
+		glm::vec3(-0.5f, -0.5f, +0.5f),	
+		glm::vec3(-0.5f, -0.5f, -0.5f),	
+		glm::vec3(-0.5f, +0.5f, -0.5f),	
+		glm::vec3(-0.5f, +0.5f, +0.5f),	
 		// Right
-		+0.5f, -0.5f, -0.5f,	
-		+0.5f, -0.5f, +0.5f,	
-		+0.5f, +0.5f, +0.5f,	
-		+0.5f, +0.5f, -0.5f,	
+		glm::vec3(+0.5f, -0.5f, -0.5f),	
+		glm::vec3(+0.5f, -0.5f, +0.5f),	
+		glm::vec3(+0.5f, +0.5f, +0.5f),	
+		glm::vec3(+0.5f, +0.5f, -0.5f),	
 		// Bottom
-		-0.5f, -0.5f, -0.5f,	
-		+0.5f, -0.5f, -0.5f,	
-		+0.5f, -0.5f, +0.5f,	
-		-0.5f, -0.5f, +0.5f,	
+		glm::vec3(-0.5f, -0.5f, -0.5f),	
+		glm::vec3(+0.5f, -0.5f, -0.5f),	
+		glm::vec3(+0.5f, -0.5f, +0.5f),	
+		glm::vec3(-0.5f, -0.5f, +0.5f),	
 		// Top
-		-0.5f, +0.5f, -0.5f,	
-		+0.5f, +0.5f, -0.5f,	
-		+0.5f, +0.5f, +0.5f,	
-		-0.5f, +0.5f, +0.5f	
+		glm::vec3(-0.5f, +0.5f, -0.5f),	
+		glm::vec3(+0.5f, +0.5f, -0.5f),	
+		glm::vec3(+0.5f, +0.5f, +0.5f),	
+		glm::vec3(-0.5f, +0.5f, +0.5f)	
 	};
 
-	const std::vector<float> NORMALS = {
+	std::vector<glm::vec3> normals = {
 		// Front
-		+0.0f, +0.0f, -1.0f,
-		+0.0f, +0.0f, -1.0f,
-		+0.0f, +0.0f, -1.0f,
-		+0.0f, +0.0f, -1.0f,
+		glm::vec3(+0.0f, +0.0f, -1.0f),
+		glm::vec3(+0.0f, +0.0f, -1.0f),
+		glm::vec3(+0.0f, +0.0f, -1.0f),
+		glm::vec3(+0.0f, +0.0f, -1.0f),
 		// Back
-		+0.0f, +0.0f, +1.0f,
-		+0.0f, +0.0f, +1.0f,
-		+0.0f, +0.0f, +1.0f,
-		+0.0f, +0.0f, +1.0f,
+		glm::vec3(+0.0f, +0.0f, +1.0f),
+		glm::vec3(+0.0f, +0.0f, +1.0f),
+		glm::vec3(+0.0f, +0.0f, +1.0f),
+		glm::vec3(+0.0f, +0.0f, +1.0f),
 		// Left
-		-1.0f, +0.0f, +0.0f,
-		-1.0f, +0.0f, +0.0f,
-		-1.0f, +0.0f, +0.0f,
-		-1.0f, +0.0f, +0.0f,
+		glm::vec3(-1.0f, +0.0f, +0.0f),
+		glm::vec3(-1.0f, +0.0f, +0.0f),
+		glm::vec3(-1.0f, +0.0f, +0.0f),
+		glm::vec3(-1.0f, +0.0f, +0.0f),
 		// Right
-		+1.0f, +0.0f, +0.0f,
-		+1.0f, +0.0f, +0.0f,
-		+1.0f, +0.0f, +0.0f,
-		+1.0f, +0.0f, +0.0f,
+		glm::vec3(+1.0f, +0.0f, +0.0f),
+		glm::vec3(+1.0f, +0.0f, +0.0f),
+		glm::vec3(+1.0f, +0.0f, +0.0f),
+		glm::vec3(+1.0f, +0.0f, +0.0f),
 		// Bottom
-		+0.0f, -1.0f, +0.0f,
-		+0.0f, -1.0f, +0.0f,
-		+0.0f, -1.0f, +0.0f,
-		+0.0f, -1.0f, +0.0f,
+		glm::vec3(+0.0f, -1.0f, +0.0f),
+		glm::vec3(+0.0f, -1.0f, +0.0f),
+		glm::vec3(+0.0f, -1.0f, +0.0f),
+		glm::vec3(+0.0f, -1.0f, +0.0f),
 		// Top
-		+0.0f, +1.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f
+		glm::vec3(+0.0f, +1.0f, +0.0f),
+		glm::vec3(+0.0f, +1.0f, +0.0f),
+		glm::vec3(+0.0f, +1.0f, +0.0f),
+		glm::vec3(+0.0f, +1.0f, +0.0f)
 	};
 
-	const std::vector<float> COLORS = {
+	std::vector<glm::vec3> colors = {
 		// Front			
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
 		// Back
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
 		// Left
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
 		// Right
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
 		// Bottom
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
 		// Top
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f,
-		+1.0f, +1.0f, +1.0f
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f)
 	};
 
-	const std::vector<float> TEXTURES = {
+	std::vector<glm::vec2> textures = {
 		// Front
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f,
+		glm::vec2(0.0f, 0.0f),
+		glm::vec2(1.0f, 0.0f),
+		glm::vec2(1.0f, 1.0f),
+		glm::vec2(0.0f, 1.0f),
 		// Back
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f,
+		glm::vec2(0.0f, 0.0f),
+		glm::vec2(1.0f, 0.0f),
+		glm::vec2(1.0f, 1.0f),
+		glm::vec2(0.0f, 1.0f),
 		// Left
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f,
+		glm::vec2(0.0f, 0.0f),
+		glm::vec2(1.0f, 0.0f),
+		glm::vec2(1.0f, 1.0f),
+		glm::vec2(0.0f, 1.0f),
 		// Right
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f,
+		glm::vec2(0.0f, 0.0f),
+		glm::vec2(1.0f, 0.0f),
+		glm::vec2(1.0f, 1.0f),
+		glm::vec2(0.0f, 1.0f),
 		// Bottom
-		0.0f, 1.0f,
-		1.0f, 1.0f,
-		1.0f, 0.0f,
-		0.0f, 0.0f,
+		glm::vec2(0.0f, 1.0f),
+		glm::vec2(1.0f, 1.0f),
+		glm::vec2(1.0f, 0.0f),
+		glm::vec2(0.0f, 0.0f),
 		// Top
-		0.0f, 1.0f,
-		1.0f, 1.0f,
-		1.0f, 0.0f,
-		0.0f, 0.0f
+		glm::vec2(0.0f, 1.0f),
+		glm::vec2(1.0f, 1.0f),
+		glm::vec2(1.0f, 0.0f),
+		glm::vec2(0.0f, 0.0f)
 	};
 
-	const std::vector<unsigned int> INDICES = {
+	std::vector<unsigned int> indices = {
 		0, 1, 2,
 		2, 3, 0,
 		4, 5, 6,
@@ -154,12 +154,15 @@ private:
 	};
 
 public:
-	static const unsigned int VERTICES_ARRAY_SIZE = 72;
-	static const unsigned int NORMALS_ARRAY_SIZE = 72;
-	static const unsigned int COLORS_ARRAY_SIZE = 72;
-	static const unsigned int TEXTURES_ARRAY_SIZE = 48;
-	static const unsigned int INDICES_ARRAY_SIZE = 36;
 	Cube();
+	Cube(float width);
+	Cube(float width, float height);
 	~Cube();
+	std::vector<glm::vec3> createCube(const float width, const float height);
+	std::vector<glm::vec3> getVertices();
+	std::vector<glm::vec3> getNormals();
+	std::vector<glm::vec3> getColors();
+	std::vector<glm::vec2> getTextures();
+	std::vector<unsigned int> getIndices();
 	int getNumCubes();
 };

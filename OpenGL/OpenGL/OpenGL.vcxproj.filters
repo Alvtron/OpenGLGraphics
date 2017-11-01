@@ -78,13 +78,13 @@
     <ClCompile Include="TextExampleLevel.cpp">
       <Filter>Source Files\Levels</Filter>
     </ClCompile>
-    <ClCompile Include="vec3.cpp">
+    <ClCompile Include="Sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vec4.cpp">
+    <ClCompile Include="Triangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mat4.cpp">
+    <ClCompile Include="Diamond.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -140,45 +140,45 @@
     <ClInclude Include="TextExampleLevel.h">
       <Filter>Header Files\Levels</Filter>
     </ClInclude>
-    <ClInclude Include="vec3.h">
+    <ClInclude Include="Sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vec4.h">
+    <ClInclude Include="MathDefinitions.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mat4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="maths.h">
+    <ClInclude Include="Diamond.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\cubemap.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\cubemap.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\object.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\object.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\light.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\light.vert">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Arial">
       <Filter>fonts</Filter>
     </None>
-    <None Include="shaders\text.frag">
+    <None Include="shaders\cubemap_frag.shader">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\text.vert">
+    <None Include="shaders\cubemap_vert.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\light_frag.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\light_vert.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\object_frag.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\object_vert.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\text_frag.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\text_vert.shader">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

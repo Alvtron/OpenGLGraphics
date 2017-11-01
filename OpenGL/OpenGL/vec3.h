@@ -20,20 +20,17 @@ public:
 	vec3& normalize();
 	static vec3 normalize(const vec3& v1);
 
-	vec3& add(const vec3& v);
-	vec3& subtract(const vec3& v);
-	vec3& multiply(const vec3& v);
-	vec3& divide(const vec3& v);
+	static vec3 add(const vec3& v1, const vec3& v2);
+	static vec3 subtract(const vec3& v1, const vec3& v2);
+	static vec3 multiply(const vec3& v1, const vec3& v2);
+	static vec3 divide(const vec3& v1, const vec3& v2);
 
-	friend vec3 operator+(vec3 left, const vec3& right);
-	friend vec3 operator-(vec3 left, const vec3& right);
-	friend vec3 operator*(vec3 left, const vec3& right);
-	friend vec3 operator/(vec3 left, const vec3& right);
+	static vec3 scale(const vec3& v, const GLfloat& k);
 
-	vec3& operator+=(const vec3& v);
-	vec3& operator-=(const vec3& v);
-	vec3& operator*=(const vec3& v);
-	vec3& operator/=(const vec3& v);
+	friend vec3 operator+(const vec3& left, const vec3& right);
+	friend vec3 operator-(const vec3& left, const vec3& right);
+	friend vec3 operator*(const vec3& left, const vec3& right);
+	friend vec3 operator/(const vec3& left, const vec3& right);
 
 	friend std::ostream& operator<<(std::ostream& stream, const vec3& v);
 

@@ -1,7 +1,4 @@
-#define _USE_MATH_DEFINES
-
 #include <GL/glew.h>
-#include <cmath>
 #include "vec3.h"
 
 vec3::vec3() {
@@ -37,72 +34,44 @@ vec3& vec3::normalize() {
 }
 
 vec3 vec3::normalize(const vec3& v) {
-	vec3 result;
 	GLfloat vectorLength = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
-	result.x = v.x / vectorLength;
-	result.y = v.y / vectorLength;
-	result.z = v.z / vectorLength;
-	return result;
+	return vec3(v.x / vectorLength, v.y / vectorLength, v.z / vectorLength);
 }
 
-vec3& vec3::add(const vec3& v) {
-	x += v.x;
-	y += v.y;
-	z += v.z;
-	return *this;
+vec3 vec3::add(const vec3& v1, const vec3& v2) {
+	return vec3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
 
-vec3& vec3::subtract(const vec3& v) {
-	x -= v.x;
-	y -= v.y;
-	z -= v.z;
-	return *this;
+vec3 vec3::subtract(const vec3& v1, const vec3& v2) {
+	return vec3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
 }
 
-vec3& vec3::multiply(const vec3& v) {
-	x *= v.x;
-	y *= v.y;
-	z *= v.z;
-	return *this;
+vec3 vec3::multiply(const vec3& v1, const vec3& v2) {
+	return vec3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
 }
 
-vec3& vec3::divide(const vec3& v) {
-	x /= v.x;
-	y /= v.y;
-	z /= v.z;
-	return *this;
+vec3 vec3::divide(const vec3& v1, const vec3& v2) {
+	return vec3(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z);
 }
 
-vec3 operator+(vec3 left, const vec3& right) {
-	return left.add(right);
+vec3 vec3::scale(const vec3& v, const GLfloat& k) {
+	return vec3(v.x * k, v.y * k, v.z * k);
 }
 
-vec3 operator-(vec3 left, const vec3& right) {
-	return left.subtract(right);
+vec3 operator+(const vec3& left, const vec3& right) {
+	return vec3::add(left, right);
 }
 
-vec3 operator*(vec3 left, const vec3& right) {
-	return left.multiply(right);
+vec3 operator-(const vec3& left, const vec3& right) {
+	return vec3::subtract(left, right);
 }
 
-vec3 operator/(vec3 left, const vec3& right) {
-	return left.divide(right);
+vec3 operator*(const vec3& left, const vec3& right) {
+	return vec3::multiply(left, right);
 }
 
-vec3& vec3::operator+=(const vec3& v) {
-	return add(v);
-}
-
-vec3& vec3::operator-=(const vec3& v) {
-	return subtract(v);
-}
-
-vec3& vec3::operator*=(const vec3& v) {
-	return multiply(v);
-}
-
-vec3& vec3::operator/=(const vec3& v) {
-	return divide(v);
+vec3 operator/(const vec3& left, const vec3& right) {
+	return vec3::divide(left, right);
 }
 
 std::ostream& operator<<(std::ostream& stream, const vec3& v) {

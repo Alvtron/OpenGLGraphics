@@ -1,8 +1,8 @@
 #define _USE_MATH_DEFINES
 
 #include <GL/glew.h>
-#include <cmath>
 #include "mat4.h"
+#include "vec3.h"
 
 mat4::mat4() {
 	for (GLint i = 0; i < 16; i++)
@@ -39,22 +39,23 @@ mat4 mat4::makeRotate(const GLfloat& angle, const vec3& axis) {
 
 	mat4 result;
 
-	GLfloat r = (GLfloat)(angle * (M_PI / 180));
-	GLfloat cosine = (GLfloat)cos((GLdouble)r);
-	GLfloat sine = (GLfloat)sin((GLdouble)r);
-	GLfloat omc = 1.0f - cosine;
+	GLfloat c = (GLfloat)cos((GLdouble)angle);
+	GLfloat s = (GLfloat)sin((GLdouble)angle);
+	GLfloat omc = 1.0f - c;
 
-	result.matrix[0] = axis.x * omc + cosine;
-	result.matrix[1] = axis.y * axis.x * omc + axis.z * sine;
-	result.matrix[2] = axis.x * axis.z * omc - axis.y * sine;
+	vec3 v = vec3::normalize(axis);
 
-	result.matrix[4] = axis.x * axis.y * omc - axis.z * sine;
-	result.matrix[5] = axis.y * omc + cosine;
-	result.matrix[6] = axis.y * axis.z * omc + axis.x * sine;
+	result.matrix[0] = c + omc * v.x * v.x;
+	result.matrix[1] = omc * v.x * v.y + s * v.z;
+	result.matrix[2] = omc * v.x * v.z - s * v.y;
 
-	result.matrix[8] = axis.x * axis.z * omc + axis.y * sine;
-	result.matrix[9] = axis.y * axis.z * omc - axis.x * sine;
-	result.matrix[10] = axis.z * omc + cosine;
+	result.matrix[4] = omc * v.y * v.x - s * v.z;
+	result.matrix[5] = c + omc * v.y * v.y;
+	result.matrix[6] = omc * v.y * v.z + s * v.x;
+
+	result.matrix[8] = omc * v.z * v.x + s * v.y;
+	result.matrix[9] = omc * v.z * v.y - s * v.x;
+	result.matrix[10] = c + omc * v.z * v.z;
 
 	result.matrix[15] = 1.0f;
 
@@ -76,9 +77,11 @@ mat4 mat4::makeTranslate(const vec3& translation) {
 
 mat4 mat4::makePerspective(const GLfloat& angle, const GLfloat& aspectRatio, const GLfloat& n, const GLfloat& f) {
 
+	GLfloat angleInRadians = GLfloat(angle * (M_PI / 180));
+
 	mat4 result;
 
-	GLfloat t = tan(angle / 2.0f) * n;
+	GLfloat t = tan(angleInRadians / 2.0f) * n;
 	GLfloat b = -t;
 	GLfloat r = t * aspectRatio;
 	GLfloat l = -t * aspectRatio;
@@ -99,13 +102,22 @@ mat4 mat4::multiply(const mat4& m1, const mat4& m2) {
 
 	mat4 result;
 
-	for (GLint i = 0; i < 4; i++) {
-		for (GLint j = 0; j < 4; j++) {
-			for (GLint k = 0; k < 4; k++) {
-				result.matrix[i + j * 4] += m1.matrix[i + k * 4] * m2.matrix[k + j * 4];
-			}
-		}
-	}
+	result.matrix[0] = m1.matrix[0] * m2.matrix[0] + m1.matrix[4] * m2.matrix[1] + m1.matrix[8] * m2.matrix[2] + m1.matrix[12] * m2.matrix[3];
+	result.matrix[4] = m1.matrix[0] * m2.matrix[4] + m1.matrix[4] * m2.matrix[5] + m1.matrix[8] * m2.matrix[6] + m1.matrix[12] * m2.matrix[7];
+	result.matrix[8] = m1.matrix[0] * m2.matrix[8] + m1.matrix[4] * m2.matrix[9] + m1.matrix[8] * m2.matrix[10] + m1.matrix[12] * m2.matrix[11];
+	result.matrix[12] = m1.matrix[0] * m2.matrix[12] + m1.matrix[4] * m2.matrix[13] + m1.matrix[8] * m2.matrix[14] + m1.matrix[12] * m2.matrix[15];
+	result.matrix[1] = m1.matrix[1] * m2.matrix[0] + m1.matrix[5] * m2.matrix[1] + m1.matrix[9] * m2.matrix[2] + m1.matrix[13] * m2.matrix[3];
+	result.matrix[5] = m1.matrix[1] * m2.matrix[4] + m1.matrix[5] * m2.matrix[5] + m1.matrix[9] * m2.matrix[6] + m1.matrix[13] * m2.matrix[7];
+	result.matrix[9] = m1.matrix[1] * m2.matrix[8] + m1.matrix[5] * m2.matrix[9] + m1.matrix[9] * m2.matrix[10] + m1.matrix[13] * m2.matrix[11];
+	result.matrix[13] = m1.matrix[1] * m2.matrix[12] + m1.matrix[5] * m2.matrix[13] + m1.matrix[9] * m2.matrix[14] + m1.matrix[13] * m2.matrix[15];
+	result.matrix[2] = m1.matrix[2] * m2.matrix[0] + m1.matrix[6] * m2.matrix[1] + m1.matrix[10] * m2.matrix[2] + m1.matrix[14] * m2.matrix[3];
+	result.matrix[6] = m1.matrix[2] * m2.matrix[4] + m1.matrix[6] * m2.matrix[5] + m1.matrix[10] * m2.matrix[6] + m1.matrix[14] * m2.matrix[7];
+	result.matrix[10] = m1.matrix[2] * m2.matrix[8] + m1.matrix[6] * m2.matrix[9] + m1.matrix[10] * m2.matrix[10] + m1.matrix[14] * m2.matrix[11];
+	result.matrix[14] = m1.matrix[2] * m2.matrix[12] + m1.matrix[6] * m2.matrix[13] + m1.matrix[10] * m2.matrix[14] + m1.matrix[14] * m2.matrix[15];
+	result.matrix[3] = m1.matrix[3] * m2.matrix[0] + m1.matrix[7] * m2.matrix[1] + m1.matrix[11] * m2.matrix[2] + m1.matrix[15] * m2.matrix[3];
+	result.matrix[7] = m1.matrix[3] * m2.matrix[4] + m1.matrix[7] * m2.matrix[5] + m1.matrix[11] * m2.matrix[6] + m1.matrix[15] * m2.matrix[7];
+	result.matrix[11] = m1.matrix[3] * m2.matrix[8] + m1.matrix[7] * m2.matrix[9] + m1.matrix[11] * m2.matrix[10] + m1.matrix[15] * m2.matrix[11];
+	result.matrix[15] = m1.matrix[2] * m2.matrix[12] + m1.matrix[7] * m2.matrix[13] + m1.matrix[11] * m2.matrix[14] + m1.matrix[15] * m2.matrix[15];
 
 	return result;
 

@@ -138,6 +138,8 @@
     <ClCompile Include="Diamond.cpp" />
     <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="LightShader.cpp" />
+    <ClCompile Include="mat4.cpp" />
+    <ClCompile Include="maths.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ObjectShader.cpp" />
     <ClCompile Include="Rectangle.cpp" />
@@ -149,6 +151,8 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ThomasLevel.cpp" />
     <ClCompile Include="Triangle.cpp" />
+    <ClCompile Include="vec3.cpp" />
+    <ClCompile Include="vec4.cpp" />
     <ClCompile Include="VegardLevel.cpp" />
     <ClCompile Include="VetleLevel.cpp" />
   </ItemGroup>
@@ -161,8 +165,11 @@
     <ClInclude Include="Dungeon.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LightShader.h" />
+    <ClInclude Include="mat4.h" />
     <ClInclude Include="MathDefinitions.h" />
+    <ClInclude Include="maths.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="newcamera.h" />
     <ClInclude Include="ObjectShader.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Shader.h" />
@@ -172,6 +179,8 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="ThomasLevel.h" />
     <ClInclude Include="Triangle.h" />
+    <ClInclude Include="vec3.h" />
+    <ClInclude Include="vec4.h" />
     <ClInclude Include="VegardLevel.h" />
     <ClInclude Include="VetleLevel.h" />
   </ItemGroup>

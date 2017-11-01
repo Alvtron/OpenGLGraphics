@@ -66,13 +66,6 @@ Husk at det kun kan kjøres 1 level om gangen :) bare kommenter ut det levelklass
 
 */
 
-/*
-	Melding fra Vetle: 
-	For å bruke matteklassen, bare bruk #include "maths.h", da får dere med alt.
-	Skal kommentere metodene etterhvert, forklare parametere og bruk etc.
-	Har tenkt å lage en ny metode for å hente view matrisa uten bruk av glm.
-*/
-
 void initGLFWindow()
 {
 

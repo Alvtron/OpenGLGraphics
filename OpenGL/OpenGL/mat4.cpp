@@ -1,11 +1,10 @@
 #define _USE_MATH_DEFINES
 
-#include <GL/glew.h>
 #include "mat4.h"
 #include "vec3.h"
 
 mat4::mat4() {
-	for (GLint i = 0; i < 16; i++)
+	for (int i = 0; i < 16; i++)
 		matrix[i] = 0.0f;
 }
 
@@ -35,13 +34,13 @@ mat4 mat4::makeScale(const vec3& scale) {
 
 }
 
-mat4 mat4::makeRotate(const GLfloat& angle, const vec3& axis) {
+mat4 mat4::makeRotate(const float& angle, const vec3& axis) {
 
 	mat4 result;
 
-	GLfloat c = (GLfloat)cos((GLdouble)angle);
-	GLfloat s = (GLfloat)sin((GLdouble)angle);
-	GLfloat omc = 1.0f - c;
+	float c = (float)cos((double)angle);
+	float s = (float)sin((double)angle);
+	float omc = 1.0f - c;
 
 	vec3 v = vec3::normalize(axis);
 
@@ -75,16 +74,16 @@ mat4 mat4::makeTranslate(const vec3& translation) {
 
 }
 
-mat4 mat4::makePerspective(const GLfloat& angle, const GLfloat& aspectRatio, const GLfloat& n, const GLfloat& f) {
+mat4 mat4::makePerspective(const float& angle, const float& aspectRatio, const float& n, const float& f) {
 
-	GLfloat angleInRadians = GLfloat(angle * (M_PI / 180));
+	float angleInRadians = float(angle * (M_PI / 180));
 
 	mat4 result;
 
-	GLfloat t = tan(angleInRadians / 2.0f) * n;
-	GLfloat b = -t;
-	GLfloat r = t * aspectRatio;
-	GLfloat l = -t * aspectRatio;
+	float t = tan(angleInRadians / 2.0f) * n;
+	float b = -t;
+	float r = t * aspectRatio;
+	float l = -t * aspectRatio;
 
 	result.matrix[0] = (2.0f * n) / (r - l);
 	result.matrix[5] = (2.0f * n) / (t - b);

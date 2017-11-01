@@ -1,4 +1,3 @@
-#include <GL/glew.h>
 #include "vec3.h"
 
 vec3::vec3() {
@@ -7,7 +6,7 @@ vec3::vec3() {
 	z = 1.0f;
 }
 
-vec3::vec3(const GLfloat& a, const GLfloat& b, const GLfloat& c) {
+vec3::vec3(const float& a, const float& b, const float& c) {
 	x = a;
 	y = b;
 	z = c;
@@ -21,12 +20,12 @@ vec3 vec3::cross(const vec3& v1, const vec3& v2) {
 	return result;
 }
 
-GLfloat vec3::dot(const vec3& v1, const vec3& v2) {
+float vec3::dot(const vec3& v1, const vec3& v2) {
 	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
 
 vec3& vec3::normalize() {
-	GLfloat vectorLength = sqrt((x * x) + (y * y) + (z * z));
+	float vectorLength = sqrt((x * x) + (y * y) + (z * z));
 	x /= vectorLength;
 	y /= vectorLength;
 	z /= vectorLength;
@@ -34,7 +33,7 @@ vec3& vec3::normalize() {
 }
 
 vec3 vec3::normalize(const vec3& v) {
-	GLfloat vectorLength = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+	float vectorLength = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
 	return vec3(v.x / vectorLength, v.y / vectorLength, v.z / vectorLength);
 }
 
@@ -54,7 +53,7 @@ vec3 vec3::divide(const vec3& v1, const vec3& v2) {
 	return vec3(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z);
 }
 
-vec3 vec3::scale(const vec3& v, const GLfloat& k) {
+vec3 vec3::scale(const vec3& v, const float& k) {
 	return vec3(v.x * k, v.y * k, v.z * k);
 }
 

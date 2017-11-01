@@ -11,11 +11,11 @@ enum Camera_Movement {
 };
 
 // Default camera values
-const GLfloat YAW = -90.0f;
-const GLfloat PITCH = 0.0f;
-const GLfloat SPEED = 5.0f;
-const GLfloat SENSITIVTY = 0.1f;
-const GLfloat ZOOM = 45.0f;
+const float YAW = -90.0f;
+const float PITCH = 0.0f;
+const float SPEED = 5.0f;
+const float SENSITIVTY = 0.1f;
+const float ZOOM = 45.0f;
 
 // An abstract camera class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL
 class Camera
@@ -30,13 +30,13 @@ public:
 	const vec3 WORLD_UP = vec3(0.0f, 1.0f, 0.0f);
 
 	// Eular Angles
-	GLfloat Yaw;
-	GLfloat Pitch;
+	float Yaw;
+	float Pitch;
 
 	// Camera options
-	GLfloat MovementSpeed;
-	GLfloat MouseSensitivity;
-	GLfloat Zoom;
+	float MovementSpeed;
+	float MouseSensitivity;
+	float Zoom;
 
 	// Constructor
 	Camera()
@@ -82,9 +82,9 @@ public:
 	}
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-	GLvoid ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
+	void ProcessKeyboard(Camera_Movement direction, float deltaTime)
 	{
-		GLfloat velocity = MovementSpeed * deltaTime;
+		float velocity = MovementSpeed * deltaTime;
 		if (direction == FORWARD)
 			Position = vec3::add(Position, vec3::scale(Front,velocity));
 		if (direction == BACKWARD)
@@ -96,7 +96,7 @@ public:
 	}
 
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-	GLvoid ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset)
+	void ProcessMouseMovement(float xoffset, float yoffset)
 	{
 		xoffset *= MouseSensitivity;
 		yoffset *= MouseSensitivity;
@@ -116,7 +116,7 @@ public:
 	}
 
 	// Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-	GLvoid ProcessMouseScroll(GLfloat yoffset)
+	void ProcessMouseScroll(float yoffset)
 	{
 		if (Zoom >= 1.0f && Zoom <= 45.0f)
 			Zoom -= yoffset;
@@ -128,7 +128,7 @@ public:
 
 private:
 	// Calculates the front vector from the Camera's (updated) Eular Angles
-	GLvoid updateCameraVectors()
+	void updateCameraVectors()
 	{
 		// Calculate the new Front vector
 		vec3 front;

@@ -1,4 +1,3 @@
-#include <GL/glew.h>
 #include "mat4.h"
 #include "vec4.h"
 
@@ -10,14 +9,14 @@ vec4::vec4() {
 	w = 1.0f;
 }
 
-vec4::vec4(const GLfloat& a, const GLfloat& b, const GLfloat& c) {
+vec4::vec4(const float& a, const float& b, const float& c) {
 	x = a;
 	y = b;
 	z = c;
 	w = 1.0f;
 }
 
-vec4::vec4(const GLfloat& a, const GLfloat& b, const GLfloat& c, const GLfloat& d) {
+vec4::vec4(const float& a, const float& b, const float& c, const float& d) {
 	x = a;
 	y = b;
 	z = c;
@@ -35,12 +34,12 @@ vec4 vec4::cross(const vec4& v1, const vec4& v2) {
 	return vec4((v1.y * v2.z) - (v2.y * v1.z), -((v1.x * v2.z) - (v2.x * v1.z)), (v1.x * v2.y) - (v2.x * v1.y));
 }
 
-GLfloat vec4::dot(const vec4& v1, const vec4& v2) {
+float vec4::dot(const vec4& v1, const vec4& v2) {
 	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
 
 vec4& vec4::normalize() {
-	GLfloat vectorLength = sqrt((x * x) + (y * y) + (z * z));
+	float vectorLength = sqrt((x * x) + (y * y) + (z * z));
 	x /= vectorLength;
 	y /= vectorLength;
 	z /= vectorLength;
@@ -48,7 +47,7 @@ vec4& vec4::normalize() {
 }
 
 vec4 vec4::normalize(const vec4& v) {
-	GLfloat vectorLength = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+	float vectorLength = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
 	return vec4(v.x / vectorLength, v.y / vectorLength, v.z / vectorLength, 1.0f);
 }
 
@@ -68,7 +67,7 @@ vec4 vec4::divide(const vec4& v1, const vec4& v2) {
 	return vec4(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z, 1.0f);
 }
 
-vec4 vec4::scale(const vec4& v, const GLfloat& k) {
+vec4 vec4::scale(const vec4& v, const float& k) {
 	return vec4(v.x * k, v.y * k, v.z * k, 1.0f);
 }
 

@@ -74,6 +74,37 @@ public:
 		return glm::lookAt(Position, Position + Front, Up);
 	}
 
+	/*
+	
+	// Returns the view matrix calculated using Eular Angles
+	mat4 getViewMatrix()
+	{
+	vec3 Center(vec3::add(Position, Front));
+	vec3 f(vec3::normalize(vec3::subtract(Center, Position)));
+	vec3 s(vec3::normalize(vec3::cross(f, Up)));
+	vec3 u(vec3::cross(s, f));
+
+	mat4 result;
+
+	result.matrix[0] = s.x;
+	result.matrix[4] = s.y;
+	result.matrix[8] = s.z;
+	result.matrix[1] = u.x;
+	result.matrix[5] = u.y;
+	result.matrix[9] = u.z;
+	result.matrix[2] = -f.x;
+	result.matrix[6] = -f.y;
+	result.matrix[10] = -f.z;
+	result.matrix[12] = -vec3::dot(s, Position);
+	result.matrix[13] = -vec3::dot(u, Position);
+	result.matrix[14] = vec3::dot(f, Position);
+	result.matrix[15] = 1.0f;
+
+	return result;
+	}
+	
+	*/
+
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
 	void ProcessKeyboard(Camera_Movement direction, float deltaTime)
 	{

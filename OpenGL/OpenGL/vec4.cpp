@@ -91,6 +91,11 @@ vec4 operator/(const vec4& left, const vec4& right) {
 	return vec4::divide(left, right);
 }
 
+float* vec4::getArray(const vec4& v) {
+	float temp[] = { v.x, v.y, v.z, v.w };
+	return temp;
+}
+
 std::ostream& operator<<(std::ostream& stream, const vec4& v) {
 	stream << "vec4:\n(" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")";
 	return stream;

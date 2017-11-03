@@ -18,7 +18,7 @@ Sphere::Sphere(float size, unsigned int quality)
 	breakup(quality);
 
 	for (int i = 0; i < vertices.size(); i++)
-		vertices.at(i) = glm::normalize(vertices.at(i)) * size;
+		vertices.at(i) = vec3::scale(vec3::normalize(vertices.at(i)), size);
 
 	Mesh::createVertexData(vertices, normals, colors, textures);
 	num_spheres++;
@@ -30,19 +30,19 @@ Sphere::~Sphere()
 }
 
 void Sphere::breakup(unsigned int times) {
-	std::vector<glm::vec3> new_vertices;
-	std::vector<glm::vec3> new_normals;
-	std::vector<glm::vec3> new_colors;
-	std::vector<glm::vec2> new_textures;
+	std::vector<vec3> new_vertices;
+	std::vector<vec3> new_normals;
+	std::vector<vec3> new_colors;
+	std::vector<vec2> new_textures;
 	for (int t = 0; t < times; t++) {
 		for (int i = 0; i < vertices.size(); i += 3) {
-			glm::vec3 a = vertices.at(i + 0);
-			glm::vec3 b = vertices.at(i + 1);
-			glm::vec3 c = vertices.at(i + 2);
+			vec3 a = vertices.at(i + 0);
+			vec3 b = vertices.at(i + 1);
+			vec3 c = vertices.at(i + 2);
 
-			glm::vec3 na = midpoint(a, b);
-			glm::vec3 nb = midpoint(b, c);
-			glm::vec3 nc = midpoint(a, c);
+			vec3 na = midpoint(a, b);
+			vec3 nb = midpoint(b, c);
+			vec3 nc = midpoint(a, c);
 
 			new_vertices.push_back(a);
 			new_vertices.push_back(na);
@@ -60,13 +60,13 @@ void Sphere::breakup(unsigned int times) {
 			new_vertices.push_back(nb);
 			new_vertices.push_back(c);
 
-			glm::vec2 ta = textures.at(i + 0);
-			glm::vec2 tb = textures.at(i + 1);
-			glm::vec2 tc = textures.at(i + 2);
+			vec2 ta = textures.at(i + 0);
+			vec2 tb = textures.at(i + 1);
+			vec2 tc = textures.at(i + 2);
 
-			glm::vec2 nta = midpoint(ta, tb);
-			glm::vec2 ntb = midpoint(tb, tc);
-			glm::vec2 ntc = midpoint(ta, tc);
+			vec2 nta = midpoint(ta, tb);
+			vec2 ntb = midpoint(tb, tc);
+			vec2 ntc = midpoint(ta, tc);
 
 			new_textures.push_back(ta);
 			new_textures.push_back(nta);
@@ -88,39 +88,39 @@ void Sphere::breakup(unsigned int times) {
 		textures = new_textures;
 	}
 	for (int s = 0; s < vertices.size(); s++) {
-		new_colors.push_back(glm::vec3(0.1 * s));
+		new_colors.push_back(vec3(0.1f * s, 0.1f * s, 0.1f * s));
 	}
 	for (int s = 0; s < vertices.size(); s++) {
-		new_normals.push_back(glm::vec3(0.0));
+		new_normals.push_back(vec3(0.0f, 0.0f, 0.0f));
 	}
 	normals = new_normals;
 	colors = new_colors;
 }
 
-glm::vec3 Sphere::midpoint(glm::vec3 a, glm::vec3 b) {
-	return glm::vec3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
+vec3 Sphere::midpoint(vec3 a, vec3 b) {
+	return vec3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
 }
 
-glm::vec2 Sphere::midpoint(glm::vec2 a, glm::vec2 b) {
-	return glm::vec2((a.x + b.x) / 2, (a.y + b.y) / 2);
+vec2 Sphere::midpoint(vec2 a, vec2 b) {
+	return vec2((a.x + b.x) / 2, (a.y + b.y) / 2);
 }
 
-std::vector<glm::vec3> Sphere::getVertices()
+std::vector<vec3> Sphere::getVertices()
 {
 	return vertices;
 }
 
-std::vector<glm::vec3> Sphere::getNormals()
+std::vector<vec3> Sphere::getNormals()
 {
 	return normals;
 }
 
-std::vector<glm::vec3> Sphere::getColors()
+std::vector<vec3> Sphere::getColors()
 {
 	return colors;
 }
 
-std::vector<glm::vec2> Sphere::getTextures()
+std::vector<vec2> Sphere::getTextures()
 {
 	return textures;
 }

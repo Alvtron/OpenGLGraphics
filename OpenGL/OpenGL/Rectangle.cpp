@@ -1,5 +1,4 @@
 #include "Rectangle.h"
-#include <cmath>
 
 unsigned int Rect::num_rectangles = 0;
 
@@ -13,13 +12,13 @@ Rect::Rect() : Mesh()
 /* Create a Rectangle object that stores vertex data: vertices, normals, colors, textures and indices. Call createVertexData(...) to change vertex data. */
 Rect::Rect(float width, float height) : Mesh()
 {
-	createRectangle(width, height, glm::vec3(0.0f, 0.0f, 0.0f));
+	createRectangle(width, height, vec3(0.0f, 0.0f, 0.0f));
 	Mesh::createVertexData(vertices, normals, colors, textures, indices);
 	num_rectangles++;
 }
 
 /* Create a Rectangle object that stores vertex data: vertices, normals, colors, textures and indices. Call createVertexData(...) to change vertex data. */
-Rect::Rect(float width, float height, glm::vec3 position) : Mesh()
+Rect::Rect(float width, float height, vec3 position) : Mesh()
 {
 	vertices = createRectangle(width, height, position);
 	Mesh::createVertexData(vertices, normals, colors, textures, indices);
@@ -33,31 +32,31 @@ Rect::~Rect()
 }
 
 /* Create a rectangle. Returns it's vertices */
-std::vector<glm::vec3> Rect::createRectangle(float width, float height, glm::vec3 position) {
+std::vector<vec3> Rect::createRectangle(float width, float height, vec3 position) {
 	return {
-		glm::vec3(-(width / 2.0f) + position.x, -(height / 2.0f) + position.y, 0.0f + position.z),
-		glm::vec3((width / 2.0f) + position.x, -(height / 2.0f) + position.y, 0.0f + position.z),
-		glm::vec3((width / 2.0f) + position.x, (height / 2.0f) + position.y, 0.0f + position.z),
-		glm::vec3(-(width / 2.0f) + position.x, (height / 2.0f) + position.y, 0.0f + position.z)
+		vec3(-(width / 2.0f) + position.x, -(height / 2.0f) + position.y, 0.0f + position.z),
+		vec3((width / 2.0f) + position.x, -(height / 2.0f) + position.y, 0.0f + position.z),
+		vec3((width / 2.0f) + position.x, (height / 2.0f) + position.y, 0.0f + position.z),
+		vec3(-(width / 2.0f) + position.x, (height / 2.0f) + position.y, 0.0f + position.z)
 	};
 }
 
-std::vector<glm::vec3> Rect::getVertices()
+std::vector<vec3> Rect::getVertices()
 {
 	return vertices;
 }
 
-std::vector<glm::vec3> Rect::getNormals()
+std::vector<vec3> Rect::getNormals()
 {
 	return normals;
 }
 
-std::vector<glm::vec3> Rect::getColors()
+std::vector<vec3> Rect::getColors()
 {
 	return colors;
 }
 
-std::vector<glm::vec2> Rect::getTextures()
+std::vector<vec2> Rect::getTextures()
 {
 	return textures;
 }

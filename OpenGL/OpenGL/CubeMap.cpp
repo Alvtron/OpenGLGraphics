@@ -59,11 +59,11 @@ void CubeMap::loadCubemapTexture(const std::string right, const std::string left
 }
 
 /* Draws the cubemap from vertex data stored on the GPU */
-void CubeMap::drawCubemap(Shader * shader, Camera * camera, glm::mat4 view, glm::mat4 projection) {
+void CubeMap::drawCubemap(Shader * shader, Camera * camera, mat4 view, mat4 projection) {
 	// draw skybox as last
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 	shader->use();
-	view = glm::mat4(glm::mat3(camera->GetViewMatrix())); // remove translation from the view matrix
+	view = mat4::removeTranslation(camera->GetViewMatrix()); // remove translation from the view matrix
 	shader->setMat4("view", view);
 	shader->setMat4("projection", projection);
 	// skybox cube

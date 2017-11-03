@@ -19,7 +19,6 @@ My dungeon generator is written entirely by me, but based on Nystrom's guide.
 #include <random>
 #include <algorithm>
 #include <time.h>
-#include <glm.hpp>
 
 Dungeon::Dungeon() {
 	this->name = DEFAULT_NAME;

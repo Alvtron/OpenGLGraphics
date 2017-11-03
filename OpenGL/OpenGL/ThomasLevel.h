@@ -1,17 +1,14 @@
 #pragma once
+
+#include "newcamera.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 // STB: Texture loader for several different types of image files
 #include "stb_image.h"
-// GLM: Matrix and vector math-library (temporary) 
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
 // Shaders and camera class, based on Joey de Vries' camera and shader class from learnOpenGL.com.
 #include "ObjectShader.h"
 #include "LightShader.h"
 #include "CubeMapShader.h"
-#include "camera.h"
 // Dungeon class created by Thomas Angeland for creating random-generated dungeons in adjustable sizes.
 #include "Dungeon.h"
 // 3D Object classes

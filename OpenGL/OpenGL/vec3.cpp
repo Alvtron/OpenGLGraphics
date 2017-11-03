@@ -73,11 +73,6 @@ vec3 operator/(const vec3& left, const vec3& right) {
 	return vec3::divide(left, right);
 }
 
-float* vec3::getArray(const vec3& v) {
-	float temp[] = { v.x, v.y, v.z };
-	return temp;
-}
-
 std::ostream& operator<<(std::ostream& stream, const vec3& v) {
 	stream << "vec3:\n(" << v.x << ", " << v.y << ", " << v.z << ")";
 	return stream;

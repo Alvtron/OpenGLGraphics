@@ -12,7 +12,7 @@ void Text::initFonts(std::string fontPath, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 {
 
 	textShader = Shader("shaders/text_vert.shader", "shaders/text_frag.shader");
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(WINDOW_WIDTH), 0.0f, static_cast<GLfloat>(WINDOW_HEIGHT));
+	mat4 projection = mat4::makeOrtho(0.0f, static_cast<GLfloat>(WINDOW_WIDTH), 0.0f, static_cast<GLfloat>(WINDOW_HEIGHT));
 	textShader.use();
 
 
@@ -69,8 +69,8 @@ void Text::initFonts(std::string fontPath, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 		// Now store character for later use
 		Character character = {
 			texture,
-			glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-			glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+			vec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+			vec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
 			face->glyph->advance.x
 		};
 		Characters.insert(std::pair<GLchar, Character>(c, character));
@@ -96,7 +96,7 @@ void Text::initFonts(std::string fontPath, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 
 }
 
-void Text::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
+void Text::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, vec3 color)
 {
 	// Activate corresponding render state	
 	textShader.use();

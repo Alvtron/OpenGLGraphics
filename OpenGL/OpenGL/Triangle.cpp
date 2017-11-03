@@ -31,41 +31,41 @@ Triangle::~Triangle()
 }
 
 /* Create a triangle. Returns it's vertices */
-std::vector<glm::vec3> Triangle::createTriangle(float base, float height)
+std::vector<vec3> Triangle::createTriangle(float base, float height)
 {
 	return {
-		glm::vec3(-(base / 2.0f), -(height / 2.0f), 0.0f),
-		glm::vec3((base / 2.0f), -(height / 2.0f), 0.0f),
-		glm::vec3(0.0f, (height / 2), 0.0f)
+		vec3(-(base / 2.0f), -(height / 2.0f), 0.0f),
+		vec3((base / 2.0f), -(height / 2.0f), 0.0f),
+		vec3(0.0f, (height / 2), 0.0f)
 	};
 }
 
 /* Create a triangle. Returns it's vertices */
-std::vector<glm::vec3> Triangle::createTriangle(float side)
+std::vector<vec3> Triangle::createTriangle(float side)
 {
 	return {
-		glm::vec3(-(side / 2.0f), -(side / 2.0f), 0.0f),
-		glm::vec3((side / 2.0f), -(side / 2.0f), 0.0f),
-		glm::vec3(0.0f, (side / 2), 0.0f)
+		vec3(-(side / 2.0f), -(side / 2.0f), 0.0f),
+		vec3((side / 2.0f), -(side / 2.0f), 0.0f),
+		vec3(0.0f, (side / 2), 0.0f)
 	};
 }
 
-std::vector<glm::vec3> Triangle::getVertices()
+std::vector<vec3> Triangle::getVertices()
 {
 	return vertices;
 }
 
-std::vector<glm::vec3> Triangle::getNormals()
+std::vector<vec3> Triangle::getNormals()
 {
 	return normals;
 }
 
-std::vector<glm::vec3> Triangle::getColors()
+std::vector<vec3> Triangle::getColors()
 {
 	return colors;
 }
 
-std::vector<glm::vec2> Triangle::getTextures()
+std::vector<vec2> Triangle::getTextures()
 {
 	return textures;
 }

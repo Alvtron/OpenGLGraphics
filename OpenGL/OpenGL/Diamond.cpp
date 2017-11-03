@@ -19,59 +19,59 @@ Diamond::~Diamond()
 	num_diamonds--;
 }
 
-std::vector<glm::vec3> Diamond::createDiamond(float width) {
+std::vector<vec3> Diamond::createDiamond(float width) {
 	float radius = width / 2.0f;
 	return {
-		glm::vec3(-radius, 0.0f, -radius),
-		glm::vec3(+radius, 0.0f, -radius),
-		glm::vec3(0.0f, +radius, 0.0f),
+		vec3(-radius, 0.0f, -radius),
+		vec3(+radius, 0.0f, -radius),
+		vec3(0.0f, +radius, 0.0f),
 
-		glm::vec3(+radius, 0.0f, -radius),
-		glm::vec3(+radius, 0.0f, +radius),
-		glm::vec3(0.0f, +radius, 0.0f),
+		vec3(+radius, 0.0f, -radius),
+		vec3(+radius, 0.0f, +radius),
+		vec3(0.0f, +radius, 0.0f),
 
-		glm::vec3(+radius, 0.0f, +radius),
-		glm::vec3(-radius, 0.0f, +radius),
-		glm::vec3(0.0f, +radius, 0.0f),
+		vec3(+radius, 0.0f, +radius),
+		vec3(-radius, 0.0f, +radius),
+		vec3(0.0f, +radius, 0.0f),
 
-		glm::vec3(-radius, 0.0f, +radius),
-		glm::vec3(-radius, 0.0f, -radius),
-		glm::vec3(0.0f, +radius, 0.0f),
+		vec3(-radius, 0.0f, +radius),
+		vec3(-radius, 0.0f, -radius),
+		vec3(0.0f, +radius, 0.0f),
 
-		glm::vec3(-radius, 0.0f, -radius),
-		glm::vec3(+radius, 0.0f, -radius),
-		glm::vec3(0.0f, -radius, 0.0f),
+		vec3(-radius, 0.0f, -radius),
+		vec3(+radius, 0.0f, -radius),
+		vec3(0.0f, -radius, 0.0f),
 
-		glm::vec3(+radius, 0.0f, -radius),
-		glm::vec3(+radius, 0.0f, +radius),
-		glm::vec3(0.0f, -radius, 0.0f),
+		vec3(+radius, 0.0f, -radius),
+		vec3(+radius, 0.0f, +radius),
+		vec3(0.0f, -radius, 0.0f),
 
-		glm::vec3(+radius, 0.0f, +radius),
-		glm::vec3(-radius, 0.0f, +radius),
-		glm::vec3(0.0f, -radius, 0.0f),
+		vec3(+radius, 0.0f, +radius),
+		vec3(-radius, 0.0f, +radius),
+		vec3(0.0f, -radius, 0.0f),
 
-		glm::vec3(-radius, 0.0f, +radius),
-		glm::vec3(-radius, 0.0f, -radius),
-		glm::vec3(0.0f, -radius, 0.0f)
+		vec3(-radius, 0.0f, +radius),
+		vec3(-radius, 0.0f, -radius),
+		vec3(0.0f, -radius, 0.0f)
 	};
 }
 
-std::vector<glm::vec3> Diamond::getVertices()
+std::vector<vec3> Diamond::getVertices()
 {
 	return vertices;
 }
 
-std::vector<glm::vec3> Diamond::getNormals()
+std::vector<vec3> Diamond::getNormals()
 {
 	return normals;
 }
 
-std::vector<glm::vec3> Diamond::getColors()
+std::vector<vec3> Diamond::getColors()
 {
 	return colors;
 }
 
-std::vector<glm::vec2> Diamond::getTextures()
+std::vector<vec2> Diamond::getTextures()
 {
 	return textures;
 }

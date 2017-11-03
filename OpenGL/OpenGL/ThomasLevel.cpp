@@ -7,8 +7,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
 // Camera
-Camera camera;
-const glm::vec3 SPAWN_POSITION(0.0f, 2.0f, 2.0f);
+const vec3 SPAWN_POSITION(0.0f, 2.0f, 2.0f);
+Camera camera(SPAWN_POSITION);
 double lastX;
 double lastY;
 bool firstMouse = true;
@@ -21,13 +21,13 @@ float color_rotation_g = 0.0f;
 float color_rotation_b = 0.0f;
 
 // Global positions
-std::vector<glm::vec3> pointLightPositions = {
-        glm::vec3( 0.7f,  2.0f,  2.0f),
-        glm::vec3( 2.3f,  4.0f, -4.0f),
-        glm::vec3(-4.0f,  2.0f, -12.0f),
-        glm::vec3( 0.0f,  1.0f, -3.0f)
+std::vector<vec3> pointLightPositions = {
+        vec3( 0.7f,  2.0f,  2.0f),
+        vec3( 2.3f,  4.0f, -4.0f),
+        vec3(-4.0f,  2.0f, -12.0f),
+        vec3( 0.0f,  1.0f, -3.0f)
     };
-glm::vec3 lightColor = glm::vec3(1.0f, 0.5f, 1.0f);
+vec3 lightColor = vec3(1.0f, 0.5f, 1.0f);
 
 // 3D Objects
 CubeMap cubemap = CubeMap();
@@ -62,7 +62,7 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	// ===========================================================================================
 	// CAMERA - for player movement, sets spawn position
 	// ===========================================================================================
-	camera = Camera(SPAWN_POSITION);
+	//camera = Camera(SPAWN_POSITION);
 
 	// ===========================================================================================
 	// SHADER - Build and compile the shader program (with LearnOpenGL's provided shader class)
@@ -150,17 +150,17 @@ void ThomasLevel::loop()
 	// light properties
 	for (int i = 0; i < pointLightPositions.size(); i++) {
 		shader.setVec3("pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
-		shader.setVec3("pointLights[" + std::to_string(i) + "].ambient", glm::vec3(0.2f, 0.2f, 0.2f) + (lightColor * 0.1f));
-		shader.setVec3("pointLights[" + std::to_string(i) + "].diffuse", lightColor * 0.5f);
+		shader.setVec3("pointLights[" + std::to_string(i) + "].ambient", vec3(0.2f, 0.2f, 0.2f) + (vec3::scale(lightColor, 0.1f)));
+		shader.setVec3("pointLights[" + std::to_string(i) + "].diffuse", vec3::scale(lightColor, 0.5f));
 		shader.setVec3("pointLights[" + std::to_string(i) + "].specular", lightColor);
 		shader.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0f);
-		shader.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
-		shader.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.032);
+		shader.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09f);
+		shader.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.032f);
 	}
 
 	// Calculate View/Projection transformations
-	glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
-	glm::mat4 view = camera.GetViewMatrix();
+	mat4 projection = mat4::makePerspective(camera.Fov, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+	mat4 view = camera.GetViewMatrix();
 	shader.setMat4("projection", projection);
 	shader.setMat4("view", view);
 
@@ -170,8 +170,8 @@ void ThomasLevel::loop()
 	
 	for (int i = -10; i < 10; i++) {
 		for (int j = -10; j < 10; j+=2) {
-			cube.drawObject(&shader, glm::vec3(i, 0.0f, j), tile);
-			cube.drawObject(&shader, glm::vec3(i, -0.25f, j + 1), metal);
+			cube.drawObject(&shader, vec3(i, 0.0f, j), tile);
+			cube.drawObject(&shader, vec3(i, -0.25f, j + 1), metal);
 		}
 	}
 
@@ -183,13 +183,13 @@ void ThomasLevel::loop()
 
 	// Draw light object
 	for (int i = 0; i < pointLightPositions.size(); i++) {
-		light.drawObject(&lightShader, pointLightPositions[i], 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), metal);
+		light.drawObject(&lightShader, pointLightPositions[i], 90.0f, vec3(1.0f, 0.0f, 0.0f), metal);
 	}
 
 	// Draw cubemap (this must AFTER all other objects last or it will decrease peformance)
 	cubemap.drawCubemap(&cubeMapShader, &camera, view, projection);
 
-	lightColor = glm::vec3(abs(sin(color_rotation_r)), abs(sin(color_rotation_g)), abs(sin(color_rotation_b)));
+	lightColor = vec3(abs(sin(color_rotation_r)), abs(sin(color_rotation_g)), abs(sin(color_rotation_b)));
 	color_rotation_r += 0.10f * deltaTime;
 	color_rotation_g += 0.20f * deltaTime;
 	color_rotation_b += 0.30f * deltaTime;

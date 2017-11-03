@@ -1,7 +1,5 @@
 #include "TextExampleLevel.h"
 
-
-
 void processInputTextExampleLevel(GLFWwindow *window);
 
 Text textExample;
@@ -41,9 +39,9 @@ void TextExampleLevel::loop()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Text, x, y, scale and color in vectorform
-	textExample.RenderText("12345678", 0, 0, 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	textExample.RenderText("Dette er en text", 200.0f,100.0f, 1.0f, glm::vec3(1.0, 0.0f, 0.2f));
-	textExample.RenderText("WOHO!", 100.0f, 200.0f, 2.0f, glm::vec3(0.0f, 0.5f, 0.5f));
+	textExample.RenderText("12345678", 0, 0, 1.0f, vec3(0.0f, 1.0f, 0.0f));
+	textExample.RenderText("Dette er en text", 200.0f,100.0f, 1.0f, vec3(1.0, 0.0f, 0.2f));
+	textExample.RenderText("WOHO!", 100.0f, 200.0f, 2.0f, vec3(0.0f, 0.5f, 0.5f));
 
 	processInputTextExampleLevel(window);
 	glfwSwapBuffers(window);

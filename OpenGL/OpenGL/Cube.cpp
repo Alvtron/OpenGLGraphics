@@ -30,59 +30,59 @@ Cube::~Cube()
 }
 
 /* Create a cube. Returns it's vertices */
-std::vector<glm::vec3> Cube::createCube(const float width, const float height) {
+std::vector<vec3> Cube::createCube(const float width, const float height) {
 	float widthRadius = width / 2.0f;
 	float heightRadius = height / 2.0f;
 	return vertices = {
 		// Front
-		glm::vec3(-widthRadius, -heightRadius, -widthRadius),
-		glm::vec3(+widthRadius, -heightRadius, -widthRadius),
-		glm::vec3(+widthRadius, +heightRadius, -widthRadius),
-		glm::vec3(-widthRadius, +heightRadius, -widthRadius),
+		vec3(-widthRadius, -heightRadius, -widthRadius),
+		vec3(+widthRadius, -heightRadius, -widthRadius),
+		vec3(+widthRadius, +heightRadius, -widthRadius),
+		vec3(-widthRadius, +heightRadius, -widthRadius),
 		// Back
-		glm::vec3(-widthRadius, -heightRadius, +widthRadius),
-		glm::vec3(+widthRadius, -heightRadius, +widthRadius),
-		glm::vec3(+widthRadius, +heightRadius, +widthRadius),
-		glm::vec3(-widthRadius, +heightRadius, +widthRadius),
+		vec3(-widthRadius, -heightRadius, +widthRadius),
+		vec3(+widthRadius, -heightRadius, +widthRadius),
+		vec3(+widthRadius, +heightRadius, +widthRadius),
+		vec3(-widthRadius, +heightRadius, +widthRadius),
 		// Left
-		glm::vec3(-widthRadius, -heightRadius, +widthRadius),
-		glm::vec3(-widthRadius, -heightRadius, -widthRadius),
-		glm::vec3(-widthRadius, +heightRadius, -widthRadius),
-		glm::vec3(-widthRadius, +heightRadius, +widthRadius),
+		vec3(-widthRadius, -heightRadius, +widthRadius),
+		vec3(-widthRadius, -heightRadius, -widthRadius),
+		vec3(-widthRadius, +heightRadius, -widthRadius),
+		vec3(-widthRadius, +heightRadius, +widthRadius),
 		// Right
-		glm::vec3(+widthRadius, -heightRadius, -widthRadius),
-		glm::vec3(+widthRadius, -heightRadius, +widthRadius),
-		glm::vec3(+widthRadius, +heightRadius, +widthRadius),
-		glm::vec3(+widthRadius, +heightRadius, -widthRadius),
+		vec3(+widthRadius, -heightRadius, -widthRadius),
+		vec3(+widthRadius, -heightRadius, +widthRadius),
+		vec3(+widthRadius, +heightRadius, +widthRadius),
+		vec3(+widthRadius, +heightRadius, -widthRadius),
 		// Bottom
-		glm::vec3(-widthRadius, -heightRadius, -widthRadius),
-		glm::vec3(+widthRadius, -heightRadius, -widthRadius),
-		glm::vec3(+widthRadius, -heightRadius, +widthRadius),
-		glm::vec3(-widthRadius, -heightRadius, +widthRadius),
+		vec3(-widthRadius, -heightRadius, -widthRadius),
+		vec3(+widthRadius, -heightRadius, -widthRadius),
+		vec3(+widthRadius, -heightRadius, +widthRadius),
+		vec3(-widthRadius, -heightRadius, +widthRadius),
 		// Top
-		glm::vec3(-widthRadius, +heightRadius, -widthRadius),
-		glm::vec3(+widthRadius, +heightRadius, -widthRadius),
-		glm::vec3(+widthRadius, +heightRadius, +widthRadius),
-		glm::vec3(-widthRadius, +heightRadius, +widthRadius)
+		vec3(-widthRadius, +heightRadius, -widthRadius),
+		vec3(+widthRadius, +heightRadius, -widthRadius),
+		vec3(+widthRadius, +heightRadius, +widthRadius),
+		vec3(-widthRadius, +heightRadius, +widthRadius)
 	};
 }
 
-std::vector<glm::vec3> Cube::getVertices()
+std::vector<vec3> Cube::getVertices()
 {
 	return vertices;
 }
 
-std::vector<glm::vec3> Cube::getNormals()
+std::vector<vec3> Cube::getNormals()
 {
 	return normals;
 }
 
-std::vector<glm::vec3> Cube::getColors()
+std::vector<vec3> Cube::getColors()
 {
 	return colors;
 }
 
-std::vector<glm::vec2> Cube::getTextures()
+std::vector<vec2> Cube::getTextures()
 {
 	return textures;
 }

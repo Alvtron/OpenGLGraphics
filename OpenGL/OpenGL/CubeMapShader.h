@@ -1,5 +1,6 @@
 #pragma once
 #include "Shader.h"
+
 class CubeMapShader : public Shader
 {
 public:

@@ -10,19 +10,19 @@ class Sphere : public Mesh
 private:
 	static unsigned int num_spheres;
 
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec3> normals;
-	std::vector<glm::vec3> colors;
-	std::vector<glm::vec2> textures;
+	std::vector<vec3> vertices;
+	std::vector<vec3> normals;
+	std::vector<vec3> colors;
+	std::vector<vec2> textures;
 public:
 	Sphere();
 	Sphere(float size, unsigned int quality);
 	~Sphere();
 	void breakup(unsigned int times);
-	glm::vec3 midpoint(glm::vec3 a, glm::vec3 b);
-	glm::vec2 midpoint(glm::vec2 a, glm::vec2 b);
-	std::vector<glm::vec3> getVertices();
-	std::vector<glm::vec3> getNormals();
-	std::vector<glm::vec3> getColors();
-	std::vector<glm::vec2> getTextures();
+	vec3 midpoint(vec3 a, vec3 b);
+	vec2 midpoint(vec2 a, vec2 b);
+	std::vector<vec3> getVertices();
+	std::vector<vec3> getNormals();
+	std::vector<vec3> getColors();
+	std::vector<vec2> getTextures();
 };

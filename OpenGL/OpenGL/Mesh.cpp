@@ -9,7 +9,7 @@ Mesh::Mesh()
 }
 
 /* Create a Mesh object that stores vertex data: vertices, normals, colors, textures and indices. Call createVertexData(...) to change vertex data. */
-bool Mesh::createVertexData(const std::vector<glm::vec3>& vertices, const  std::vector<glm::vec3>& normals, const  std::vector<glm::vec3>& colors, const  std::vector<glm::vec2>& textures, const  std::vector<unsigned int>& indices)
+bool Mesh::createVertexData(const std::vector<vec3>& vertices, const  std::vector<vec3>& normals, const  std::vector<vec3>& colors, const  std::vector<vec2>& textures, const  std::vector<unsigned int>& indices)
 {
 	if (indices.size() < 1) {
 		std::cout << "Mesh : createVertexData() : Cannot create vertex data. ";
@@ -28,7 +28,7 @@ bool Mesh::createVertexData(const std::vector<glm::vec3>& vertices, const  std::
 	}
 }
 
-bool Mesh::createVertexData(const std::vector<glm::vec3>& vertices, const  std::vector<glm::vec3>& normals, const  std::vector<glm::vec3>& colors, const  std::vector<glm::vec2>& textures)
+bool Mesh::createVertexData(const std::vector<vec3>& vertices, const  std::vector<vec3>& normals, const  std::vector<vec3>& colors, const  std::vector<vec2>& textures)
 {
 	if (vertices.size() < 1 || normals.size() < 1 || colors.size() < 1 || textures.size() < 1) {
 		std::cout << "Mesh : createVertexData() : Cannot create vertex data. ";
@@ -85,7 +85,7 @@ Mesh::~Mesh()
 }
 
 /* Change or add vertex data. Specify vertex datatype, VERTEX_DATA_TYPE{MESH_VERTICE, MESH_NORMAL, MESH_COLOR, MESH_TEXTURE or MESH_INDICE}. If data already exists, it will just overwrite it. */
-bool Mesh::addVertexData(const std::vector<glm::vec3> &data, VERTEX_DATA_TYPE data_type)
+bool Mesh::addVertexData(const std::vector<vec3> &data, VERTEX_DATA_TYPE data_type)
 {
 	if (data_type != MESH_INDICE)
 	{
@@ -245,7 +245,7 @@ bool Mesh::setDrawMode(GLenum mode)
 	}
 }
 /* Draw MESH_INDICE vertex data from GPU */
-bool Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, Texture texture, int from_index, int to_index)
+bool Mesh::drawObject(const Shader * shader, vec3 position, vec3 scale_vector, float rotation_degrees, vec3 rotation_vector, Texture texture, int from_index, int to_index)
 {
 	if (storedOnGPU)
 	{
@@ -282,10 +282,10 @@ bool Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale
 		// Bind VAO
 		glBindVertexArray(VAO);
 		// Calculate the model matrix for each object and pass it to shader before drawing
-		glm::mat4 model;
-		model = glm::translate(model, position);
-		model = glm::rotate(model, glm::radians(rotation_degrees), rotation_vector);
-		model = glm::scale(model, scale_vector);
+		mat4 translate = mat4::makeTranslate(position);
+		mat4 rotate = mat4::makeRotate(rotation_degrees, rotation_vector);
+		mat4 scale = mat4::makeScale(scale_vector);
+		mat4 model = translate * rotate * scale;
 		shader->setMat4("model", model);
 		// Draw mesh
 		if (hasIndices) glDrawElements(draw_mode, indices.size(), GL_UNSIGNED_INT, 0);
@@ -299,33 +299,33 @@ bool Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale
 	}
 }
 
-bool Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture)
+bool Mesh::drawObject(const Shader * shader, vec3 position, vec3 scale_vector, float rotation_degrees, vec3 rotation_vector, const Texture texture)
 {
 	return drawObject(shader, position, scale_vector, rotation_degrees, rotation_vector, texture, 0, vertex_data.size() / stride());
 }
 
 /* Draw vertex data from GPU */
-bool Mesh::drawObject(const Shader * shader, glm::vec3 position, float rotation_degrees, glm::vec3 rotation_vector, const Texture texture)
+bool Mesh::drawObject(const Shader * shader, vec3 position, float rotation_degrees, vec3 rotation_vector, const Texture texture)
 {
-	return drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), rotation_degrees, rotation_vector, texture, 0, vertex_data.size() / stride());
+	return drawObject(shader, position, vec3(1.0f, 1.0f, 1.0f), rotation_degrees, rotation_vector, texture, 0, vertex_data.size() / stride());
 }
 
 /* Draw vertex data from GPU */
-bool Mesh::drawObject(const Shader * shader, glm::vec3 position, glm::vec3 scale_vector, const Texture texture)
+bool Mesh::drawObject(const Shader * shader, vec3 position, vec3 scale_vector, const Texture texture)
 {
-	return drawObject(shader, position, scale_vector, 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture, 0, vertex_data.size() / stride());
+	return drawObject(shader, position, scale_vector, 0.0f, vec3(1.0f, 1.0f, 1.0f), texture, 0, vertex_data.size() / stride());
 }
 
 /* Draw vertex data from GPU */
-bool Mesh::drawObject(const Shader * shader, glm::vec3 position, const Texture texture)
+bool Mesh::drawObject(const Shader * shader, vec3 position, const Texture texture)
 {
-	return drawObject(shader, position, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture, 0, vertex_data.size() / stride());
+	return drawObject(shader, position, vec3(1.0f, 1.0f, 1.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), texture, 0, vertex_data.size() / stride());
 }
 
 /* Draw vertex data from GPU */
 bool Mesh::drawObject(const Shader * shader, const Texture texture)
 {
-	return drawObject(shader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), texture, 0, vertex_data.size() / stride());
+	return drawObject(shader, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), texture, 0, vertex_data.size() / stride());
 }
 
 /* De-allocate vertex data once it has outlived it's purpose */

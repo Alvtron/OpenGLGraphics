@@ -1,8 +1,8 @@
 #include "vec2.h"
 
 vec2::vec2() {
-	x = 1.0f;
-	y = 1.0f;
+	x = 0.0f;
+	y = 0.0f;
 }
 
 vec2::vec2(const float& a, const float& b) {

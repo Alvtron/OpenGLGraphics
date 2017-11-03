@@ -1,9 +1,9 @@
 #include "vec3.h"
 
 vec3::vec3() {
-	x = 1.0f;
-	y = 1.0f;
-	z = 1.0f;
+	x = 0.0f;
+	y = 0.0f;
+	z = 0.0f;
 }
 
 vec3::vec3(const float& a, const float& b, const float& c) {
@@ -22,14 +22,6 @@ vec3 vec3::cross(const vec3& v1, const vec3& v2) {
 
 float vec3::dot(const vec3& v1, const vec3& v2) {
 	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
-}
-
-vec3& vec3::normalize() {
-	float vectorLength = sqrt((x * x) + (y * y) + (z * z));
-	x /= vectorLength;
-	y /= vectorLength;
-	z /= vectorLength;
-	return *this;
 }
 
 vec3 vec3::normalize(const vec3& v) {

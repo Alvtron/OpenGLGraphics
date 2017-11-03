@@ -3,9 +3,9 @@
 
 
 vec4::vec4() {
-	x = 1.0f;
-	y = 1.0f;
-	z = 1.0f;
+	x = 0.0f;
+	y = 0.0f;
+	z = 0.0f;
 	w = 1.0f;
 }
 
@@ -36,14 +36,6 @@ vec4 vec4::cross(const vec4& v1, const vec4& v2) {
 
 float vec4::dot(const vec4& v1, const vec4& v2) {
 	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
-}
-
-vec4& vec4::normalize() {
-	float vectorLength = sqrt((x * x) + (y * y) + (z * z));
-	x /= vectorLength;
-	y /= vectorLength;
-	z /= vectorLength;
-	return *this;
 }
 
 vec4 vec4::normalize(const vec4& v) {

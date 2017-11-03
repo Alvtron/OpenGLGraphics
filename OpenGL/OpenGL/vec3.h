@@ -31,6 +31,8 @@ public:
 	friend vec3 operator*(const vec3& left, const vec3& right);
 	friend vec3 operator/(const vec3& left, const vec3& right);
 
+	static float* getArray(const vec3& v);
+
 	friend std::ostream& operator<<(std::ostream& stream, const vec3& v);
 
 };

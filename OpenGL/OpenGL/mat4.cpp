@@ -1,7 +1,5 @@
-#define _USE_MATH_DEFINES
-
 #include "mat4.h"
-#include "vec3.h"
+#include "MathDefinitions.h"
 
 mat4::mat4() {
 	for (int i = 0; i < 16; i++)
@@ -36,10 +34,12 @@ mat4 mat4::makeScale(const vec3& scale) {
 
 mat4 mat4::makeRotate(const float& angle, const vec3& axis) {
 
+	float r = (float)(angle * (M_PI / 180.0f));
+
 	mat4 result;
 
-	float c = (float)cos((double)angle);
-	float s = (float)sin((double)angle);
+	float c = (float)cos((double)r);
+	float s = (float)sin((double)r);
 	float omc = 1.0f - c;
 
 	vec3 v = vec3::normalize(axis);
@@ -76,11 +76,11 @@ mat4 mat4::makeTranslate(const vec3& translation) {
 
 mat4 mat4::makePerspective(const float& angle, const float& aspectRatio, const float& n, const float& f) {
 
-	float angleInRadians = float(angle * (M_PI / 180));
+	float a = (float)(angle * (M_PI / 180.0f));
 
 	mat4 result;
 
-	float t = tan(angleInRadians / 2.0f) * n;
+	float t = tan(a / 2.0f) * n;
 	float b = -t;
 	float r = t * aspectRatio;
 	float l = -t * aspectRatio;
@@ -92,6 +92,33 @@ mat4 mat4::makePerspective(const float& angle, const float& aspectRatio, const f
 	result.matrix[10] = -((f + n) / (f - n));
 	result.matrix[11] = -1.0f;
 	result.matrix[14] = -((2.0f * f * n) / (f - n));
+
+	return result;
+
+}
+
+mat4 mat4::makeOrtho(const float& l, const float& r, const float& b, const float& t) {
+
+	mat4 result;
+
+	result.matrix[0] = 2.0f / (r - l);
+	result.matrix[5] = 2.0f / (t - b);
+	result.matrix[10] = -1.0f;
+	result.matrix[12] = -((r + l) / (r - l));
+	result.matrix[13] = -((t + b) / (t - b));
+	result.matrix[15] = 1.0f;
+
+	return result;
+
+}
+
+mat4 mat4::removeTranslation(const mat4& m) {
+	
+	mat4 result = m;
+
+	result.matrix[12] = 0.0f;
+	result.matrix[13] = 0.0f;
+	result.matrix[14] = 0.0f;
 
 	return result;
 

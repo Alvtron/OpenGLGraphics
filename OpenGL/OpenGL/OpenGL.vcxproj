@@ -139,7 +139,6 @@
     <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="LightShader.cpp" />
     <ClCompile Include="mat4.cpp" />
-    <ClCompile Include="maths.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ObjectShader.cpp" />
     <ClCompile Include="Rectangle.cpp" />

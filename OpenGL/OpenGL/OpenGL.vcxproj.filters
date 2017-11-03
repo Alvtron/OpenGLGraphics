@@ -90,9 +90,6 @@
     <ClCompile Include="mat4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="maths.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="vec3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

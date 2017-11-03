@@ -15,7 +15,7 @@ const float YAW = -90.0f;
 const float PITCH = 0.0f;
 const float SPEED = 5.0f;
 const float SENSITIVTY = 0.1f;
-const float ZOOM = 45.0f;
+const float FOV = 45.0f;
 
 // An abstract camera class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL
 class Camera
@@ -36,12 +36,12 @@ public:
 	// Camera options
 	float MovementSpeed;
 	float MouseSensitivity;
-	float Zoom;
+	float Fov;
 
 	// Constructor
-	Camera()
+	Camera(vec3 eye)
 	{
-		Position = vec3(0.0f, 0.0f, 5.0f);
+		Position = eye;
 		Front = vec3(0.0f, 0.0f, -1.0f);
 
 		Yaw = YAW;
@@ -49,13 +49,13 @@ public:
 
 		MovementSpeed = SPEED;
 		MouseSensitivity = SENSITIVTY;
-		Zoom = ZOOM;
+		Fov = FOV;
 
 		updateCameraVectors();
 	}
 
 	// Returns the view matrix calculated using Eular Angles
-	mat4 getViewMatrix()
+	mat4 GetViewMatrix()
 	{
 		vec3 Center(vec3::add(Position, Front));
 		vec3 f(vec3::normalize(vec3::subtract(Center, Position)));
@@ -95,6 +95,23 @@ public:
 			Position = vec3::add(Position, vec3::scale(Right, velocity));
 	}
 
+	void ProcessKeyboard(Camera_Movement direction, float deltaTime, bool sprint)
+	{
+		if (!sprint) ProcessKeyboard(direction, deltaTime);
+		else
+		{
+			float velocity = MovementSpeed * deltaTime * 2;
+			if (direction == FORWARD)
+				Position = vec3::add(Position, vec3::scale(Front, velocity));
+			if (direction == BACKWARD)
+				Position = vec3::subtract(Position, vec3::scale(Front, velocity));
+			if (direction == LEFT)
+				Position = vec3::subtract(Position, vec3::scale(Right, velocity));
+			if (direction == RIGHT)
+				Position = vec3::add(Position, vec3::scale(Right, velocity));
+		}
+	}
+
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
 	void ProcessMouseMovement(float xoffset, float yoffset)
 	{
@@ -116,25 +133,27 @@ public:
 	}
 
 	// Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-	void ProcessMouseScroll(float yoffset)
+	void setFOV(float yoffset)
 	{
-		if (Zoom >= 1.0f && Zoom <= 45.0f)
-			Zoom -= yoffset;
-		if (Zoom <= 1.0f)
-			Zoom = 1.0f;
-		if (Zoom >= 45.0f)
-			Zoom = 45.0f;
+		if (Fov >= 1.0f && Fov <= 45.0f)
+			Fov -= yoffset;
+		if (Fov <= 1.0f)
+			Fov = 1.0f;
+		if (Fov >= 45.0f)
+			Fov = 45.0f;
 	}
 
 private:
 	// Calculates the front vector from the Camera's (updated) Eular Angles
 	void updateCameraVectors()
 	{
+		float y = (float)(Yaw * (M_PI / 180.0f));
+		float p = (float)(Pitch * (M_PI / 180.0f));
 		// Calculate the new Front vector
 		vec3 front;
-		front.x = cos(toRadians(Yaw)) * cos(toRadians(Pitch));
-		front.y = sin(toRadians(Pitch));
-		front.z = sin(toRadians(Yaw)) * cos(toRadians(Pitch));
+		front.x = cos(y) * cos(p);
+		front.y = sin(p);
+		front.z = sin(y) * cos(p);
 		Front = vec3::normalize(front);
 		// Also re-calculate the Right and Up vector
 		Right = vec3::normalize(vec3::cross(Front, WORLD_UP));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.

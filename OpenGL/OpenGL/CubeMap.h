@@ -4,7 +4,7 @@
 #include "stb_image.h"
 #include <cmath>
 #include "Shader.h"
-#include "newcamera.h"
+#include "Camera.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>

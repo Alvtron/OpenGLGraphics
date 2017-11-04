@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include "vec3.h"
+#include "Vec3.h"
 
 class mat4 {
 

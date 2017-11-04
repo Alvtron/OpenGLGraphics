@@ -1,7 +1,7 @@
 #pragma once
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "maths.h"
+#include "Maths.h"
 #include <string>
 #include <fstream>
 #include <sstream>

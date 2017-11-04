@@ -1,11 +1,11 @@
 #pragma once
 
-#include "newcamera.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 // STB: Texture loader for several different types of image files
 #include "stb_image.h"
 // Shaders and camera class, based on Joey de Vries' camera and shader class from learnOpenGL.com.
+#include "Camera.h"
 #include "ObjectShader.h"
 #include "LightShader.h"
 #include "CubeMapShader.h"

@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <vector>
 #include "Texture.h"
-#include "maths.h"
+#include "Maths.h"
 
 class Mesh
 {

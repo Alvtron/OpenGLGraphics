@@ -1,9 +1,9 @@
 #pragma once
 
 #include "MathDefinitions.h"
-#include "mat4.h"
-#include "mat3.h"
-#include "mat2.h"
-#include "vec4.h"
-#include "vec3.h"
-#include "vec2.h"
+#include "Mat4.h"
+#include "Mat3.h"
+#include "Mat2.h"
+#include "Vec4.h"
+#include "Vec3.h"
+#include "Vec2.h"

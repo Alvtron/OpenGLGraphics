@@ -2,17 +2,31 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Camera.h"
 
-class VetleLevel
-{
+#include "CubeMap.h"
+#include "Rectangle.h"
+#include "Sphere.h"
 
-private:
-	GLFWwindow *window;
-	int WINDOW_WIDTH, WINDOW_HEIGHT;
+#include "ObjectShader.h"
+#include "CubeMapShader.h"
 
-public:
-	void init(GLFWwindow *window, int WINDOW_WIDTH, int WINDOW_HEIGHT);
-	void loop();
+#include "Texture.h"
 
+namespace vetle {
+
+	class VetleLevel
+	{
+
+	private:
+		GLFWwindow *window;
+		int WINDOW_WIDTH, WINDOW_HEIGHT;
+
+	public:
+		void init(GLFWwindow *window, int WINDOW_WIDTH, int WINDOW_HEIGHT);
+		void loop();
+
+
+	};
 
 };

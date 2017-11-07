@@ -25,8 +25,8 @@ public:
 
 	/**
 		Constructs a 4x4 rotation matrix that can be used to rotate a vector by multiplication
-	@param translation A vec3 which describes how you want to rotate a point around the x, y and z axis.
 	@param angle A float which describes how far you want to rotate around the given axis in degrees (NOT RADIANS).
+	@param axis A vec3 which describes how you want to rotate a point around the x, y and z axis.
 	@return A rotation matrix
 	*/
 	static mat4 makeRotate(const float& angle, const vec3& axis);

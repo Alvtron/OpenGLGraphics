@@ -1,39 +1,47 @@
 #include "Cube.h"
 
-unsigned int Cube::num_cubes = 0; 
-
 /* Create a Cube object that stores vertex data: vertices, normals, colors, textures and indices. Call createVertexData(...) to add vertex data. */
 Cube::Cube() : Mesh()
 {
-	Mesh::createVertexData(vertices, normals, colors, textures, indices);
-	num_cubes++;
+	createCube(WIDTH, HEIGHT);
 }
 
 Cube::Cube(float width) : Mesh()
 {
-	vertices = createCube(width, width);
-	Mesh::createVertexData(vertices, normals, colors, textures, indices);
-	num_cubes++;
+	createCube(width, width);
 }
 
 Cube::Cube(float width, float height) : Mesh()
 {
-	vertices = createCube(width, height);
-	Mesh::createVertexData(vertices, normals, colors, textures, indices);
-	num_cubes++;
+	createCube(width, height);
 }
 
 /* De-constructor */
 Cube::~Cube()
 {
-	num_cubes--;
 }
 
 /* Create a cube. Returns it's vertices */
-std::vector<vec3> Cube::createCube(const float width, const float height) {
+void Cube::createCube(const float width, const float height) {
 	float widthRadius = width / 2.0f;
 	float heightRadius = height / 2.0f;
-	return vertices = {
+
+	vertex.indices = {
+		0, 1, 2,
+		2, 3, 0,
+		4, 5, 6,
+		6, 7, 4,
+		8, 9, 10,
+		10, 11, 8,
+		12, 13, 14,
+		14, 15, 12,
+		16, 17, 18,
+		18, 19, 16,
+		20, 21, 22,
+		22, 23, 20
+	};
+
+	vertex.vertices = {
 		// Front
 		vec3(-widthRadius, -heightRadius, -widthRadius),
 		vec3(+widthRadius, -heightRadius, -widthRadius),
@@ -65,35 +73,72 @@ std::vector<vec3> Cube::createCube(const float width, const float height) {
 		vec3(+widthRadius, +heightRadius, +widthRadius),
 		vec3(-widthRadius, +heightRadius, +widthRadius)
 	};
-}
 
-std::vector<vec3> Cube::getVertices()
-{
-	return vertices;
-}
+	vertex.normals = {
+		// Front
+		vec3(0.0f, 0.0f, -1.0f),
+		vec3(0.0f, 0.0f, -1.0f),
+		vec3(0.0f, 0.0f, -1.0f),
+		vec3(0.0f, 0.0f, -1.0f),
+		// Back
+		vec3(0.0f, 0.0f, +1.0f),
+		vec3(0.0f, 0.0f, +1.0f),
+		vec3(0.0f, 0.0f, +1.0f),
+		vec3(0.0f, 0.0f, +1.0f),
+		// Left
+		vec3(-1.0f, 0.0f, 0.0f),
+		vec3(-1.0f, 0.0f, 0.0f),
+		vec3(-1.0f, 0.0f, 0.0f),
+		vec3(-1.0f, 0.0f, 0.0f),
+		// Right
+		vec3(1.0f, 0.0f, 0.0f),
+		vec3(1.0f, 0.0f, 0.0f),
+		vec3(1.0f, 0.0f, 0.0f),
+		vec3(1.0f, 0.0f, 0.0f),
+		// Bottom
+		vec3(0.0f, -1.0f, 0.0f),
+		vec3(0.0f, -1.0f, 0.0f),
+		vec3(0.0f, -1.0f, 0.0f),
+		vec3(0.0f, -1.0f, 0.0f),
+		// Top
+		vec3(0.0f, 1.0f, 0.0f),
+		vec3(0.0f, 1.0f, 0.0f),
+		vec3(0.0f, 1.0f, 0.0f),
+		vec3(0.0f, 1.0f, 0.0f)
+	};
 
-std::vector<vec3> Cube::getNormals()
-{
-	return normals;
-}
-
-std::vector<vec3> Cube::getColors()
-{
-	return colors;
-}
-
-std::vector<vec2> Cube::getTextures()
-{
-	return textures;
-}
-
-std::vector<unsigned int> Cube::getIndices()
-{
-	return indices;
-}
-
-/* Return number of cubes created on this stack */
-int Cube::getNumCubes()
-{
-	return num_cubes;
+	vertex.uvs = {
+		// Front
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(1.0f, 1.0f),
+		vec2(0.0f, 1.0f),
+		// Back
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(1.0f, 1.0f),
+		vec2(0.0f, 1.0f),
+		// Left
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(1.0f, 1.0f),
+		vec2(0.0f, 1.0f),
+		// Right
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(1.0f, 1.0f),
+		vec2(0.0f, 1.0f),
+		// Bottom
+		vec2(0.0f, 1.0f),
+		vec2(1.0f, 1.0f),
+		vec2(1.0f, 0.0f),
+		vec2(0.0f, 0.0f),
+		// Top
+		vec2(0.0f, 1.0f),
+		vec2(1.0f, 1.0f),
+		vec2(1.0f, 0.0f),
+		vec2(0.0f, 0.0f)
+	};
+	MeshUtility::createColors(vertex);
+	MeshUtility::calculateTangents(vertex);
 }

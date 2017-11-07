@@ -10,11 +10,14 @@ public:
 	float z;
 
 	vec3();
+	vec3(const float & a);
 	vec3(const float& a, const float& b, const float& c);
 
 	static vec3 cross(const vec3& v1, const vec3& v2);
 
 	static float dot(const vec3& v1, const vec3& v2);
+
+	static float length(const vec3 & v);
 
 	static vec3 normalize(const vec3& v);
 
@@ -29,7 +32,7 @@ public:
 	friend vec3 operator-(const vec3& left, const vec3& right);
 	friend vec3 operator*(const vec3& left, const vec3& right);
 	friend vec3 operator/(const vec3& left, const vec3& right);
-
+	friend vec3 operator*(const vec3& left, const float& scalar);
 	friend std::ostream& operator<<(std::ostream& stream, const vec3& v);
 
 };

@@ -156,6 +156,7 @@
     <ClCompile Include="Vec3.cpp" />
     <ClCompile Include="Vec4.cpp" />
     <ClCompile Include="VegardLevel.cpp" />
+    <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VetleLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +174,7 @@
     <ClInclude Include="Maths.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="MeshUtility.h" />
     <ClInclude Include="ObjectShader.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Shader.h" />
@@ -186,6 +188,7 @@
     <ClInclude Include="Vec3.h" />
     <ClInclude Include="Vec4.h" />
     <ClInclude Include="VegardLevel.h" />
+    <ClInclude Include="Vertex.h" />
     <ClInclude Include="VetleLevel.h" />
   </ItemGroup>
   <ItemGroup>

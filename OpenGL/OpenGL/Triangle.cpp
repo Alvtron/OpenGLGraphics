@@ -1,73 +1,54 @@
 #include "Triangle.h"
 
-unsigned int Triangle::num_triangles = 0;
-
 /* Create a Triangle object that stores vertex data: vertices, normals, colors and textures. Call createVertexData(...) to add vertex data. */
 Triangle::Triangle() : Mesh()
 {
-	num_triangles++;
+	createTriangle(WIDTH, getHeight(WIDTH, WIDTH));
 }
 
 /* Create a Triangle object that stores vertex data: vertices, normals, colors and textures. Call createVertexData(...) to add vertex data. */
 Triangle::Triangle(float base) : Mesh()
 {
-	vertices = createTriangle(base, getHeight(base, base));
-	Mesh::createVertexData(vertices, normals, colors, textures);
-	num_triangles++;
+	createTriangle(base, getHeight(base, base));
 }
 
 /* Create a Triangle object that stores vertex data: vertices, normals, colors and textures. Call createVertexData(...) to add vertex data. */
 Triangle::Triangle(float base, float height) : Mesh()
 {
-	vertices = createTriangle(base, height);
-	Mesh::createVertexData(vertices, normals, colors, textures);
-	num_triangles++;
+	createTriangle(base, height);
 }
 
 /* De-constructor */
 Triangle::~Triangle()
 {
-	num_triangles--;
 }
 
-/* Create a triangle. Returns it's vertices */
-std::vector<vec3> Triangle::createTriangle(float base, float height)
+/* Create a triangle. */
+void Triangle::createTriangle(float base, float height)
 {
-	return {
+	vertex.vertices = {
 		vec3(-(base / 2.0f), -(height / 2.0f), 0.0f),
 		vec3((base / 2.0f), -(height / 2.0f), 0.0f),
 		vec3(0.0f, (height / 2), 0.0f)
 	};
-}
-
-/* Create a triangle. Returns it's vertices */
-std::vector<vec3> Triangle::createTriangle(float side)
-{
-	return {
-		vec3(-(side / 2.0f), -(side / 2.0f), 0.0f),
-		vec3((side / 2.0f), -(side / 2.0f), 0.0f),
-		vec3(0.0f, (side / 2), 0.0f)
+	vertex.normals = {
+		vec3(0.0f, 0.0f, -1.0f),
+		vec3(0.0f, 0.0f, -1.0f),
+		vec3(0.0f, 0.0f, -1.0f)
 	};
+	vertex.uvs = {
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(0.5f, 1.0f)
+	};
+	MeshUtility::createColors(vertex);
+	MeshUtility::calculateTangents(vertex);
 }
 
-std::vector<vec3> Triangle::getVertices()
+/* Create a triangle. */
+void Triangle::createTriangle(float side)
 {
-	return vertices;
-}
-
-std::vector<vec3> Triangle::getNormals()
-{
-	return normals;
-}
-
-std::vector<vec3> Triangle::getColors()
-{
-	return colors;
-}
-
-std::vector<vec2> Triangle::getTextures()
-{
-	return textures;
+	createTriangle(side, getHeight(side, side));
 }
 
 /* Return height of triangle */
@@ -80,10 +61,4 @@ float Triangle::getHeight(float base, float side)
 float Triangle::getAreal(float base, float height)
 {
 	return (height * base) / 2.0f;
-}
-
-/* Return number of triangles of rectangle */
-int Triangle::getNumTriangles()
-{
-	return num_triangles;
 }

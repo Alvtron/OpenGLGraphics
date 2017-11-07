@@ -1,91 +1,56 @@
 #include "Rectangle.h"
 
-unsigned int Rect::num_rectangles = 0;
-
-/* Create a Rectangle object that stores vertex data: vertices, normals, colors, textures and indices. Call createVertexData(...) to change vertex data. */
+/* Create a Rectangle object that stores vertex data: vertices, normals, colors, textures, tangents and indices. Call createVertexData(...) to change vertex data. */
 Rect::Rect() : Mesh()
 {
-	Mesh::createVertexData(vertices, normals, colors, textures, indices);
-	num_rectangles++;
+	createRectangle(WIDTH, HEIGHT, vec3(0.0f, 0.0f, 0.0f));
 }
 
 /* Create a Rectangle object that stores vertex data: vertices, normals, colors, textures and indices. Call createVertexData(...) to change vertex data. */
 Rect::Rect(float width, float height) : Mesh()
 {
 	createRectangle(width, height, vec3(0.0f, 0.0f, 0.0f));
-	Mesh::createVertexData(vertices, normals, colors, textures, indices);
-	num_rectangles++;
 }
 
 /* Create a Rectangle object that stores vertex data: vertices, normals, colors, textures and indices. Call createVertexData(...) to change vertex data. */
 Rect::Rect(float width, float height, vec3 position) : Mesh()
 {
-	vertices = createRectangle(width, height, position);
-	Mesh::createVertexData(vertices, normals, colors, textures, indices);
-	num_rectangles++;
+	createRectangle(width, height, position);
 }
 
 /* Deconstructor */
 Rect::~Rect()
 {
-	num_rectangles--;
 }
 
 /* Create a rectangle. Returns it's vertices */
-std::vector<vec3> Rect::createRectangle(float width, float height, vec3 position) {
-	return {
+void Rect::createRectangle(float width, float height, vec3 position) {
+	vertex.indices = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	vertex.vertices = {
 		vec3(-(width / 2.0f) + position.x, -(height / 2.0f) + position.y, 0.0f + position.z),
 		vec3((width / 2.0f) + position.x, -(height / 2.0f) + position.y, 0.0f + position.z),
 		vec3((width / 2.0f) + position.x, (height / 2.0f) + position.y, 0.0f + position.z),
 		vec3(-(width / 2.0f) + position.x, (height / 2.0f) + position.y, 0.0f + position.z)
 	};
-}
 
-std::vector<vec3> Rect::getVertices()
-{
-	return vertices;
-}
+	vertex.normals = {
+		vec3(0.0f, 0.0f, -1.0f),
+		vec3(0.0f, 0.0f, -1.0f),
+		vec3(0.0f, 0.0f, -1.0f),
+		vec3(0.0f, 0.0f, -1.0f)
+	};
 
-std::vector<vec3> Rect::getNormals()
-{
-	return normals;
-}
+	vertex.uvs = {
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(1.0f, 1.0f),
+		vec2(0.0f, 1.0f)
+	};
 
-std::vector<vec3> Rect::getColors()
-{
-	return colors;
-}
-
-std::vector<vec2> Rect::getTextures()
-{
-	return textures;
-}
-
-std::vector<unsigned int> Rect::getIndices()
-{
-	return indices;
-}
-
-/* Return width of rectangle */
-float Rect::getWidth()
-{
-	return vertices[1].x - vertices[0].x;
-}
-
-/* Return height of rectangle */
-float Rect::getHeight()
-{
-	return vertices[3].y - vertices[0].y;
-}
-
-/* Return area of rectangle */
-float Rect::getArea()
-{
-	return getWidth() * getHeight();
-}
-
-/* Return number of rectangles created on this stack */
-int Rect::getNumRectangles()
-{
-	return num_rectangles;
+	MeshUtility::createColors(vertex);
+	MeshUtility::calculateTangents(vertex);
 }

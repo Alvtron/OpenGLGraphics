@@ -16,26 +16,28 @@ bool firstMouse = true;
 // Timing - time between current frame and last frame
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+float rotation = 0.0f;
 float color_rotation_r = 0.0f;
 float color_rotation_g = 0.0f;
 float color_rotation_b = 0.0f;
 
-// Global positions
+// Light positions
+vec3 sunPosition = vec3(-1.0, -1.0, 0.0f);
+vec3 sunColor = vec3(1.0f, 1.0f, 0.0f);
 std::vector<vec3> pointLightPositions = {
-        vec3( 0.7f,  2.0f,  2.0f),
-        vec3( 2.3f,  4.0f, -4.0f),
-        vec3(-4.0f,  2.0f, -12.0f),
-        vec3( 0.0f,  1.0f, -3.0f)
-    };
+	vec3(0.7f,  2.0f,  2.0f),
+	vec3(2.0f,  2.0f,  5.0f)
+};
 vec3 lightColor = vec3(1.0f, 0.5f, 1.0f);
 
 // 3D Objects
 CubeMap cubemap = CubeMap();
-Diamond cube = Diamond(1.0f);
-Sphere light = Sphere(0.5f, 3);
+Cube cube = Cube(1.0f);
+Diamond diamond = Diamond(1.0f);
+Sphere light = Sphere(0.25f, 3);
 
 // Textures
-Texture metal, tile;
+Texture metal, tile, mixedstone;
 
 // Shaders
 CubeMapShader cubeMapShader;
@@ -76,6 +78,7 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	// ===========================================================================================
 	cubemap.storeOnGPU();
 	cube.storeOnGPU();
+	diamond.storeOnGPU();
 	light.storeOnGPU();
 
 	// ===========================================================================================
@@ -94,18 +97,25 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	metal.addDiffuse("resources/textures/1857-diffuse.jpg");
 	metal.addSpecular("resources/textures/1857-specexponent.jpg");
 	metal.addNormal("resources/textures/1857-normal.jpg");
+	metal.addDisplacement("resources/textures/1857-displacement.jpg");
 
 	tile = Texture();
 	tile.addDiffuse("resources/textures/10744-diffuse.jpg");
 	tile.addSpecular("resources/textures/10744-specstrength.jpg");
 	tile.addNormal("resources/textures/10744-normal.jpg");
-	tile.addAO("resources/textures/10744-ambientocclusion.jpg");
+	tile.addDisplacement("resources/textures/10744-displacement.jpg");
+
+	mixedstone = Texture();
+	mixedstone.addDiffuse("resources/textures/mixedstones-diffuse.jpg");
+	mixedstone.addSpecular("resources/textures/mixedstones-specular.jpg");
+	mixedstone.addNormal("resources/textures/mixedstones-normal.jpg");
+	mixedstone.addDisplacement("resources/textures/mixedstones-displace.jpg");
 
 	// ===========================================================================================
 	// CREATE SHADOWS
 	// ===========================================================================================
 
-	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+	/*const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 	unsigned int depthMapFBO;
 	glGenFramebuffers(1, &depthMapFBO);
 	// create depth texture
@@ -124,7 +134,7 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
 }
 
 void ThomasLevel::loop()
@@ -144,15 +154,23 @@ void ThomasLevel::loop()
 
 	// Activate shader when setting uniforms/drawing objects
 	shader.use();
+	shader.setInt("pointLightCount", pointLightPositions.size());
+	shader.setInt("directionLightCount", pointLightPositions.size());
 	shader.setFloat("material.shininess", 64.0f);
 	shader.setVec3("viewPos", camera.Position);
+	shader.setVec3("lightPos", pointLightPositions[0]);
+
+	shader.setVec3("directionLight.direction", sunPosition);
+	shader.setVec3("directionLight.ambient", vec3::scale(sunColor, 0.05f));
+	shader.setVec3("directionLight.diffuse", vec3::scale(sunColor, 0.2f));
+	shader.setVec3("directionLight.specular", vec3::scale(sunColor, 0.2f));
 
 	// light properties
 	for (int i = 0; i < pointLightPositions.size(); i++) {
 		shader.setVec3("pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
-		shader.setVec3("pointLights[" + std::to_string(i) + "].ambient", vec3(0.2f, 0.2f, 0.2f) + (vec3::scale(lightColor, 0.1f)));
+		shader.setVec3("pointLights[" + std::to_string(i) + "].ambient", vec3::scale(lightColor, 0.5f));
 		shader.setVec3("pointLights[" + std::to_string(i) + "].diffuse", vec3::scale(lightColor, 0.5f));
-		shader.setVec3("pointLights[" + std::to_string(i) + "].specular", lightColor);
+		shader.setVec3("pointLights[" + std::to_string(i) + "].specular", vec3::scale(lightColor, 1.0f));
 		shader.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0f);
 		shader.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09f);
 		shader.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.032f);
@@ -175,6 +193,8 @@ void ThomasLevel::loop()
 		}
 	}
 
+	diamond.drawObject(&shader, vec3(0.0f, 3.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f) , mixedstone);
+
 	// Activate light shader and configure it
 	lightShader.use();
 	lightShader.setMat4("projection", projection);
@@ -190,9 +210,10 @@ void ThomasLevel::loop()
 	cubemap.drawCubemap(&cubeMapShader, &camera, view, projection);
 
 	lightColor = vec3(abs(sin(color_rotation_r)), abs(sin(color_rotation_g)), abs(sin(color_rotation_b)));
-	color_rotation_r += 0.10f * deltaTime;
-	color_rotation_g += 0.20f * deltaTime;
+	color_rotation_r += 0.05f * deltaTime;
+	color_rotation_g += 0.15f * deltaTime;
 	color_rotation_b += 0.30f * deltaTime;
+	rotation = sin(color_rotation_r * M_PI);
 
 	// GLFW: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 	glfwSwapBuffers(window);

@@ -1,44 +1,101 @@
 #include "Sphere.h"
 
-unsigned int Sphere::num_spheres = 0;
-
 Sphere::Sphere() : Mesh()
 {
-	num_spheres++;
+	createSphere(WIDTH, QUALITY);
 }
 
-Sphere::Sphere(float size, unsigned int quality)
+Sphere::Sphere(const float width, const unsigned int quality)
 {
-	Diamond diamond = Diamond(1.0f);
-	vertices = diamond.getVertices();
-	normals = diamond.getNormals();
-	colors = diamond.getColors();
-	textures = diamond.getTextures();
-
-	breakup(quality);
-
-	for (int i = 0; i < vertices.size(); i++)
-		vertices.at(i) = vec3::scale(vec3::normalize(vertices.at(i)), size);
-
-	Mesh::createVertexData(vertices, normals, colors, textures);
-	num_spheres++;
+	createSphere(width, quality);
 }
 
 Sphere::~Sphere()
 {
-	num_spheres--;
 }
 
-void Sphere::breakup(unsigned int times) {
+void Sphere::createSphere(const float width, const unsigned int quality) {
+	float radius = width / 2.0f;
+
+	vertex.vertices = {
+		vec3(-radius, 0.0f, -radius),
+		vec3(+radius, 0.0f, -radius),
+		vec3(0.0f, +radius, 0.0f),
+
+		vec3(+radius, 0.0f, -radius),
+		vec3(+radius, 0.0f, +radius),
+		vec3(0.0f, +radius, 0.0f),
+
+		vec3(+radius, 0.0f, +radius),
+		vec3(-radius, 0.0f, +radius),
+		vec3(0.0f, +radius, 0.0f),
+
+		vec3(-radius, 0.0f, +radius),
+		vec3(-radius, 0.0f, -radius),
+		vec3(0.0f, +radius, 0.0f),
+
+		vec3(-radius, 0.0f, -radius),
+		vec3(+radius, 0.0f, -radius),
+		vec3(0.0f, -radius, 0.0f),
+
+		vec3(+radius, 0.0f, -radius),
+		vec3(+radius, 0.0f, +radius),
+		vec3(0.0f, -radius, 0.0f),
+
+		vec3(+radius, 0.0f, +radius),
+		vec3(-radius, 0.0f, +radius),
+		vec3(0.0f, -radius, 0.0f),
+
+		vec3(-radius, 0.0f, +radius),
+		vec3(-radius, 0.0f, -radius),
+		vec3(0.0f, -radius, 0.0f)
+	};
+
+	vertex.uvs = {
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(0.5f, 1.0f),
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(0.5f, 1.0f),
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(0.5f, 1.0f),
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(0.5f, 1.0f),
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(0.5f, 1.0f),
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(0.5f, 1.0f),
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(0.5f, 1.0f),
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f),
+		vec2(0.5f, 1.0f)
+	};
+
+	breakup(quality);
+
+	for (int i = 0; i < vertex.vertices.size(); i++)
+		vertex.vertices.at(i) = vec3::scale(vec3::normalize(vertex.vertices.at(i)), width);
+
+	MeshUtility::createNormals(vertex);
+	MeshUtility::createColors(vertex);
+	MeshUtility::calculateTangents(vertex);
+}
+
+void Sphere::breakup(const unsigned int times) {
 	std::vector<vec3> new_vertices;
-	std::vector<vec3> new_normals;
-	std::vector<vec3> new_colors;
-	std::vector<vec2> new_textures;
+	std::vector<vec2> new_uvs;
 	for (int t = 0; t < times; t++) {
-		for (int i = 0; i < vertices.size(); i += 3) {
-			vec3 a = vertices.at(i + 0);
-			vec3 b = vertices.at(i + 1);
-			vec3 c = vertices.at(i + 2);
+		for (int i = 0; i < vertex.vertices.size(); i += 3) {
+			vec3 a = vertex.vertices.at(i + 0);
+			vec3 b = vertex.vertices.at(i + 1);
+			vec3 c = vertex.vertices.at(i + 2);
 
 			vec3 na = midpoint(a, b);
 			vec3 nb = midpoint(b, c);
@@ -60,67 +117,39 @@ void Sphere::breakup(unsigned int times) {
 			new_vertices.push_back(nb);
 			new_vertices.push_back(c);
 
-			vec2 ta = textures.at(i + 0);
-			vec2 tb = textures.at(i + 1);
-			vec2 tc = textures.at(i + 2);
+			vec2 ta = vertex.uvs.at(i + 0);
+			vec2 tb = vertex.uvs.at(i + 1);
+			vec2 tc = vertex.uvs.at(i + 2);
 
 			vec2 nta = midpoint(ta, tb);
 			vec2 ntb = midpoint(tb, tc);
 			vec2 ntc = midpoint(ta, tc);
 
-			new_textures.push_back(ta);
-			new_textures.push_back(nta);
-			new_textures.push_back(ntc);
+			new_uvs.push_back(ta);
+			new_uvs.push_back(nta);
+			new_uvs.push_back(ntc);
 
-			new_textures.push_back(nta);
-			new_textures.push_back(ntb);
-			new_textures.push_back(ntc);
+			new_uvs.push_back(nta);
+			new_uvs.push_back(ntb);
+			new_uvs.push_back(ntc);
 
-			new_textures.push_back(nta);
-			new_textures.push_back(tb);
-			new_textures.push_back(ntb);
+			new_uvs.push_back(nta);
+			new_uvs.push_back(tb);
+			new_uvs.push_back(ntb);
 
-			new_textures.push_back(ntc);
-			new_textures.push_back(ntb);
-			new_textures.push_back(tc);
+			new_uvs.push_back(ntc);
+			new_uvs.push_back(ntb);
+			new_uvs.push_back(tc);
 		}
-		vertices = new_vertices;
-		textures = new_textures;
+		vertex.vertices = new_vertices;
+		vertex.uvs = new_uvs;
 	}
-	for (int s = 0; s < vertices.size(); s++) {
-		new_colors.push_back(vec3(0.1f * s, 0.1f * s, 0.1f * s));
-	}
-	for (int s = 0; s < vertices.size(); s++) {
-		new_normals.push_back(vec3(0.0f, 0.0f, 0.0f));
-	}
-	normals = new_normals;
-	colors = new_colors;
 }
 
-vec3 Sphere::midpoint(vec3 a, vec3 b) {
+vec3 Sphere::midpoint(const vec3 &a, const vec3 &b) {
 	return vec3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
 }
 
-vec2 Sphere::midpoint(vec2 a, vec2 b) {
+vec2 Sphere::midpoint(const vec2 &a, const vec2 &b) {
 	return vec2((a.x + b.x) / 2, (a.y + b.y) / 2);
-}
-
-std::vector<vec3> Sphere::getVertices()
-{
-	return vertices;
-}
-
-std::vector<vec3> Sphere::getNormals()
-{
-	return normals;
-}
-
-std::vector<vec3> Sphere::getColors()
-{
-	return colors;
-}
-
-std::vector<vec2> Sphere::getTextures()
-{
-	return textures;
 }

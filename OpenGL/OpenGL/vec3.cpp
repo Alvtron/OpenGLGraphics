@@ -6,6 +6,12 @@ vec3::vec3() {
 	z = 0.0f;
 }
 
+vec3::vec3(const float& a) {
+	x = a;
+	y = a;
+	z = a;
+}
+
 vec3::vec3(const float& a, const float& b, const float& c) {
 	x = a;
 	y = b;
@@ -22,6 +28,10 @@ vec3 vec3::cross(const vec3& v1, const vec3& v2) {
 
 float vec3::dot(const vec3& v1, const vec3& v2) {
 	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+}
+
+float vec3::length(const vec3& v) {
+	return sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2));
 }
 
 vec3 vec3::normalize(const vec3& v) {
@@ -59,6 +69,10 @@ vec3 operator-(const vec3& left, const vec3& right) {
 
 vec3 operator*(const vec3& left, const vec3& right) {
 	return vec3::multiply(left, right);
+}
+
+vec3 operator*(const vec3& left, const float& scalar) {
+	return vec3(left.x * scalar, left.y * scalar, left.z * scalar);
 }
 
 vec3 operator/(const vec3& left, const vec3& right) {

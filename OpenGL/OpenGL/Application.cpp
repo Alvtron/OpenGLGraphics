@@ -28,44 +28,6 @@ const char window_title[] = "ITF21215 OpenGL group project";
 const int openGL_min = 4, openGL_max = 4;
 GLFWwindow* window;
 
-/*
-
-
-#==========================================================================================#
-
-Meldig Fra Vegard (teksten kommer til å bli fjernet etterhvert)
-
-Levelklassen! (ikke helt ferdig, men det funker for nå)
-
-Den hovedsaklige planen var å lage en main level klasse, men fordi alle level klasser til å være
-forskjellig, fant jeg det ut at det er enklere at vi lager nye klasser hver gang vi skal lage
-en ny level.
-
-men det må inneholde 2 metoder:
-
-init() <--- her skal all kode kjøre før " while (!glfwWindowShouldClose(window)) " loopen kjører
-
-tar imot parametere:
-GLFWwindow *window,		int WINDOW_HEIGHT,		int WINDOW_WIDTH
-
-Kan hjerne ta imot flere parametere med behov
-
-
-
-loop() <-- her skal all kode kjøre som er inne i " while (!glfwWindowShouldClose(window))  " loopen kjøre
-
-tar imot ingen parameter
-
-
-Husk at det kun kan kjøres 1 level om gangen :) bare kommenter ut det levelklassen dere ikke bruker
-
-
-#==========================================================================================#
-
-
-
-*/
-
 void initGLFWindow()
 {
 
@@ -101,7 +63,6 @@ void initGLFWindow()
 		return;
 	}
 	glfwMakeContextCurrent(window);
-	if (DEBUG) std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl;
 
 	//Enable vsync
 	glfwSwapInterval(vsync);

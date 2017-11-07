@@ -8,21 +8,14 @@
 class Sphere : public Mesh
 {
 private:
-	static unsigned int num_spheres;
-
-	std::vector<vec3> vertices;
-	std::vector<vec3> normals;
-	std::vector<vec3> colors;
-	std::vector<vec2> textures;
+	const float WIDTH = 1.0f;
+	const unsigned int QUALITY = 4;
 public:
 	Sphere();
-	Sphere(float size, unsigned int quality);
+	Sphere(const float width, const unsigned int quality);
 	~Sphere();
-	void breakup(unsigned int times);
-	vec3 midpoint(vec3 a, vec3 b);
-	vec2 midpoint(vec2 a, vec2 b);
-	std::vector<vec3> getVertices();
-	std::vector<vec3> getNormals();
-	std::vector<vec3> getColors();
-	std::vector<vec2> getTextures();
+	void createSphere(const float width, const unsigned int quality);
+	void breakup(const unsigned int times);
+	vec3 midpoint(const vec3 & a, const vec3 & b);
+	vec2 midpoint(const vec2 & a, const vec2 & b);
 };

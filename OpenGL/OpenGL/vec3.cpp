@@ -39,6 +39,10 @@ vec3 vec3::normalize(const vec3& v) {
 	return vec3(v.x / vectorLength, v.y / vectorLength, v.z / vectorLength);
 }
 
+vec3 vec3::midpoint(const vec3 &a, const vec3 &b) {
+	return vec3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
+}
+
 vec3 vec3::add(const vec3& v1, const vec3& v2) {
 	return vec3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }

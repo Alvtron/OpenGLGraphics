@@ -1,8 +1,8 @@
 #pragma once
-#include "Mesh.h"
-class Triangle : public Mesh
+#include "Vertex.h"
+class Triangle : public Vertex
 {
-public:
+private:
 	const float WIDTH = 1.0f, HEIGHT = 1.0f;
 public:
 	Triangle();

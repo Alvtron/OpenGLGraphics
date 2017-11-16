@@ -30,8 +30,8 @@ public:
 	const vec3 WORLD_UP = vec3(0.0f, 1.0f, 0.0f);
 
 	// Eular Angles
-	float Yaw;
-	float Pitch;
+	double Yaw;
+	double Pitch;
 
 	// Camera options
 	float MovementSpeed;
@@ -82,9 +82,9 @@ public:
 	}
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-	void ProcessKeyboard(Camera_Movement direction, float deltaTime)
+	void ProcessKeyboard(Camera_Movement direction, float deltaTime, bool sprint = false)
 	{
-		float velocity = MovementSpeed * deltaTime;
+		float velocity = (!sprint) ? MovementSpeed * deltaTime : MovementSpeed * deltaTime * 2;
 		if (direction == FORWARD)
 			Position = vec3::add(Position, vec3::scale(Front,velocity));
 		if (direction == BACKWARD)
@@ -95,25 +95,8 @@ public:
 			Position = vec3::add(Position, vec3::scale(Right, velocity));
 	}
 
-	void ProcessKeyboard(Camera_Movement direction, float deltaTime, bool sprint)
-	{
-		if (!sprint) ProcessKeyboard(direction, deltaTime);
-		else
-		{
-			float velocity = MovementSpeed * deltaTime * 2;
-			if (direction == FORWARD)
-				Position = vec3::add(Position, vec3::scale(Front, velocity));
-			if (direction == BACKWARD)
-				Position = vec3::subtract(Position, vec3::scale(Front, velocity));
-			if (direction == LEFT)
-				Position = vec3::subtract(Position, vec3::scale(Right, velocity));
-			if (direction == RIGHT)
-				Position = vec3::add(Position, vec3::scale(Right, velocity));
-		}
-	}
-
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-	void ProcessMouseMovement(float xoffset, float yoffset)
+	void ProcessMouseMovement(double xoffset, double yoffset)
 	{
 		xoffset *= MouseSensitivity;
 		yoffset *= MouseSensitivity;

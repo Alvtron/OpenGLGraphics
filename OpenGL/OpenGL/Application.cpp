@@ -13,8 +13,8 @@
 // Presets
 #define DEBUG true
 #define FULLSCREEN false
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 720
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
 #define MSAA_SAMPLES 4
 #define DRAW_WIREFRAME false
 double getTimeSeconds(clock_t time_begin, clock_t time_end);
@@ -137,9 +137,6 @@ void main()
 		glfwTerminate();
 		return;
 	}
-	
-
-
 
 	glfwTerminate();
 }

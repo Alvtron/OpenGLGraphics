@@ -1,22 +1,25 @@
 #include "Diamond.h"
 
-Diamond::Diamond() : Mesh()
+/* Create a Diamond object that stores vertex data */
+Diamond::Diamond()
 {
 	createDiamond(WIDTH);
 }
 
-Diamond::Diamond(float width) : Mesh()
+/* Create a Diamond object that stores vertex data */
+Diamond::Diamond(float width)
 {
 	createDiamond(width);
 }
 
+/* Create a Diamond object that stores vertex data */
 Diamond::~Diamond()
 {
 }
 
 void Diamond::createDiamond(float width) {
 	float radius = width / 2.0f;
-	vertex.vertices = {
+	vertices = {
 		vec3(-radius, 0.0f, -radius),
 		vec3(+radius, 0.0f, -radius),
 		vec3(0.0f, +radius, 0.0f),
@@ -50,7 +53,7 @@ void Diamond::createDiamond(float width) {
 		vec3(0.0f, -radius, 0.0f)
 	};
 
-	vertex.normals = {
+	normals = {
 		vec3(0.0f, 0.5f, -0.5f),
 		vec3(0.0f, 0.5f, -0.5f),
 		vec3(0.0f, 0.5f, -0.5f),
@@ -84,7 +87,7 @@ void Diamond::createDiamond(float width) {
 		vec3(-0.5f, -0.5f, 0.0f)
 	};
 
-	vertex.uvs = {
+	uvs = {
 		vec2(0.0f, 0.0f),
 		vec2(1.0f, 0.0f),
 		vec2(0.5f, 1.0f),
@@ -111,6 +114,6 @@ void Diamond::createDiamond(float width) {
 		vec2(0.5f, 1.0f)
 	};
 
-	MeshUtility::createColors(vertex);
-	MeshUtility::calculateTangents(vertex);
+	createColors();
+	calculateTangents();
 }

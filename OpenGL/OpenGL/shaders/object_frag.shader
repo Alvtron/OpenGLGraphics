@@ -30,41 +30,70 @@ struct PointLight {
     vec3 specular;
 };
 
+struct SpotLight {
+	vec3 position;
+	vec3 direction;
+	float cutOff;
+	float outerCutOff;
+
+	float constant;
+	float linear;
+	float quadratic;
+
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+#define MAX_LIGHTS 20
+#define MAX_DIRECTIONAL_LIGHTS 20
 #define MAX_POINT_LIGHTS 20
-#define DIRLIGHT_STRENGTH 0.8
-#define POINTLIGHT_STRENGTH 0.8
-#define NORMAL_STRENGTH 0.9
+#define MAX_SPOT_LIGHTS 20
+#define DIRLIGHT_STRENGTH 0.5
+#define POINTLIGHT_STRENGTH 0.5
+#define SPOTLIGHT_STRENGTH 0.5
+#define NORMAL_STRENGTH 0.5
 #define blinn true
 
 in vec3 Point;  
 in vec3 Normal;  
 in vec3 Color;
 in vec2 UV;
-in vec3 TangentLightPos;
+in vec3 TangentLightPos[MAX_LIGHTS];
 in vec3 TangentViewPos;
 in vec3 TangentPoint;
   
-uniform int pointLightCount;
-uniform int directionLightCount;
 uniform vec3 viewPos;
-uniform DirectionLight directionLight;
 uniform Material material;
+uniform DirectionLight directionalLights[MAX_DIRECTIONAL_LIGHTS];
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
+uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
+uniform int directionLightCount;
+uniform int pointLightCount;
+uniform int spotLightCount;
+uniform int lightCount;
 
 vec3 CalcDirectionLight(DirectionLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 Point, vec3 viewDir);
-vec3 CalcNormals();
+vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 Point, vec3 viewDir);
+vec3 CalcNormals(vec3 tangentLightPos);
 
 void main()
 {
 	vec3 normal = normalize(Normal);
 	vec3 viewDir = normalize(viewPos - Point);
 	vec3 result = vec3(0.0f);
-	result += CalcDirectionLight(directionLight, normal, viewDir) * DIRLIGHT_STRENGTH;
-	for(int i = 0; i < pointLightCount; i++)
-        result += CalcPointLight(pointLights[i], normal, Point, viewDir) * POINTLIGHT_STRENGTH;
-
-	result += CalcNormals() * NORMAL_STRENGTH;
+	// Calculate directional light(s)
+	for (int i = 0; i < directionLightCount; i++)
+		result += CalcDirectionLight(directionalLights[i], normal, viewDir) * DIRLIGHT_STRENGTH;
+	// Calculate point light(s)
+	for (int i = 0; i < pointLightCount; i++)
+		result += CalcPointLight(pointLights[i], normal, Point, viewDir) * POINTLIGHT_STRENGTH;
+	// Calculate spot light(s)
+	for (int i = 0; i < spotLightCount; i++)
+		result += CalcSpotLight(spotLights[i], normal, Point, viewDir) * SPOTLIGHT_STRENGTH;
+	// Calculate normals
+	for (int i = 0; i < lightCount; i++)
+		result += CalcNormals(TangentLightPos[i]) * NORMAL_STRENGTH;
 
 	FragColor = vec4(result, 1.0);
 } 
@@ -85,6 +114,7 @@ vec3 CalcDirectionLight(DirectionLight light, vec3 normal, vec3 viewDir)
 	return (ambient + diffuse + specular);
 }
 
+// calculates the color when using a point light.
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 Point, vec3 viewDir)
 {
 	vec3 lightDir = normalize(light.position - Point);
@@ -111,7 +141,33 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 Point, vec3 viewDir)
 	return (ambient + diffuse + specular);
 }
 
-vec3 CalcNormals()
+// calculates the color when using a spot light.
+vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 Point, vec3 viewDir)
+{
+	vec3 lightDir = normalize(light.position - Point);
+	// diffuse shading
+	float diff = max(dot(normal, lightDir), 0.0);
+	// specular shading
+	vec3 reflectDir = reflect(-lightDir, normal);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	// attenuation
+	float distance = length(light.position - Point);
+	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+	// spotlight intensity
+	float theta = dot(lightDir, normalize(-light.direction));
+	float epsilon = light.cutOff - light.outerCutOff;
+	float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
+	// combine results
+	vec3 ambient = light.ambient * vec3(texture(material.diffuse, UV));
+	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, UV));
+	vec3 specular = light.specular * spec * vec3(texture(material.specular, UV));
+	ambient *= attenuation * intensity;
+	diffuse *= attenuation * intensity;
+	specular *= attenuation * intensity;
+	return (ambient + diffuse + specular);
+}
+
+vec3 CalcNormals(vec3 tangentLightPos)
 {
 	// obtain normal from normal map in range [0,1]
 	vec3 normal = texture(material.normal, UV).rgb;
@@ -123,7 +179,7 @@ vec3 CalcNormals()
 	// ambient
 	vec3 ambient = 0.1 * color;
 	// diffuse
-	vec3 lightDir = normalize(TangentLightPos - TangentPoint);
+	vec3 lightDir = normalize(tangentLightPos - TangentPoint);
 	float diff = max(dot(lightDir, normal), 0.0);
 	vec3 diffuse = diff * color;
 	// specular

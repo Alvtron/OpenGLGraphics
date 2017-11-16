@@ -1,19 +1,19 @@
 #include "Triangle.h"
 
-/* Create a Triangle object that stores vertex data: vertices, normals, colors and textures. Call createVertexData(...) to add vertex data. */
-Triangle::Triangle() : Mesh()
+/* Create a Triangle object that stores vertex data */
+Triangle::Triangle()
 {
 	createTriangle(WIDTH, getHeight(WIDTH, WIDTH));
 }
 
-/* Create a Triangle object that stores vertex data: vertices, normals, colors and textures. Call createVertexData(...) to add vertex data. */
-Triangle::Triangle(float base) : Mesh()
+/* Create a Triangle object that stores vertex data */
+Triangle::Triangle(float base)
 {
 	createTriangle(base, getHeight(base, base));
 }
 
-/* Create a Triangle object that stores vertex data: vertices, normals, colors and textures. Call createVertexData(...) to add vertex data. */
-Triangle::Triangle(float base, float height) : Mesh()
+/* Create a Triangle object that stores vertex data */
+Triangle::Triangle(float base, float height)
 {
 	createTriangle(base, height);
 }
@@ -26,23 +26,23 @@ Triangle::~Triangle()
 /* Create a triangle. */
 void Triangle::createTriangle(float base, float height)
 {
-	vertex.vertices = {
+	vertices = {
 		vec3(-(base / 2.0f), -(height / 2.0f), 0.0f),
 		vec3((base / 2.0f), -(height / 2.0f), 0.0f),
 		vec3(0.0f, (height / 2), 0.0f)
 	};
-	vertex.normals = {
+	normals = {
 		vec3(0.0f, 0.0f, -1.0f),
 		vec3(0.0f, 0.0f, -1.0f),
 		vec3(0.0f, 0.0f, -1.0f)
 	};
-	vertex.uvs = {
+	uvs = {
 		vec2(0.0f, 0.0f),
 		vec2(1.0f, 0.0f),
 		vec2(0.5f, 1.0f)
 	};
-	MeshUtility::createColors(vertex);
-	MeshUtility::calculateTangents(vertex);
+	createColors();
+	calculateTangents();
 }
 
 /* Create a triangle. */

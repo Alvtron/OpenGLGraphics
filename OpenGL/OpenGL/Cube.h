@@ -1,12 +1,11 @@
 #pragma once
-#include "Mesh.h"
+#include "Vertex.h"
 
-class Cube : public Mesh
+class Cube : public Vertex
 {
 private:
 	const unsigned short SIZE = 24;
 	const float WIDTH = 1.0f, HEIGHT = 1.0f;
-
 public:
 	Cube();
 	Cube(float width);

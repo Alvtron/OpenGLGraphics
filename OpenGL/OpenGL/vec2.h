@@ -19,6 +19,8 @@ public:
 
 	static vec2 normalize(const vec2& v);
 
+	static vec2 midpoint(const vec2 & a, const vec2 & b);
+
 	static vec2 scale(const vec2& v, const float& k);
 
 	static vec2 add(const vec2& v1, const vec2& v2);

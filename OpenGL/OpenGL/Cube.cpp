@@ -1,17 +1,19 @@
 #include "Cube.h"
 
-/* Create a Cube object that stores vertex data: vertices, normals, colors, textures and indices. Call createVertexData(...) to add vertex data. */
-Cube::Cube() : Mesh()
+/* Create a Cube object that stores vertex data. */
+Cube::Cube()
 {
 	createCube(WIDTH, HEIGHT);
 }
 
-Cube::Cube(float width) : Mesh()
+/* Create a Cube object that stores vertex data. */
+Cube::Cube(float width)
 {
 	createCube(width, width);
 }
 
-Cube::Cube(float width, float height) : Mesh()
+/* Create a Cube object that stores vertex data. */
+Cube::Cube(float width, float height)
 {
 	createCube(width, height);
 }
@@ -26,7 +28,7 @@ void Cube::createCube(const float width, const float height) {
 	float widthRadius = width / 2.0f;
 	float heightRadius = height / 2.0f;
 
-	vertex.indices = {
+	indices = {
 		0, 1, 2,
 		2, 3, 0,
 		4, 5, 6,
@@ -41,7 +43,7 @@ void Cube::createCube(const float width, const float height) {
 		22, 23, 20
 	};
 
-	vertex.vertices = {
+	vertices = {
 		// Front
 		vec3(-widthRadius, -heightRadius, -widthRadius),
 		vec3(+widthRadius, -heightRadius, -widthRadius),
@@ -74,7 +76,7 @@ void Cube::createCube(const float width, const float height) {
 		vec3(-widthRadius, +heightRadius, +widthRadius)
 	};
 
-	vertex.normals = {
+	normals = {
 		// Front
 		vec3(0.0f, 0.0f, -1.0f),
 		vec3(0.0f, 0.0f, -1.0f),
@@ -107,7 +109,7 @@ void Cube::createCube(const float width, const float height) {
 		vec3(0.0f, 1.0f, 0.0f)
 	};
 
-	vertex.uvs = {
+	uvs = {
 		// Front
 		vec2(0.0f, 0.0f),
 		vec2(1.0f, 0.0f),
@@ -139,6 +141,6 @@ void Cube::createCube(const float width, const float height) {
 		vec2(1.0f, 0.0f),
 		vec2(0.0f, 0.0f)
 	};
-	MeshUtility::createColors(vertex);
-	MeshUtility::calculateTangents(vertex);
+	createColors();
+	calculateTangents();
 }

@@ -19,6 +19,11 @@
 #include "Triangle.h"
 #include "Diamond.h"
 #include "Texture.h"
+// 3D Light class
+#include "Light.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
 // General C++ (and C++11) libraries
 #include <iostream>
 #include <string>

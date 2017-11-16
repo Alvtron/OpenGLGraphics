@@ -21,6 +21,8 @@ public:
 
 	static vec3 normalize(const vec3& v);
 
+	static vec3 midpoint(const vec3 & a, const vec3 & b);
+
 	static vec3 scale(const vec3& v, const float& k);
 
 	static vec3 add(const vec3& v1, const vec3& v2);

@@ -23,6 +23,10 @@ vec2 vec2::normalize(const vec2& v) {
 	return vec2(v.x / vectorLength, v.y / vectorLength);
 }
 
+vec2 vec2::midpoint(const vec2 &a, const vec2 &b) {
+	return vec2((a.x + b.x) / 2, (a.y + b.y) / 2);
+}
+
 vec2 vec2::add(const vec2& v1, const vec2& v2) {
 	return vec2(v1.x + v2.x, v1.y + v2.y);
 }

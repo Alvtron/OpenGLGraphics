@@ -1,11 +1,10 @@
 #pragma once
-#include "Mesh.h"
+#include "Vertex.h"
 
-class Rect : public Mesh
+class Rect : public Vertex
 {
 private:
 	const float WIDTH = 1.0f, HEIGHT = 1.0f;
-	
 public:
 	Rect();
 	Rect(float width, float height);

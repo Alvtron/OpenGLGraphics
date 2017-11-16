@@ -6,13 +6,13 @@ layout (location = 3) in vec2 aUVs;
 layout (location = 4) in vec3 aTangent;
 layout (location = 5) in vec3 aBitangent;
 
-#define MAX_POINT_LIGHTS 100
+#define MAX_LIGHTS 20
 
 out vec3 Point;
 out vec3 Normal;
 out vec3 Color;
 out vec2 UV;
-out vec3 TangentLightPos;
+out vec3 TangentLightPos[MAX_LIGHTS];
 out vec3 TangentViewPos;
 out vec3 TangentPoint;
 
@@ -22,7 +22,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 uniform int lightCount;
-uniform vec3 lightPos;
+uniform vec3 lightPositions[MAX_LIGHTS];
 uniform vec3 viewPos;
 
 void main()
@@ -31,15 +31,15 @@ void main()
     Normal = mat3(transpose(inverse(model))) * aNormals; 
 	Color = aColors;
     UV = vec2(aUVs.x * scale.x, aUVs.y * scale.y);
-   
+    
 	mat3 normalMatrix = transpose(inverse(mat3(model)));
 	vec3 T = normalize(normalMatrix * aTangent);
+	vec3 B = normalize(vec3(model * vec4(aBitangent, 0.0)));
 	vec3 N = normalize(normalMatrix * aNormals);
-	T = normalize(T - dot(T, N) * N);
-	vec3 B = cross(N, T);
 
 	mat3 TBN = transpose(mat3(T, B, N));
-	TangentLightPos = TBN * lightPos;
+	for (int i = 0; i < lightCount; i++)
+		TangentLightPos[i] = TBN * lightPositions[i];
 	TangentViewPos = TBN * viewPos;
 	TangentPoint = TBN * Point;
 

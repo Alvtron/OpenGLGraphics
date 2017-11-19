@@ -94,6 +94,43 @@ public:
 		if (direction == RIGHT)
 			Position = vec3::add(Position, vec3::scale(Right, velocity));
 	}
+	// Same as previous ProcessKeyBoard method, but this locks camera to only be able to move in z and x directions. This is necessary for 
+	// a more first person game control, only way to move in y direction is with space key jumping (method for that further down) 
+	void ProcessKeyboard(Camera_Movement direction, float deltaTime, bool sprint, bool flyingmode)
+	{
+		
+		if (flyingmode)
+		{
+			ProcessKeyboard(direction, deltaTime, sprint);
+		}
+		else
+		{
+
+			float velocity = (!sprint) ? MovementSpeed * deltaTime : MovementSpeed * deltaTime * 2;
+			if (direction == FORWARD)
+				Position = vec3::add(Position, vec3::scale(vec3(Front.x, 0.0f, Front.z), velocity));
+			if (direction == BACKWARD)
+				Position = vec3::subtract(Position, vec3::scale(vec3(Front.x, 0.0f, Front.z), velocity));
+			if (direction == LEFT)
+				Position = vec3::subtract(Position, vec3::scale(Right, velocity));
+			if (direction == RIGHT)
+				Position = vec3::add(Position, vec3::scale(Right, velocity));
+		}
+	}
+
+	//Processing movment for y direction
+	void ProcessKeyboardJump(float deltaTime, float jumpStrength)
+	{
+
+		float velocity = jumpStrength * deltaTime;
+		Position = vec3::add(Position, vec3(0.0f, velocity, 0.0f));
+	}
+
+	//Set position camera
+	void SetCameraPosition(vec3 v)
+	{
+		Position = (v);
+	}
 
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
 	void ProcessMouseMovement(double xoffset, double yoffset)

@@ -144,6 +144,7 @@
     <ClCompile Include="Mat3.cpp" />
     <ClCompile Include="Mat4.cpp" />
     <ClCompile Include="ObjectShader.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Rectangle.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Diamond.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Dungeon.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="LightShader.h" />
@@ -179,6 +181,7 @@
     <ClInclude Include="Maths.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ObjectShader.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Shader.h" />

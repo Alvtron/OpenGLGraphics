@@ -43,6 +43,12 @@
     <Filter Include="Header Files\Lights">
       <UniqueIdentifier>{ba72f4a7-2f77-48f9-8027-f81c1d778317}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Entity">
+      <UniqueIdentifier>{9ea81f2e-dd3b-4df5-be1f-5c85779ea3f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity">
+      <UniqueIdentifier>{a963d491-95ef-4920-9321-3833030eb11c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ThomasLevel.cpp">
@@ -134,6 +140,9 @@
     </ClCompile>
     <ClCompile Include="SpotLight.cpp">
       <Filter>Source Files\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Entity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +241,12 @@
     </ClInclude>
     <ClInclude Include="PointLight.h">
       <Filter>Header Files\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

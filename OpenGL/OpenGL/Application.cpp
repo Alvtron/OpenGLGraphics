@@ -13,8 +13,8 @@
 // Presets
 #define DEBUG true
 #define FULLSCREEN false
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 1080
+#define WINDOW_WIDTH 1080
+#define WINDOW_HEIGHT 720
 #define MSAA_SAMPLES 4
 #define DRAW_WIREFRAME false
 double getTimeSeconds(clock_t time_begin, clock_t time_end);
@@ -100,15 +100,15 @@ void main()
 	// Draw wireframe
 	if (DRAW_WIREFRAME) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
-	//VegardLevel vegardLevel;
-	ThomasLevel thomasLevel;
+	Vegard::VegardLevel vegardLevel;
+	//ThomasLevel thomasLevel;
 	//VetleLevel vetleLevel;
 	//TextExampleLevel textExampleLevel;
 
 	try {
 		
-		//vegardLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
-		thomasLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
+		vegardLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
+		//thomasLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
 		//vetleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
 		//textExampleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
 
@@ -123,8 +123,8 @@ void main()
 	try {
 		while (!glfwWindowShouldClose(window)) {
 
-			thomasLevel.loop();
-			//vegardLevel.loop();
+			//thomasLevel.loop();
+			vegardLevel.loop();
 			//vetleLevel.loop();
 			//textExampleLevel.loop();
 

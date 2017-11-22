@@ -201,6 +201,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Arial" />
+    <None Include="shaders\bloom_frag.shader" />
+    <None Include="shaders\bloom_vert.shader" />
+    <None Include="shaders\blur_frag.shader" />
+    <None Include="shaders\blur_vert.shader" />
     <None Include="shaders\cubemap_frag.shader" />
     <None Include="shaders\cubemap_vert.shader" />
     <None Include="shaders\object_frag.shader" />

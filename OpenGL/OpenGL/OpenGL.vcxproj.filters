@@ -283,5 +283,17 @@
     <None Include="shaders\water_vert.shader">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\bloom_frag.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\bloom_vert.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\blur_frag.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\blur_vert.shader">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -100,15 +100,15 @@ void main()
 	// Draw wireframe
 	if (DRAW_WIREFRAME) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
-	Vegard::VegardLevel vegardLevel;
-	//ThomasLevel thomasLevel;
-	//VetleLevel vetleLevel;
+	//Vegard::VegardLevel vegardLevel;
+	ThomasLevel thomasLevel;
+	//vetle::VetleLevel vetleLevel;
 	//TextExampleLevel textExampleLevel;
 
 	try {
 		
-		vegardLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
-		//thomasLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
+		//vegardLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
+		thomasLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
 		//vetleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
 		//textExampleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
 
@@ -123,8 +123,8 @@ void main()
 	try {
 		while (!glfwWindowShouldClose(window)) {
 
-			//thomasLevel.loop();
-			vegardLevel.loop();
+			thomasLevel.loop();
+			//vegardLevel.loop();
 			//vetleLevel.loop();
 			//textExampleLevel.loop();
 

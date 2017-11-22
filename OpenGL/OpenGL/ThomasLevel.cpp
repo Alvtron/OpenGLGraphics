@@ -9,6 +9,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
+void initFrameBuffers(int WINDOW_WIDTH, int WINDOW_HEIGHT);
+void applyBloom();
+void renderQuad();
+
 // Camera
 const vec3 SPAWN_POSITION(0.0f, 2.0f, 0.0f);
 Camera camera(SPAWN_POSITION);
@@ -31,6 +35,12 @@ vec3 sunColor = vec3(1.0f, 1.0f, 0.0f);
 vec3 lightColor = vec3(1.0f, 0.5f, 1.0f);
 SpotLight flashlight = SpotLight(&camera, vec3(1.0f));
 
+// Bloom variables
+bool bloom = true;
+bool bloomKeyPressed = false;
+float exposure = 1.0f;
+unsigned int hdrFBO, rboDepth, colorBuffers[2], pingpongFBO[2], pingpongColorbuffers[2], VBOQuad = 0, VAOQuad = 0;
+
 // 3D Objects
 CubeMap cubemap = CubeMap();
 Cube cube = Cube(1.0f);
@@ -42,7 +52,7 @@ Rect rect = Rect();
 Texture metal, tile, mixedstone;
 
 // Shaders
-Shader waterShader;
+Shader waterShader, blurShader, bloomShader;
 CubeMapShader cubeMapShader;
 ObjectShader shader;
 LightShader lightShader;
@@ -65,12 +75,6 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	// Tell GLFW to capture the players mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-
-	// ===========================================================================================
-	// CAMERA - for player movement, sets spawn position
-	// ===========================================================================================
-	//camera = Camera(SPAWN_POSITION);
-
 	// ===========================================================================================
 	// SHADER - Build and compile the shader program (with LearnOpenGL's provided shader class)
 	// ===========================================================================================
@@ -78,6 +82,8 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	shader = ObjectShader("shaders/object_vert.shader", "shaders/object_frag.shader");
 	lightShader = LightShader("shaders/light_vert.shader", "shaders/light_frag.shader", lightColor);
 	waterShader = Shader("shaders/water_vert.shader", "shaders/water_frag.shader");
+	blurShader = Shader("shaders/blur_vert.shader", "shaders/blur_frag.shader");
+	bloomShader = Shader("shaders/bloom_vert.shader", "shaders/bloom_frag.shader");
 
 	// ===========================================================================================
 	// 3D LIGHTS - Set up lights
@@ -111,19 +117,19 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 		"resources/skybox/front.jpg"
 	);
 
-	metal = Texture();
+	metal = Texture("resources/textures/1857-diffuse.jpg");
 	metal.addDiffuse("resources/textures/1857-diffuse.jpg");
 	metal.addSpecular("resources/textures/1857-specexponent.jpg");
 	metal.addNormal("resources/textures/1857-normal.jpg");
 	metal.addDisplacement("resources/textures/1857-displacement.jpg");
 
-	tile = Texture();
+	tile = Texture("resources/textures/10744-diffuse.jpg");
 	tile.addDiffuse("resources/textures/10744-diffuse.jpg");
 	tile.addSpecular("resources/textures/10744-specstrength.jpg");
 	tile.addNormal("resources/textures/10744-normal.jpg");
 	tile.addDisplacement("resources/textures/10744-displacement.jpg");
 
-	mixedstone = Texture();
+	mixedstone = Texture("resources/textures/mixedstones-diffuse.jpg");
 	mixedstone.addDiffuse("resources/textures/mixedstones-diffuse.jpg");
 	mixedstone.addSpecular("resources/textures/mixedstones-specular.jpg");
 	mixedstone.addNormal("resources/textures/mixedstones-normal.jpg");
@@ -153,6 +159,19 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// ===========================================================================================
+	// CREATE BLOOM
+	// ===========================================================================================
+
+	initFrameBuffers(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	blurShader.use();
+	blurShader.setInt("image", 0);
+	bloomShader.use();
+	bloomShader.setInt("scene", 0);
+	bloomShader.setInt("bloomBlur", 5);
+
 }
 
 void ThomasLevel::loop()
@@ -172,19 +191,28 @@ void ThomasLevel::loop()
 	rotation = (float)sin(color_rotation_r * M_PI);
 
 	// Background color (world color)
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	// Clear the depth buffer before each render iteration
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// 1. render scene into floating point framebuffer
+	// -----------------------------------------------
+	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 	// Calculate View/Projection transformations
 	mat4 projection = mat4::makePerspective(camera.Fov, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
 	mat4 view = camera.GetViewMatrix();
 
 	renderObjects(projection, view);
 	renderLights(projection, view);
-	
+
 	// Draw cubemap (this must happen last or it will decrease peformance)
 	cubemap.drawCubemap(&cubeMapShader, &camera, view, projection);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	applyBloom();
 
 	// GLFW: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 	glfwSwapBuffers(window);
@@ -246,6 +274,44 @@ void renderLights(mat4 projection, mat4 view) {
 	}
 }
 
+void renderQuad() {
+
+	if (VAOQuad == 0) {
+
+		float quadVertices[] = {
+			// positions        // texture Coords
+			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+			1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		};
+
+		// setup plane VAO
+		glGenVertexArrays(1, &VAOQuad);
+		glGenBuffers(1, &VBOQuad);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBOQuad);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+
+		glBindVertexArray(VAOQuad);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	}
+
+	glBindVertexArray(VAOQuad);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+
+}
+
 // ===========================================================================================
 // PLAYER INPUTS
 // ===========================================================================================
@@ -266,6 +332,30 @@ void processInput(GLFWwindow *window)
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
+
+	
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !bloomKeyPressed)
+	{
+		bloom = !bloom;
+		bloomKeyPressed = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
+	{
+		bloomKeyPressed = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		if (exposure > 0.0f)
+			exposure -= 0.01f;
+		else
+			exposure = 0.0f;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	{
+		exposure += 0.01f;
+	}
+
 }
 
 /* Process all input: Query GLFW whether relevant keys are pressed. Registers one press. */
@@ -318,4 +408,97 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.setFOV((float)yoffset);
+}
+
+void initFrameBuffers(int WINDOW_WIDTH, int WINDOW_HEIGHT) {
+
+	// configure (floating point) framebuffers
+	// ---------------------------------------
+	glGenFramebuffers(1, &hdrFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+
+	// create 2 floating point color buffers (1 for normal rendering, other for brightness treshold values)
+	glGenTextures(2, colorBuffers);
+
+	for (unsigned int i = 0; i < 2; i++)
+	{
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		// attach texture to framebuffer
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+	}
+
+	// create and attach depth buffer (renderbuffer)
+	glGenRenderbuffers(1, &rboDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, attachments);
+
+	// finally check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "Framebuffer not complete!" << std::endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// ping-pong-framebuffer for blurring
+	glGenFramebuffers(2, pingpongFBO);
+	glGenTextures(2, pingpongColorbuffers);
+
+	for (unsigned int i = 0; i < 2; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0);
+		// also check if framebuffers are complete (no need for depth buffer)
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			std::cout << "Framebuffer not complete!" << std::endl;
+	}
+
+}
+
+void applyBloom() {
+
+	// 2. blur bright fragments with two-pass Gaussian Blur 
+	// --------------------------------------------------
+	bool horizontal = true, first_iteration = true;
+	unsigned int amount = 30;
+	blurShader.use();
+	for (unsigned int i = 0; i < amount; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+		blurShader.setInt("horizontal", horizontal);
+		glBindTexture(GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
+		renderQuad();
+		horizontal = !horizontal;
+		if (first_iteration)
+			first_iteration = false;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
+	// --------------------------------------------------------------------------------------------------------------------------
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	bloomShader.use();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
+	bloomShader.setInt("bloom", bloom);
+	bloomShader.setFloat("exposure", exposure);
+	renderQuad();
+
+	std::cout << "bloom: " << (bloom ? "on" : "off") << "| exposure: " << exposure << std::endl;
+
 }

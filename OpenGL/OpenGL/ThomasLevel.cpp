@@ -170,7 +170,7 @@ void ThomasLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	blurShader.setInt("image", 0);
 	bloomShader.use();
 	bloomShader.setInt("scene", 0);
-	bloomShader.setInt("bloomBlur", 5);
+	bloomShader.setInt("bloomBlur", 1);
 
 }
 
@@ -334,12 +334,12 @@ void processInput(GLFWwindow *window)
 		camera.ProcessKeyboard(RIGHT, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
 
 	
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !bloomKeyPressed)
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !bloomKeyPressed)
 	{
 		bloom = !bloom;
 		bloomKeyPressed = true;
 	}
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE)
 	{
 		bloomKeyPressed = false;
 	}
@@ -493,7 +493,7 @@ void applyBloom() {
 	bloomShader.use();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
-	glActiveTexture(GL_TEXTURE5);
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
 	bloomShader.setInt("bloom", bloom);
 	bloomShader.setFloat("exposure", exposure);

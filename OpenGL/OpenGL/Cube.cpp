@@ -1,29 +1,24 @@
 #include "Cube.h"
 
-/* Create a Cube object that stores vertex data. */
 Cube::Cube()
 {
 	createCube(WIDTH, HEIGHT);
 }
 
-/* Create a Cube object that stores vertex data. */
 Cube::Cube(float width)
 {
 	createCube(width, width);
 }
 
-/* Create a Cube object that stores vertex data. */
 Cube::Cube(float width, float height)
 {
 	createCube(width, height);
 }
 
-/* De-constructor */
 Cube::~Cube()
 {
 }
 
-/* Create a cube. Returns it's vertices */
 void Cube::createCube(const float width, const float height) {
 	float widthRadius = width / 2.0f;
 	float heightRadius = height / 2.0f;
@@ -141,6 +136,6 @@ void Cube::createCube(const float width, const float height) {
 		vec2(1.0f, 0.0f),
 		vec2(0.0f, 0.0f)
 	};
-	createColors();
+	setColor();
 	calculateTangents();
 }

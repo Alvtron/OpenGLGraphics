@@ -27,5 +27,4 @@ public:
 	void initFonts(std::string fontPath, int WINDOW_HEIGHT, int WINDOW_WIDTH);
 	void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, vec3 color);
 	Shader textShader;
-
 };

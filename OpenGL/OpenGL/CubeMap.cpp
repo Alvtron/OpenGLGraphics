@@ -1,18 +1,15 @@
 #include "CubeMap.h"
 
-/* Default constructor */
 CubeMap::CubeMap()
 {
 }
 
-/* De-constructor */
 CubeMap::~CubeMap()
 {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 }
 
-/* Generate buffers and store vertex data on the GPU. Call drawCubemap(...) to draw it */
 void CubeMap::storeOnGPU() {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -23,7 +20,6 @@ void CubeMap::storeOnGPU() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 }
 
-/* Load cubemap texture and attach it. You must provide a string-vector of 6 filepaths */
 void CubeMap::loadCubemapTexture(std::vector<std::string> faces)
 {
 	glGenTextures(1, &texture_id);
@@ -40,7 +36,7 @@ void CubeMap::loadCubemapTexture(std::vector<std::string> faces)
 		}
 		else
 		{
-			std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+			printf("Cubemap texture failed to load at path: %s", faces[i]);
 			stbi_image_free(data);
 		}
 	}
@@ -51,26 +47,29 @@ void CubeMap::loadCubemapTexture(std::vector<std::string> faces)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
-/* Load cubemap texture and attach it. You must provide 6 filepaths as Strings */
 void CubeMap::loadCubemapTexture(const std::string right, const std::string left, const std::string top, const std::string bottom, const std::string front, const std::string back)
 {
 	std::vector<std::string> faces = { right , left, top, bottom, front, back };
 	loadCubemapTexture(faces);
 }
 
-/* Draws the cubemap from vertex data stored on the GPU */
-void CubeMap::drawCubemap(Shader * shader, Camera * camera, mat4 view, mat4 projection) {
-	// draw skybox as last
-	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+void CubeMap::drawCubemap(Shader * shader, Camera * camera, mat4 projection) {
+	// Change depth function so depth test passes when values are equal to depth buffer's content
+	glDepthFunc(GL_LEQUAL);  
+	
 	shader->use();
-	view = mat4::removeTranslation(camera->GetViewMatrix()); // remove translation from the view matrix
-	shader->setMat4("view", view);
+
+	// Remove translation from the view matrix
+	shader->setMat4("view", mat4::removeTranslation(camera->GetViewMatrix()));
 	shader->setMat4("projection", projection);
-	// skybox cube
+	
+	// Render skybox cube
 	glBindVertexArray(VAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
-	glDepthFunc(GL_LESS); // set depth function back to default
+
+	// Set depth function back to default
+	glDepthFunc(GL_LESS); 
 }

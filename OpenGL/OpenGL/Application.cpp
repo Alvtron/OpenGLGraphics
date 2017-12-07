@@ -1,20 +1,49 @@
+#pragma once
+// OpenGL
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+// Math
+#include "MathDefinitions.h"
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
+// STB: Texture loader for several different types of image files
+#include "stb_image.h"
+// Shader Classes
+#include "Shader.h"
+#include "Framebuffer.h"
+// Shaders and camera class, based on Joey de Vries' camera and shader class from learnOpenGL.com.
+#include "Camera.h"
+// 3D Object classes
+#include "CubeMap.h"
+#include "Rectangle.h"
+#include "Cube.h"
+#include "Sphere.h"
+#include "Triangle.h"
+#include "Diamond.h"
+// Texture Classes
+#include "Texture.h"
+#include "Material.h"
+#include "CloudTexture.h"
+// 3D Light class
+#include "Light.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
+// Text renderer by Vegard Strand
+#include "Text.h"
+// General C++ (and C++11) libraries
 #include <iostream>
+#include <string>
 #include <vector>
-#include "Level.h"
-#include "VegardLevel.h"
-#include "VetleLevel.h"
-#include "ThomasLevel.h"
-#include "TextExampleLevel.h"
 #include <time.h>
-//Levels
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 // Presets
 #define DEBUG true
 #define FULLSCREEN false
-#define WINDOW_WIDTH 1080
-#define WINDOW_HEIGHT 720
 #define MSAA_SAMPLES 4
 #define DRAW_WIREFRAME false
 double getTimeSeconds(clock_t time_begin, clock_t time_end);
@@ -27,12 +56,73 @@ bool vsync = true;
 const char window_title[] = "ITF21215 OpenGL group project";
 const int openGL_min = 4, openGL_max = 4;
 GLFWwindow* window;
+unsigned int WINDOW_WIDTH = 1920, WINDOW_HEIGHT = 1080;
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void renderObjects(mat4 projection, mat4 view);
+void renderLights(mat4 projection, mat4 view);
+void processInput(GLFWwindow *window);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void applyBloom();
+void renderQuad();
+
+// Timing
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+float increment_0 = 0.0f, increment_1 = 0.0f, increment_2 = 0.0f, increment_3 = 0.0f;
+
+// Render quad VAO and VBO
+static unsigned int quad_vao = 0;
+static unsigned int quad_vbo = 0;
+
+// Other global variables
+bool bloom = true;
+bool bloomKeyPressed = false, render_clouds = true;
+float exposure = 1.0f;
+float cloud_render_distance = 1000.0f;
+
+// Camera
+const vec3 SPAWN_POSITION(0.0f, 2.0f, 0.0f);
+Camera camera(SPAWN_POSITION);
+double lastX;
+double lastY;
+bool firstMouse = true;
+
+// Lights
+std::vector<Light> lights;
+vec3 sunDirection = vec3(-1.0, -1.0, 0.0f);
+vec3 sunPosition = vec3(1000.0f, 1000.0f, 0.0f);
+vec3 sunColor = vec3(1.0f, 1.0f, 0.0f);
+vec3 lightColor = vec3(1.0f, 0.5f, 1.0f);
+SpotLight flashlight = SpotLight(&camera, vec3(1.0f));
+
+// Framebuffers
+Framebuffer cloudFBO;
+Framebuffer sceneFBO;
+Framebuffer pingpongFBO[2];
+
+// Shaders
+Shader objectShader, lightShader, blurShader, bloomShader, cloudShader, cubeMapShader;
+
+// Cubemap
+CubeMap cubemap = CubeMap();
+
+// Objects
+Cube cube = Cube(1.0f);
+Diamond diamond = Diamond(1.0f);
+Sphere light = Sphere(0.25f, 3);
+Rect rect = Rect(1.0f, 1.0f);
+
+// Textures & Materials
+Material metal, tile, mixedstone;
+Texture cloud_texture, cloud_structure_texture;
 
 void initGLFWindow()
 {
-
 	if (DEBUG) {
-		std::cout << "[DEBUG MODUS]" << std::endl;
+		printf("% DEBUG MODUS %\n\n");
 		start_time_init = clock();
 	}
 
@@ -41,7 +131,7 @@ void initGLFWindow()
 
 	if (glfw == GLFW_FALSE)
 	{
-		std::cout << "Error: Failed to initialize GLFW" << std::endl;
+		printf("Error: Failed to initialize GLFW\n");
 		return;
 	}
 	// Set GLFW to use OpenGL version 4.5, both minor and major
@@ -58,7 +148,7 @@ void initGLFWindow()
 	else window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, window_title, NULL, NULL);
 	if (!window)
 	{
-		std::cout << "Error: Failed to create GLFW window" << std::endl;
+		printf("Error: Failed to create GLFW window\n");
 		glfwTerminate();
 		return;
 	}
@@ -80,62 +170,296 @@ void initGLFWindow()
 	GLenum glew = glewInit();
 	if (GLEW_OK != glew)
 	{
-		std::cout << "Error: " << glewGetErrorString(glew) << std::endl;
+		printf("Error: %s\n", glewGetErrorString(glew));
 		return;
 	}
 	if (DEBUG) {
-		std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl;
-		std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-		std::cout << "Initialation time: " << getTimeSeconds(start_time_init, clock()) << " seconds" << std::endl;
+		printf("OpenGL version %s\n", glGetString(GL_VERSION));
+		printf("Using GLEW %s\n", glewGetString(GLEW_VERSION));
+		printf("Initialation time: %f seconds\n", getTimeSeconds(start_time_init, clock()));
 	}
 }
 
 
 void main()
 {
-
 	//init GLFW window
 	initGLFWindow();
 
 	// Draw wireframe
 	if (DRAW_WIREFRAME) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	
-	//Vegard::VegardLevel vegardLevel;
-	ThomasLevel thomasLevel;
-	//vetle::VetleLevel vetleLevel;
-	//TextExampleLevel textExampleLevel;
 
-	try {
-		
-		//vegardLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
-		thomasLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
-		//vetleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
-		//textExampleLevel.init(window, WINDOW_HEIGHT, WINDOW_WIDTH);
+	printf("\nSetting up GLFW...\n");
 
+	lastX = WINDOW_WIDTH / 2.0f;
+	lastY = WINDOW_HEIGHT / 2.0f;
+
+	// Set actionlisteners for window resize, mouse and scrolling
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetKeyCallback(window, key_callback);
+
+	// Tell GLFW to capture the players mouse
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// ===========================================================================================
+	// SHADER - Build and compile shader programs
+	// ===========================================================================================
+	printf("\nSetting up shaders...\n");
+
+	printf("Loading object shader...\n");
+	if (objectShader.init("shaders/object_vert.shader", "shaders/object_frag.shader") != 0) {
+		printf("Error: Failed to initialize shader in %s at line %d.\n\n", __FILE__, __LINE__);
 	}
-	catch (int e) {
-		std::cout << "Cannot init level Nr. " << e << std::endl;
-		system("PAUSE");
-		glfwTerminate();
-		return;
+
+	printf("Loading light shader...\n");
+	if (lightShader.init("shaders/light_vert.shader", "shaders/light_frag.shader") != 0) {
+		printf("Error: Failed to initialize shader in %s at line %d.\n\n", __FILE__, __LINE__);
 	}
 
-	try {
-		while (!glfwWindowShouldClose(window)) {
+	printf("Loading cubemap shader...\n");
+	if (cubeMapShader.init("shaders/cubemap_vert.shader", "shaders/cubemap_frag.shader") != 0) {
+		printf("Error: Failed to initialize shader in %s at line %d.\n\n", __FILE__, __LINE__);
+	}
 
-			thomasLevel.loop();
-			//vegardLevel.loop();
-			//vetleLevel.loop();
-			//textExampleLevel.loop();
+	printf("Loading cloud shader...\n");
+	if (cloudShader.init("shaders/cloud_vert.shader", "shaders/cloud_frag.shader") != 0) {
+		printf("Error: Failed to initialize shader in %s at line %d.\n\n", __FILE__, __LINE__);
+	}
 
+	printf("Loading blur shader...\n");
+	if (blurShader.init("shaders/blur_vert.shader", "shaders/blur_frag.shader") != 0) {
+		printf("Error: Failed to initialize shader in %s at line %d.\n\n", __FILE__, __LINE__);
+	}
+
+	printf("Loading bloom shader...\n");
+	if (bloomShader.init("shaders/bloom_vert.shader", "shaders/bloom_frag.shader") != 0) {
+		printf("Error: Failed to initialize shader in %s at line %d.\n\n", __FILE__, __LINE__);
+	}
+
+	objectShader.use();
+	objectShader.setInt("material.diffuse", 0);
+	objectShader.setInt("material.specular", 1);
+	objectShader.setInt("material.normal", 2);
+	objectShader.setInt("material.displacement", 3);
+	objectShader.setInt("material.ao", 4);
+
+	cubeMapShader.use();
+	cubeMapShader.setInt("skybox", 0);
+
+	cloudShader.use();
+	cloudShader.setInt("diffuse_buffer", 10);
+	cloudShader.setInt("depth_buffer", 11);
+
+	blurShader.use();
+	blurShader.setInt("image", 0);
+	bloomShader.use();
+	bloomShader.setInt("HDR_buffer", 0);
+	bloomShader.setInt("cloud_buffer", 3);
+	bloomShader.setInt("bloom_blur", 5);
+
+	// ===========================================================================================
+	// FRAMEBUFFERS
+	// ===========================================================================================
+	printf("\nSetting up framebuffers...\n");
+
+	// Scenery framebuffer
+	sceneFBO.createSceneFramebuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	// Clouds framebuffer
+	cloudFBO.createCloudFramebuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	// ping-pong framebuffer for blurring
+	Framebuffer::createPingPongFramebuffer(pingpongFBO, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	// ===========================================================================================
+	// LIGHTS - Set up lights
+	// ===========================================================================================
+	printf("\nSetting up lights...\n");
+
+	flashlight.disable();
+
+	lights.push_back(DirectionalLight(sunColor, sunDirection));
+	lights.push_back(PointLight(vec3(1.0f), vec3(0.0f)));
+	lights.push_back(PointLight(vec3(1.0f), vec3(0.0f)));
+
+	// ===========================================================================================
+	// OBJECTS - Set up vertex data and buffers and configure vertex attributes
+	// ===========================================================================================
+	printf("\nSetting up objects...\n");
+
+	cubemap.storeOnGPU();
+	cube.storeOnGPU();
+	diamond.storeOnGPU();
+	light.storeOnGPU();
+	rect.storeOnGPU();
+
+	// ===========================================================================================
+	// LOAD TEXTURES
+	// ===========================================================================================
+	printf("\nSetting up textures...\n");
+
+	cubemap.loadCubemapTexture(
+		"resources/skybox/right.jpg",
+		"resources/skybox/left.jpg",
+		"resources/skybox/top.jpg",
+		"resources/skybox/bottom.jpg",
+		"resources/skybox/back.jpg",
+		"resources/skybox/front.jpg"
+	);
+
+	metal.addDiffuse(Texture("resources/textures/1857-diffuse.jpg"));
+	metal.addSpecular(Texture("resources/textures/1857-specexponent.jpg"));
+	metal.addNormal(Texture("resources/textures/1857-normal.jpg"));
+	metal.addDisplacement(Texture("resources/textures/1857-displacement.jpg"));
+
+	tile.addDiffuse(Texture("resources/textures/10744-diffuse.jpg"));
+	tile.addSpecular(Texture("resources/textures/10744-specstrength.jpg"));
+	tile.addNormal(Texture("resources/textures/10744-normal.jpg"));
+	tile.addDisplacement(Texture("resources/textures/10744-displacement.jpg"));
+
+	mixedstone.addDiffuse(Texture("resources/textures/mixedstones-diffuse.jpg"));
+	mixedstone.addSpecular(Texture("resources/textures/mixedstones-specular.jpg"));
+	mixedstone.addNormal(Texture("resources/textures/mixedstones-normal.jpg"));
+	mixedstone.addDisplacement(Texture("resources/textures/mixedstones-displace.jpg"));
+
+
+	printf("\nLoading 3D cloud texture...\n");
+	if (createTexture3DFromEX5(&cloud_texture, "resources/textures/noise5.ex5") == false) {
+		printf("ERROR :: Failed to load texture in %s at line %d.\n\n", __FILE__, __LINE__);
+	}
+
+	// Preprocess the structure of the noise based clouds
+	printf("Preprocessing cloud structure...");
+	CloudTexture::process(&cloud_structure_texture, cloud_texture);
+
+	// Send textures to shaders
+	cloudShader.setTexture3D(cloud_texture, "cloud_texture");
+	cloudShader.setTexture3D(cloud_structure_texture, "cloud_structure");
+
+
+	if (DEBUG) {
+		printf("\n\nInitialization time: %f seconds", getTimeSeconds(start_time_init, clock()));
+	}
+	// ===========================================================================================
+	// GAME LOOP / RENDER LOOP
+	// ===========================================================================================
+	printf("\n\nStarting game loop...\n");
+	while (!glfwWindowShouldClose(window)) {
+
+		// Per-frame time logic
+		float currentFrame = (float)glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
+		// Process input (if any)
+		processInput(window);
+
+		increment_0 += 0.05f * deltaTime;
+		increment_1 += 0.15f * deltaTime;
+		increment_2 += 0.30f * deltaTime;
+		increment_3 += 1.0f * deltaTime;
+		lightColor = vec3(abs(sin(increment_0)), abs(sin(increment_1)), abs(sin(increment_2)));
+
+		// Background color (world color)
+		sunPosition = camera.Position + vec3(sin(increment_0) * 1000, cos(increment_0) * 1000, 0);
+
+		/* Calculate view and projection matrices and send them to shaders */
+
+		mat4 view = camera.GetViewMatrix();
+		mat4 projection = mat4::makePerspective(camera.Fov, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+
+		cloudShader.setMat4("view", view);
+		cloudShader.setMat4("proj", projection);
+		cloudShader.setMat4("inv_view", mat4::inverse(view));
+		cloudShader.setMat4("inv_proj", mat4::inverse(projection));
+		cloudShader.setVec2("window_size", vec2(WINDOW_WIDTH, WINDOW_HEIGHT));
+		cloudShader.setVec3("camera_position", vec3(0.0f, -100.0f, increment_2 * 10));
+		cloudShader.setVec3("sun_position", sunPosition);
+		cloudShader.setFloat("end", cloud_render_distance);
+
+		/*** OpenGL rendering ***/
+
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+		// -----------------------------------------------
+		// 1. render terrain and sky
+		// -----------------------------------------------
+
+		sceneFBO.bind();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Render objects & light
+		renderLights(projection, view);
+		renderObjects(projection, view);
+
+		// Draw cubemap
+		cubemap.drawCubemap(&cubeMapShader, &camera, projection);
+
+		// -----------------------------------------------
+		// 2. render clouds
+		// -----------------------------------------------
+
+		// Render clouds with resolve shader
+		cloudFBO.bind();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		cloudShader.use();
+
+		glActiveTexture(GL_TEXTURE10);
+		glBindTexture(GL_TEXTURE_2D, sceneFBO.colorBuffer[0]);
+
+		renderQuad();
+
+		// -----------------------------------------------
+		// 3. blur scene
+		// -----------------------------------------------
+
+		bool horizontal = true, first_iteration = true;
+		unsigned int amount = 30;
+		blurShader.use();
+		for (unsigned int i = 0; i < amount; i++)
+		{
+			pingpongFBO[horizontal].bind();
+			blurShader.setInt("horizontal", horizontal);
+			glActiveTexture(GL_TEXTURE0);
+			// bind texture of other framebuffer (or scene if first iteration)
+			glBindTexture(GL_TEXTURE_2D, first_iteration ? sceneFBO.colorBuffer[1] : pingpongFBO[!horizontal].colorBuffer[0]);
+			renderQuad();
+			horizontal = !horizontal;
+			if (first_iteration)
+				first_iteration = false;
 		}
-	}
-	catch (int e)
-	{
-		std::cout << "Cannot loop level Nr. " << e << std::endl;
-		system("PAUSE");
-		glfwTerminate();
-		return;
+
+		// -----------------------------------------------
+		// 4. render fbo color buffers
+		// -----------------------------------------------
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		bloomShader.use();
+
+		if (render_clouds) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, cloudFBO.colorBuffer[0]);
+		} else {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, sceneFBO.colorBuffer[0]);
+		}
+
+		glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_2D, pingpongFBO[!horizontal].colorBuffer[0]);
+
+		bloomShader.setInt("bloom", bloom);
+		bloomShader.setFloat("exposure", exposure);
+
+		renderQuad();
+
+		// Swap buffers
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+
 	}
 
 	glfwTerminate();
@@ -144,4 +468,193 @@ void main()
 // Calculate time passed between two timestamps and return it in seconds
 double getTimeSeconds(clock_t time_begin, clock_t time_end) {
 	return double(time_end - time_begin) / CLOCKS_PER_SEC;
+}
+
+/* DRAW OBJECTS - set up shaders and call mesh draw functions */
+void renderObjects(mat4 projection, mat4 view) {
+	// Activate shader when setting uniforms/drawing objects
+	objectShader.use();
+	objectShader.setMat4("projection", projection);
+	objectShader.setMat4("view", view);
+	objectShader.setFloat("material.shininess", 64.0f);
+	objectShader.setVec3("viewPos", camera.Position);
+
+	// lights
+	objectShader.setInt("directionLightCount", Light::numDirectionalLights());
+	objectShader.setInt("pointLightCount", Light::numPointLights());
+	objectShader.setInt("spotLightCount", Light::numSpotLights());
+	objectShader.setInt("lightCount", lights.size());
+
+	for (int i = 0; i < lights.size(); i++) {
+		objectShader.setVec3("lightPositions[" + std::to_string(i) + "]", lights.at(i).position);
+		lights.at(i).drawLight(&objectShader);
+	}
+
+	flashlight.drawLight(&objectShader);
+
+	cube.drawObject(&objectShader, vec3(0.0f, 5.0f, 0.0f), &metal);
+
+	rect.setScale(vec3(1000.0f, 1000.0f, 1000.0f));
+	rect.drawObject(&objectShader, &tile);
+
+	diamond.drawObject(&objectShader, vec3(0.0f, 3.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), &mixedstone);
+}
+
+/* DRAW LIGHTS - set up light shader and call mesh draw functions */
+void renderLights(mat4 projection, mat4 view) {
+	// Activate light shader and configure it
+	lightShader.use();
+	lightShader.setMat4("projection", projection);
+	lightShader.setMat4("view", view);
+	lightShader.setBool("hasLightColor", true);
+
+	// Draw light object
+	for (int i = 0; i < lights.size(); i++) {
+		lightShader.setVec3("lightColor", lightColor);
+		if (lights.at(i).is(Light::POINT)) {
+			lights.at(i).position = vec3(sin(increment_3) * 10 + i, 2.0f, cos(increment_3) * 10 + i), 90.0f, vec3(1.0f, 0.0f, 0.0f);
+			light.drawObject(&lightShader, lights.at(i).position, nullptr);
+			lights.at(i).color = lightColor;
+		}
+	}
+
+}
+
+// ===========================================================================================
+// PLAYER INPUTS
+// ===========================================================================================
+/* Process all input: Query GLFW whether relevant keys are pressed/released this frame and react accordingly */
+void processInput(GLFWwindow *window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera.ProcessKeyboard(FORWARD, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
+
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.ProcessKeyboard(BACKWARD, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
+
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.ProcessKeyboard(LEFT, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.ProcessKeyboard(RIGHT, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
+
+
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !bloomKeyPressed)
+	{
+		bloom = !bloom;
+		bloomKeyPressed = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE)
+	{
+		bloomKeyPressed = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		if (exposure > 0.0f)
+			exposure -= 0.01f;
+		else
+			exposure = 0.0f;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	{
+		exposure += 0.01f;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+	{
+		if (cloud_render_distance > 0.0f)
+			cloud_render_distance -= 1.0f;
+		else
+			cloud_render_distance = 0.0f;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+	{
+		if (cloud_render_distance < 10000.0f)
+			cloud_render_distance += 1.0f;
+		else
+			cloud_render_distance = 10000.0f;
+	}
+
+}
+
+/* Process all input: Query GLFW whether relevant keys are pressed. Registers one press. */
+void key_callback(GLFWwindow * window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_F && action == GLFW_PRESS)
+	{
+		if (flashlight.isEnabled())
+			flashlight.disable();
+		else
+			flashlight.enable();
+	}
+
+	if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
+	{
+		render_clouds = !render_clouds;
+	}
+}
+
+/* GLFW: whenever the window size changes, this callback function executes */
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+
+/* GLFW: whenever the mouse moves, this callback is called */
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse)
+	{
+		lastX = (float)xpos;
+		lastY = (float)ypos;
+		firstMouse = false;
+	}
+
+	double xoffset = xpos - lastX;
+	double yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+	lastX = (float)xpos;
+	lastY = (float)ypos;
+
+	camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+/* GLFW: whenever the mouse scroll wheel scrolls, this callback is called */
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	camera.setFOV((float)yoffset);
+}
+
+void applyBloom() {
+
+
+}
+
+void renderQuad()
+{
+	if (quad_vao == 0) {
+		GLfloat quadVertices[] = {
+			// Positions        // Texture Coords
+			-1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+			1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		};
+		glGenVertexArrays(1, &quad_vao);
+		glGenBuffers(1, &quad_vbo);
+		glBindVertexArray(quad_vao);
+		glBindBuffer(GL_ARRAY_BUFFER, quad_vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	}
+	glBindVertexArray(quad_vao);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
 }

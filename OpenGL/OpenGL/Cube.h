@@ -6,10 +6,15 @@ class Cube : public Vertex
 private:
 	const unsigned short SIZE = 24;
 	const float WIDTH = 1.0f, HEIGHT = 1.0f;
-public:
-	Cube();
-	Cube(float width);
-	Cube(float width, float height);
-	~Cube();
+	/* Create a cube */
 	void createCube(const float width, const float height);
+public:
+	/* Create a Cube object with default sizes. */
+	Cube();
+	/* Create a Cube object with width. */
+	Cube(float width);
+	/* Create a Cube object with width and height. */
+	Cube(float width, float height);
+	/* De-constructor */
+	~Cube();
 };

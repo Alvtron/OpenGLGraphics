@@ -1,5 +1,4 @@
 #pragma once
-
 #include "MathDefinitions.h"
 #include "Mat4.h"
 #include "Mat3.h"

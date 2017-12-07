@@ -1,18 +1,15 @@
 #include "Diamond.h"
 
-/* Create a Diamond object that stores vertex data */
 Diamond::Diamond()
 {
 	createDiamond(WIDTH);
 }
 
-/* Create a Diamond object that stores vertex data */
 Diamond::Diamond(float width)
 {
 	createDiamond(width);
 }
 
-/* Create a Diamond object that stores vertex data */
 Diamond::~Diamond()
 {
 }
@@ -114,6 +111,6 @@ void Diamond::createDiamond(float width) {
 		vec2(0.5f, 1.0f)
 	};
 
-	createColors();
+	setColor();
 	calculateTangents();
 }

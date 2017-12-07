@@ -74,6 +74,13 @@ public:
 	static mat4 multiply(const mat4& m1, const mat4& m2);
 
 	/**
+		Inverste a 4x4 matrix
+		@param m - a 4x4 matrix tto be inversed
+		@return the inverted matrix
+	*/
+	static mat4 inverse(const mat4 & m);
+
+	/**
 		This method overwrites the "*" operator, when used between two mat4 objects
 	@param left The left 4x4 matrix.
 	@param right The right 4x4 matrix.

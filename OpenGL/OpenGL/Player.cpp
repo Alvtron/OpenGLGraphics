@@ -1,4 +1,6 @@
 #include "Player.h"
+#include <iostream>
+#include <sstream>
 
 //Prototypes
 

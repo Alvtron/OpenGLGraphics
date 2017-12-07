@@ -8,9 +8,6 @@
 #include "Rectangle.h"
 #include "Sphere.h"
 
-#include "ObjectShader.h"
-#include "CubeMapShader.h"
-
 #include "Texture.h"
 
 namespace vetle {

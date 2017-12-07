@@ -149,6 +149,151 @@ mat4 mat4::multiply(const mat4& m1, const mat4& m2) {
 
 }
 
+mat4 mat4::inverse(const mat4& m)
+{
+	double b[16], det;
+	mat4 m_inv;
+
+	b[0] =
+		m.matrix[5] * m.matrix[10] * m.matrix[15] -
+		m.matrix[5] * m.matrix[11] * m.matrix[14] -
+		m.matrix[9] * m.matrix[6] * m.matrix[15] +
+		m.matrix[9] * m.matrix[7] * m.matrix[14] +
+		m.matrix[13] * m.matrix[6] * m.matrix[11] -
+		m.matrix[13] * m.matrix[7] * m.matrix[10];
+
+	b[4] =
+		-m.matrix[4] * m.matrix[10] * m.matrix[15] +
+		m.matrix[4] * m.matrix[11] * m.matrix[14] +
+		m.matrix[8] * m.matrix[6] * m.matrix[15] -
+		m.matrix[8] * m.matrix[7] * m.matrix[14] -
+		m.matrix[12] * m.matrix[6] * m.matrix[11] +
+		m.matrix[12] * m.matrix[7] * m.matrix[10];
+
+	b[8] =
+		m.matrix[4] * m.matrix[9] * m.matrix[15] -
+		m.matrix[4] * m.matrix[11] * m.matrix[13] -
+		m.matrix[8] * m.matrix[5] * m.matrix[15] +
+		m.matrix[8] * m.matrix[7] * m.matrix[13] +
+		m.matrix[12] * m.matrix[5] * m.matrix[11] -
+		m.matrix[12] * m.matrix[7] * m.matrix[9];
+
+	b[12] =
+		-m.matrix[4] * m.matrix[9] * m.matrix[14] +
+		m.matrix[4] * m.matrix[10] * m.matrix[13] +
+		m.matrix[8] * m.matrix[5] * m.matrix[14] -
+		m.matrix[8] * m.matrix[6] * m.matrix[13] -
+		m.matrix[12] * m.matrix[5] * m.matrix[10] +
+		m.matrix[12] * m.matrix[6] * m.matrix[9];
+
+	b[1] =
+		-m.matrix[1] * m.matrix[10] * m.matrix[15] +
+		m.matrix[1] * m.matrix[11] * m.matrix[14] +
+		m.matrix[9] * m.matrix[2] * m.matrix[15] -
+		m.matrix[9] * m.matrix[3] * m.matrix[14] -
+		m.matrix[13] * m.matrix[2] * m.matrix[11] +
+		m.matrix[13] * m.matrix[3] * m.matrix[10];
+
+	b[5] =
+		m.matrix[0] * m.matrix[10] * m.matrix[15] -
+		m.matrix[0] * m.matrix[11] * m.matrix[14] -
+		m.matrix[8] * m.matrix[2] * m.matrix[15] +
+		m.matrix[8] * m.matrix[3] * m.matrix[14] +
+		m.matrix[12] * m.matrix[2] * m.matrix[11] -
+		m.matrix[12] * m.matrix[3] * m.matrix[10];
+
+	b[9] =
+		-m.matrix[0] * m.matrix[9] * m.matrix[15] +
+		m.matrix[0] * m.matrix[11] * m.matrix[13] +
+		m.matrix[8] * m.matrix[1] * m.matrix[15] -
+		m.matrix[8] * m.matrix[3] * m.matrix[13] -
+		m.matrix[12] * m.matrix[1] * m.matrix[11] +
+		m.matrix[12] * m.matrix[3] * m.matrix[9];
+
+	b[13] =
+		m.matrix[0] * m.matrix[9] * m.matrix[14] -
+		m.matrix[0] * m.matrix[10] * m.matrix[13] -
+		m.matrix[8] * m.matrix[1] * m.matrix[14] +
+		m.matrix[8] * m.matrix[2] * m.matrix[13] +
+		m.matrix[12] * m.matrix[1] * m.matrix[10] -
+		m.matrix[12] * m.matrix[2] * m.matrix[9];
+
+	b[2] =
+		m.matrix[1] * m.matrix[6] * m.matrix[15] -
+		m.matrix[1] * m.matrix[7] * m.matrix[14] -
+		m.matrix[5] * m.matrix[2] * m.matrix[15] +
+		m.matrix[5] * m.matrix[3] * m.matrix[14] +
+		m.matrix[13] * m.matrix[2] * m.matrix[7] -
+		m.matrix[13] * m.matrix[3] * m.matrix[6];
+
+	b[6] =
+		-m.matrix[0] * m.matrix[6] * m.matrix[15] +
+		m.matrix[0] * m.matrix[7] * m.matrix[14] +
+		m.matrix[4] * m.matrix[2] * m.matrix[15] -
+		m.matrix[4] * m.matrix[3] * m.matrix[14] -
+		m.matrix[12] * m.matrix[2] * m.matrix[7] +
+		m.matrix[12] * m.matrix[3] * m.matrix[6];
+
+	b[10] =
+		m.matrix[0] * m.matrix[5] * m.matrix[15] -
+		m.matrix[0] * m.matrix[7] * m.matrix[13] -
+		m.matrix[4] * m.matrix[1] * m.matrix[15] +
+		m.matrix[4] * m.matrix[3] * m.matrix[13] +
+		m.matrix[12] * m.matrix[1] * m.matrix[7] -
+		m.matrix[12] * m.matrix[3] * m.matrix[5];
+
+	b[14] =
+		-m.matrix[0] * m.matrix[5] * m.matrix[14] +
+		m.matrix[0] * m.matrix[6] * m.matrix[13] +
+		m.matrix[4] * m.matrix[1] * m.matrix[14] -
+		m.matrix[4] * m.matrix[2] * m.matrix[13] -
+		m.matrix[12] * m.matrix[1] * m.matrix[6] +
+		m.matrix[12] * m.matrix[2] * m.matrix[5];
+
+	b[3] =
+		-m.matrix[1] * m.matrix[6] * m.matrix[11] +
+		m.matrix[1] * m.matrix[7] * m.matrix[10] +
+		m.matrix[5] * m.matrix[2] * m.matrix[11] -
+		m.matrix[5] * m.matrix[3] * m.matrix[10] -
+		m.matrix[9] * m.matrix[2] * m.matrix[7] +
+		m.matrix[9] * m.matrix[3] * m.matrix[6];
+
+	b[7] =
+		m.matrix[0] * m.matrix[6] * m.matrix[11] -
+		m.matrix[0] * m.matrix[7] * m.matrix[10] -
+		m.matrix[4] * m.matrix[2] * m.matrix[11] +
+		m.matrix[4] * m.matrix[3] * m.matrix[10] +
+		m.matrix[8] * m.matrix[2] * m.matrix[7] -
+		m.matrix[8] * m.matrix[3] * m.matrix[6];
+
+	b[11] =
+		-m.matrix[0] * m.matrix[5] * m.matrix[11] +
+		m.matrix[0] * m.matrix[7] * m.matrix[9] +
+		m.matrix[4] * m.matrix[1] * m.matrix[11] -
+		m.matrix[4] * m.matrix[3] * m.matrix[9] -
+		m.matrix[8] * m.matrix[1] * m.matrix[7] +
+		m.matrix[8] * m.matrix[3] * m.matrix[5];
+
+	b[15] =
+		m.matrix[0] * m.matrix[5] * m.matrix[10] -
+		m.matrix[0] * m.matrix[6] * m.matrix[9] -
+		m.matrix[4] * m.matrix[1] * m.matrix[10] +
+		m.matrix[4] * m.matrix[2] * m.matrix[9] +
+		m.matrix[8] * m.matrix[1] * m.matrix[6] -
+		m.matrix[8] * m.matrix[2] * m.matrix[5];
+
+	det = m.matrix[0] * b[0] + m.matrix[1] * b[4] + m.matrix[2] * b[8] + m.matrix[3] * b[12];
+
+	if (det == 0) return m_inv;
+
+	det = 1.0 / det;
+
+	for (int i = 0; i < 16; i++)
+		m_inv.matrix[i] = b[i] * det;
+
+	return m_inv;
+}
+
 mat4 operator*(const mat4& left, const mat4& right) {
 	return mat4::multiply(left, right);
 }

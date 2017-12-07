@@ -4,13 +4,6 @@
 #include <iostream>
 #include "Text.h"
 
-
-
-// Shaders and camera class, based on Joey de Vries' camera and shader class from learnOpenGL.com.
-#include "ObjectShader.h"
-#include "LightShader.h"
-#include "CubeMapShader.h"
-
 // 3D Object classes
 #include "CubeMap.h"
 #include "Rectangle.h"

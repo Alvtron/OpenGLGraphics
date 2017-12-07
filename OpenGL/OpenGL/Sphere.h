@@ -10,9 +10,13 @@ class Sphere : public Vertex
 private:
 	const float WIDTH = 1.0f;
 	const unsigned int QUALITY = 4;
-public:
-	Sphere();
-	Sphere(const float width, const unsigned int quality);
-	~Sphere();
+	/* Creates the sphere. */
 	void createSphere(const float width, const unsigned int quality);
+public:
+	/* Create a Sphere object that stores vertex data. Uses default size. */
+	Sphere();
+	/* Create a Sphere object that stores vertex data. Specify width and quality. */
+	Sphere(const float width, const unsigned int quality);
+	/* De-constructor */
+	~Sphere();
 };

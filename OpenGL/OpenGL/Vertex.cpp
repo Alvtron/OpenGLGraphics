@@ -1,6 +1,5 @@
 #include "Vertex.h"
 
-/* Cosntructor */
 Vertex::Vertex(const std::vector<vec3>& vertices, const std::vector<vec3>& normals, const std::vector<vec3>& colors, const std::vector<vec2>& uvs, const std::vector<vec3>& tangents, const std::vector<vec3>& bitangents, const std::vector<unsigned int>& indices)
 {
 	this->vertices = vertices;
@@ -12,13 +11,11 @@ Vertex::Vertex(const std::vector<vec3>& vertices, const std::vector<vec3>& norma
 	this->indices = indices;
 }
 
-/* De-constructor */
 Vertex::~Vertex()
 {
 	deAllocate();
 }
 
-/* Set scale (creates scale model) */
 void Vertex::setScale(const vec3 & scale_vector)
 {
 	scale = mat4::makeScale(scale_vector);
@@ -26,97 +23,81 @@ void Vertex::setScale(const vec3 & scale_vector)
 	uv_scale.y = scale_vector.y;
 }
 
-/* Returns scale model */
 mat4 & Vertex::getScale()
 {
 	return scale;
 }
 
-/* Returns UV scale */
 vec2 & Vertex::getUVScale()
 {
 	return uv_scale;
 }
 
-/* Set rotation (creates rotation model) */
 void Vertex::setRotate(const float & rotate_degrees, const vec3 & rotate_vector)
 {
 	rotate = mat4::makeRotate(rotate_degrees, rotate_vector);
 }
 
-/* Returns rotation model */
 mat4 & Vertex::getRotation()
 {
 	return rotate;
 }
 
-/* Set position (create translation model) */
 void Vertex::setPosition(const vec3 & position_vector)
 {
 	position = mat4::makeTranslate(position_vector);
 }
 
-/* Returns translation model */
 mat4 & Vertex::getPosition()
 {
 	return position;
 }
 
-/* Returns the size of the vertex data (per stride)*/
 const unsigned int Vertex::size()
 {
 	return dataSize() / stride();
 }
 
-/* Returns the number of floats */
 const unsigned int Vertex::dataSize()
 {
 	return vertices.size() * 3 + normals.size() * 3 + colors.size() * 3 + uvs.size() * 2 + tangents.size() * 3 + bitangents.size() * 3;
 }
 
-/* Returns wheter this vertex has vertices or not */
 bool Vertex::hasVertices()
 {
 	return (vertices.size() > 0);
 }
 
-/* Returns wheter this vertex has normals or not */
 bool Vertex::hasNormals()
 {
 	return (normals.size() > 0);
 }
 
-/* Returns wheter this vertex has colors or not */
 bool Vertex::hasColors()
 {
 	return (colors.size() > 0);
 }
 
-/* Returns wheter this vertex has uvs or not */
 bool Vertex::hasUVs()
 {
 	return (uvs.size() > 0);
 }
 
-/* Returns wheter this vertex has tangents or not */
 bool Vertex::hasTangents()
 {
 	return (tangents.size() > 0);
 }
 
-/* Returns wheter this vertex has bitangents or not */
 bool Vertex::hasBitangents()
 {
 	return (bitangents.size() > 0);
 }
 
-/* Returns wheter this vertex has indices or not */
 bool Vertex::hasIndices()
 {
 	return (indices.size() > 0);
 }
 
-/* Returns the stride (size of the raw data per float)*/
 const unsigned int Vertex::stride() {
 	unsigned int stride = 0;
 	if (hasVertices()) stride += 3;
@@ -128,19 +109,16 @@ const unsigned int Vertex::stride() {
 	return stride;
 }
 
-/* Returns the stride in vertex data*/
 const unsigned int Vertex::verticeStride() {
 	return 0;
 }
 
-/* Returns the first index of the first normal in the vertex data. */
 const unsigned int Vertex::normalStride() {
 	unsigned int stride = 3;
 	if (!hasVertices()) stride -= 3;
 	return stride;
 }
 
-/* Returns the first index of the first color in the vertex data. */
 const unsigned int Vertex::colorStride() {
 	unsigned int stride = 6;
 	if (!hasVertices()) stride -= 3;
@@ -148,7 +126,6 @@ const unsigned int Vertex::colorStride() {
 	return stride;
 }
 
-/* Returns the first index of the first texture in the vertex data. */
 const unsigned int Vertex::uvStride() {
 	unsigned int stride = 9;
 	if (!hasVertices()) stride -= 3;
@@ -157,7 +134,6 @@ const unsigned int Vertex::uvStride() {
 	return stride;
 }
 
-/* Returns the first index of the first tangent in the vertex data. */
 const unsigned int Vertex::tangentStride() {
 	unsigned int stride = 11;
 	if (!hasVertices()) stride -= 3;
@@ -167,7 +143,6 @@ const unsigned int Vertex::tangentStride() {
 	return stride;
 }
 
-/* Returns the first index of the first bitangent in the vertex data. */
 const unsigned int Vertex::bitangentStride()
 {
 	unsigned int stride = 14;
@@ -179,7 +154,6 @@ const unsigned int Vertex::bitangentStride()
 	return stride;
 }
 
-/* Generate buffers and store vertex data on the GPU. Call drawObject(...) to draw it */
 bool Vertex::storeOnGPU()
 {
 	if (hasVertices())
@@ -246,53 +220,22 @@ bool Vertex::storeOnGPU()
 	}
 }
 
-/* Set draw mode. Defaults to GL_TRIANGLES */
 void Vertex::setDrawMode(GLenum mode)
 {
 	draw_mode = mode;
 }
 
-/* Set if textures should scale with object or not. False by default*/
 void Vertex::scaleTextures(const bool ENABLE)
 {
 	scaleTexture = ENABLE;
 }
 
-/* Draw MESH_INDICE vertex data from GPU */
-bool Vertex::drawObject(const Shader * shader, const vec3 &position, const vec3 &scale_vector, const float &rotation_degrees, const vec3 &rotation_vector, Texture &texture)
+bool Vertex::drawObject(const Shader * shader, const vec3 &position, const vec3 &scale_vector, const float &rotation_degrees, const vec3 &rotation_vector, Material * material)
 {
 	if (storedOnGPU)
 	{
-		// Bind diffuse map
-		if (texture.hasDiffuse())
-		{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, texture.getDiffuse());
-		}
-		// Bind specular map
-		if (texture.hasSpecular())
-		{
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, texture.getSpecular());
-		}
-		// Bind normal map
-		if (texture.hasNormal())
-		{
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, texture.getNormal());
-		}
-		// Bind displacement map
-		if (texture.hasDisplacement())
-		{
-			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_2D, texture.getDisplacement());
-		}
-		// Bind ambient oclusion map
-		if (texture.hasAO())
-		{
-			glActiveTexture(GL_TEXTURE4);
-			glBindTexture(GL_TEXTURE_2D, texture.getAO());
-		}
+		// Bind textures if if it points to a texture
+		if (material != nullptr) material->bind();
 		// Bind VAO
 		glBindVertexArray(VAO);
 		// Calculate the model matrix for each object and pass it to shader before drawing
@@ -310,36 +253,37 @@ bool Vertex::drawObject(const Shader * shader, const vec3 &position, const vec3 
 			glDrawElements(draw_mode, indices.size(), GL_UNSIGNED_INT, 0);
 		else
 			glDrawArrays(draw_mode, 0, size());
+		// Unbind textures
+		if (material != nullptr) material->unbind();
 		return true;
 	}
 	else
 	{
-		std::cout << "Mesh : drawObject() : Can't draw mesh. Mesh data is not stored on GPU. Call storeOnGPU() first!";
+		std::cout << "Mesh : drawObject() : Can't draw modle. Vertex data is not stored on GPU. Call storeOnGPU() first!";
 		return false;
 	}
 }
 
-bool Vertex::drawObject(const Shader * shader, const vec3 & position, const float & rotation_degrees, const vec3 & rotation_vector, Texture & texture)
+bool Vertex::drawObject(const Shader * shader, const vec3 & position, const float & rotation_degrees, const vec3 & rotation_vector, Material * material)
 {
-	return drawObject(shader, position, vec3(1.0f), rotation_degrees, rotation_vector, texture);
+	return drawObject(shader, position, vec3(1.0f), rotation_degrees, rotation_vector, material);
 }
 
-bool Vertex::drawObject(const Shader * shader, const vec3 & position, const vec3 & scale_vector, Texture & texture)
+bool Vertex::drawObject(const Shader * shader, const vec3 & position, const vec3 & scale_vector, Material * material)
 {
-	return drawObject(shader, position, scale_vector, 0.0f, vec3(1.0f), texture);
+	return drawObject(shader, position, scale_vector, 0.0f, vec3(1.0f), material);
 }
 
-bool Vertex::drawObject(const Shader * shader, const vec3 & position, Texture & texture)
+bool Vertex::drawObject(const Shader * shader, const vec3 & position, Material * material)
 {
-	return drawObject(shader, position, vec3(1.0f), 0.0f, vec3(1.0f), texture);
+	return drawObject(shader, position, vec3(1.0f), 0.0f, vec3(1.0f), material);
 }
 
-bool Vertex::drawObject(const Shader * shader, Texture & texture)
+bool Vertex::drawObject(const Shader * shader, Material * material)
 {
-	return drawObject(shader, vec3(0.0f), vec3(1.0f), 0.0f, vec3(1.0f), texture);
+	return drawObject(shader, vec3(0.0f), vec3(1.0f), 0.0f, vec3(1.0f), material);
 }
 
-/* De-allocate vertex data once it has outlived it's purpose */
 bool Vertex::deAllocate()
 {
 	if (storedOnGPU)
@@ -352,56 +296,48 @@ bool Vertex::deAllocate()
 	else return false;
 }
 
-/* Prints all vertices in a human-readable format */
 const void Vertex::printVertices()
 {
 	for (int i = 0; i < vertices.size(); i++)
 		std::cout << vertices[i].x << ", " << vertices[i].y << ", " << vertices[i].z << std::endl;
 }
 
-/* Prints all normals in a human-readable format */
 const void Vertex::printNormals()
 {
 	for (int i = 0; i < normals.size(); i++)
 		std::cout << normals[i].x << ", " << normals[i].y << ", " << normals[i].z << std::endl;
 }
 
-/* Prints all colors in a human-readable format */
 const void Vertex::printColors()
 {
 	for (int i = 0; i < colors.size(); i++)
 		std::cout << colors[i].x << ", " << colors[i].y << ", " << colors[i].z << std::endl;
 }
 
-/* Prints all uvs in a human-readable format */
 const void Vertex::printUVs()
 {
 	for (int i = 0; i < uvs.size(); i++)
 		std::cout << uvs[i].x << ", " << uvs[i].y << std::endl;
 }
 
-/* Prints all tangents in a human-readable format */
 const void Vertex::printTangents()
 {
 	for (int i = 0; i < tangents.size(); i++)
 		std::cout << tangents[i].x << ", " << tangents[i].y << ", " << tangents[i].z << std::endl;
 }
 
-/* Prints all bitangents in a human-readable format */
 const void Vertex::printBitangents()
 {
 	for (int i = 0; i < bitangents.size(); i++)
 		std::cout << bitangents[i].x << ", " << bitangents[i].y << ", " << bitangents[i].z << std::endl;
 }
 
-/* Prints all indices in a human-readable format */
 const void Vertex::printIndices()
 {
 	for (int i = 0; i < indices.size(); i += 3)
 		std::cout << indices[i] << ", " << indices[i + 1] << ", " << indices[i + 2] << std::endl;
 }
 
-/* Prints vertex data in a human-readable format */
 const void Vertex::printVertexData()
 {
 	for (unsigned int i = 0; i < vertices.size(); i++)
@@ -422,7 +358,6 @@ const void Vertex::printVertexData()
 	}
 }
 
-/* Prints vertex data sizes in a human-readable format */
 const void Vertex::printDataSizes()
 {
 	std::cout << "Vertices: " << vertices.size() << std::endl;
@@ -434,7 +369,6 @@ const void Vertex::printDataSizes()
 	std::cout << "Indices: " << indices.size() << std::endl;
 }
 
-/* Return the combined vertex data */
 std::vector<float> Vertex::data()
 {
 	std::vector<float> raw_data;
@@ -479,7 +413,6 @@ std::vector<float> Vertex::data()
 	return raw_data;
 }
 
-/* Calculate the normals of each triangle, https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal */
 void Vertex::createNormals() {
 	normals.clear();
 
@@ -514,12 +447,10 @@ void Vertex::createNormals() {
 	}
 }
 
-/* Calculate tangent vectors for all triangles */
-void Vertex::createColors(const vec3 &color) {
+void Vertex::setColor(const vec3 &color) {
 	colors = std::vector<vec3>(size(), color);
 }
 
-/* Calculate tangent vectors for all triangles */
 void Vertex::calculateTangents() {
 
 	// Remove any previous tangents and bitangents
@@ -601,7 +532,6 @@ void Vertex::calculateTangents() {
 	}
 }
 
-/* Unwrap vertex data with indices. */
 std::vector<vec3> Vertex::unwrap(const std::vector<vec3> & vertex_data) {
 	std::vector<vec3> unwrapped_data;
 	unwrapped_data.reserve(indices.size());
@@ -611,7 +541,6 @@ std::vector<vec3> Vertex::unwrap(const std::vector<vec3> & vertex_data) {
 	return unwrapped_data;
 }
 
-/* Unwrap vertex data with indices. */
 std::vector<vec2> Vertex::unwrap(const std::vector<vec2> & vertex_data) {
 	std::vector<vec2> unwrapped_data;
 	unwrapped_data.reserve(indices.size());
@@ -621,7 +550,6 @@ std::vector<vec2> Vertex::unwrap(const std::vector<vec2> & vertex_data) {
 	return unwrapped_data;
 }
 
-/* Split up mesh into smaller pieces. Keep @param divitions below 10 */
 void Vertex::subdivide(const unsigned int & divitions)
 {
 	if (hasIndices())
@@ -648,7 +576,6 @@ void Vertex::subdivide(const unsigned int & divitions)
 	}
 }
 
-/* Private function: Split up vec3 data into smaller pieces */
 std::vector<vec3> Vertex::subdivide(const std::vector<vec3>& vertex_data)
 {
 	std::vector<vec3> subdivided;
@@ -683,7 +610,6 @@ std::vector<vec3> Vertex::subdivide(const std::vector<vec3>& vertex_data)
 	return subdivided;
 }
 
-/* Private function: Split up vec2 data into smaller pieces */
 std::vector<vec2> Vertex::subdivide(const std::vector<vec2>& vertex_data)
 {
 	std::vector<vec2> subdivided;

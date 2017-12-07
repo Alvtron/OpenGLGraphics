@@ -4,12 +4,10 @@ unsigned int Light::directional_light_counter = 0;
 unsigned int Light::point_light_counter = 0;
 unsigned int Light::spot_light_counter = 0;
 
-/* Constructor */
 Light::Light()
 {
 }
 
-/* De-constructor */
 Light::~Light()
 {
 }

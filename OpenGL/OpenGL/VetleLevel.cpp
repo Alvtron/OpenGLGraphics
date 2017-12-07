@@ -1,5 +1,7 @@
 #pragma once
 #include "VetleLevel.h"
+#include "Material.h"
+#include "Shader.h"
 
 namespace vetle {
 
@@ -34,11 +36,11 @@ namespace vetle {
 	float angle = 0.0f;
 
 	// Textures
-	Texture sunTexture, groundTexture;
+	Material sunTexture, groundTexture;
 
 	// Shaders
-	CubeMapShader cubeMapShader;
-	ObjectShader shader;
+	Shader cubeMapShader;
+	Shader shader;
 
 	void VetleLevel::init(GLFWwindow *window, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 	{
@@ -60,8 +62,8 @@ namespace vetle {
 		// ===========================================================================================
 		// SHADER - Build and compile the shader program (with LearnOpenGL's provided shader class)
 		// ===========================================================================================
-		cubeMapShader = CubeMapShader("shaders/cubemap_vert.shader", "shaders/cubemap_frag.shader");
-		shader = ObjectShader("shaders/object_vert.shader", "shaders/obj_one_light_frag.shader");
+		cubeMapShader.init("shaders/cubemap_vert.shader", "shaders/cubemap_frag.shader");
+		shader.init("shaders/object_vert.shader", "shaders/obj_one_light_frag.shader");
 
 		// ===========================================================================================
 		// 3D OBJECTS - Set up vertex data and buffers and configure vertex attributes
@@ -82,16 +84,14 @@ namespace vetle {
 			"resources/skybox/front.jpg"
 		);
 
-		sunTexture = Texture();
-		sunTexture.addDiffuse("resources/textures/sun1.jpg");
-		sunTexture.addSpecular("resources/textures/1857-specexponent.jpg");
-		sunTexture.addNormal("resources/textures/1857-normal.jpg");
+		sunTexture.addDiffuse(Texture("resources/textures/sun1.jpg"));
+		sunTexture.addSpecular(Texture("resources/textures/1857-specexponent.jpg"));
+		sunTexture.addNormal(Texture("resources/textures/1857-normal.jpg"));
 
-		groundTexture = Texture();
-		groundTexture.addDiffuse("resources/textures/10744-diffuse.jpg");
-		groundTexture.addSpecular("resources/textures/10744-specstrength.jpg");
-		groundTexture.addNormal("resources/textures/10744-normal.jpg");
-		groundTexture.addAO("resources/textures/10744-ambientocclusion.jpg");
+		groundTexture.addDiffuse(Texture("resources/textures/10744-diffuse.jpg"));
+		groundTexture.addSpecular(Texture("resources/textures/10744-specstrength.jpg"));
+		groundTexture.addNormal(Texture("resources/textures/10744-normal.jpg"));
+		groundTexture.addAmbientOcclusion(Texture("resources/textures/10744-ambientocclusion.jpg"));
 
 	}
 
@@ -135,14 +135,14 @@ namespace vetle {
 		// DRAW OBJECTS (see Rectangle/Cube class for draw functions)
 		// -------------------------------------------------------------------------------------------
 	
-		ground.drawObject(&shader, groundPosition, 90.0f, vec3(1.0f, 0.0f, 0.0f), groundTexture);
+		ground.drawObject(&shader, groundPosition, 90.0f, vec3(1.0f, 0.0f, 0.0f), &groundTexture);
 		sunPosition = vec3(radius * cos(angle * M_PI / 180.0f), radius * sin(angle * M_PI / 180.0f), 0.0f);
-		sun.drawObject(&shader, sunPosition, sunTexture);
+		sun.drawObject(&shader, sunPosition, &sunTexture);
 
 		angle += 0.5f;
 		
 		// Draw cubemap (this must AFTER all other objects last or it will decrease peformance)
-		cubemap.drawCubemap(&cubeMapShader, &camera, view, projection);
+		cubemap.drawCubemap(&cubeMapShader, &camera, projection);
 
 		// GLFW: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);

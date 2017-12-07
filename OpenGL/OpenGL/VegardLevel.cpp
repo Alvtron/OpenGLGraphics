@@ -1,5 +1,6 @@
 #pragma once 
 #include "VegardLevel.h"
+#include "Shader.h"
 
 namespace Vegard {
 	//Prototyes
@@ -47,11 +48,11 @@ namespace Vegard {
 	float angle = 90.0f;
 
 	// Textures
-	Texture sunTexture, groundTexture, mixedstone, metal;
+	Material sunTexture, groundTexture, mixedstone, metal;
 
 	// Shaders
-	CubeMapShader cubeMapShader;
-	ObjectShader shader;
+	Shader cubeMapShader;
+	Shader shader;
 
 	
 
@@ -81,8 +82,8 @@ namespace Vegard {
 		// ===========================================================================================
 		// SHADER - Build and compile the shader program (with LearnOpenGL's provided shader class)
 		// ===========================================================================================
-		cubeMapShader = CubeMapShader("shaders/cubemap_vert.shader", "shaders/cubemap_frag.shader");
-		shader = ObjectShader("shaders/object_vert.shader", "shaders/obj_one_light_frag.shader");
+		cubeMapShader.init("shaders/cubemap_vert.shader", "shaders/cubemap_frag.shader");
+		shader.init("shaders/object_vert.shader", "shaders/obj_one_light_frag.shader");
 
 		// ===========================================================================================
 		// 3D OBJECTS - Set up vertex data and buffers and configure vertex attributes
@@ -105,28 +106,24 @@ namespace Vegard {
 			"resources/skybox/front.jpg"
 		);
 
-		sunTexture = Texture();
-		sunTexture.addDiffuse("resources/textures/sun1.jpg");
-		sunTexture.addSpecular("resources/textures/1857-specexponent.jpg");
-		sunTexture.addNormal("resources/textures/1857-normal.jpg");
+		sunTexture.addDiffuse(Texture("resources/textures/sun1.jpg"));
+		sunTexture.addSpecular(Texture("resources/textures/1857-specexponent.jpg"));
+		sunTexture.addNormal(Texture("resources/textures/1857-normal.jpg"));
 
-		groundTexture = Texture();
-		groundTexture.addDiffuse("resources/textures/10744-diffuse.jpg");
-		groundTexture.addSpecular("resources/textures/10744-specstrength.jpg");
-		groundTexture.addNormal("resources/textures/10744-normal.jpg");
-		groundTexture.addAO("resources/textures/10744-ambientocclusion.jpg");
+		groundTexture.addDiffuse(Texture("resources/textures/10744-diffuse.jpg"));
+		groundTexture.addSpecular(Texture("resources/textures/10744-specstrength.jpg"));
+		groundTexture.addNormal(Texture("resources/textures/10744-normal.jpg"));
+		groundTexture.addAmbientOcclusion(Texture("resources/textures/10744-ambientocclusion.jpg"));
 
-		mixedstone = Texture();
-		mixedstone.addDiffuse("resources/textures/mixedstones-diffuse.jpg");
-		mixedstone.addSpecular("resources/textures/mixedstones-specular.jpg");
-		mixedstone.addNormal("resources/textures/mixedstones-normal.jpg");
-		mixedstone.addDisplacement("resources/textures/mixedstones-displace.jpg");
+		mixedstone.addDiffuse(Texture("resources/textures/mixedstones-diffuse.jpg"));
+		mixedstone.addSpecular(Texture("resources/textures/mixedstones-specular.jpg"));
+		mixedstone.addNormal(Texture("resources/textures/mixedstones-normal.jpg"));
+		mixedstone.addDisplacement(Texture("resources/textures/mixedstones-displace.jpg"));
 
-		metal = Texture();
-		metal.addDiffuse("resources/textures/1857-diffuse.jpg");
-		metal.addSpecular("resources/textures/1857-specexponent.jpg");
-		metal.addNormal("resources/textures/1857-normal.jpg");
-		metal.addDisplacement("resources/textures/1857-displacement.jpg");
+		metal.addDiffuse(Texture("resources/textures/1857-diffuse.jpg"));
+		metal.addSpecular(Texture("resources/textures/1857-specexponent.jpg"));
+		metal.addNormal(Texture("resources/textures/1857-normal.jpg"));
+		metal.addDisplacement(Texture("resources/textures/1857-displacement.jpg"));
 
 		
 
@@ -178,10 +175,10 @@ namespace Vegard {
 		// -------------------------------------------------------------------------------------------
 		// DRAW OBJECTS (see Rectangle/Cube class for draw functions)
 		// -------------------------------------------------------------------------------------------
-		ground.drawObject(&shader, gorundEnt.position, gorundEnt.scale, 90.0f, vec3(1.0f, 0.0f, 0.0f), groundTexture);
+		ground.drawObject(&shader, gorundEnt.position, gorundEnt.scale, 90.0f, vec3(1.0f, 0.0f, 0.0f), &groundTexture);
 		//cube.drawObject(&shader, boxEnt.position, metal);
-		diamond.drawObject(&shader, vec3(0.0f, 3.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), mixedstone);
-		cube1.drawObject(&shader, boxEnt.position, metal);
+		diamond.drawObject(&shader, vec3(0.0f, 3.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), &mixedstone);
+		cube1.drawObject(&shader, boxEnt.position, &metal);
 		/*
 		for (int i = -10; i < 10; i++)
 			for (int j = -10; j < 10; j += 2) {
@@ -190,7 +187,7 @@ namespace Vegard {
 			}
 		*/
 		sunPosition = vec3(radius * cos(angle * M_PI / 180.0f), radius * sin(angle * M_PI / 180.0f), 0.0f);
-		sun.drawObject(&shader, sunPosition, sunTexture);
+		sun.drawObject(&shader, sunPosition, &sunTexture);
 		if (playerConsole) {
 			text.RenderText(player.consolePlayerPosition(), 20.0f, 20.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));
 			text.RenderText(player.consolePlayerCollision(), 20.0f, 60.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));
@@ -202,7 +199,7 @@ namespace Vegard {
 		//angle += 0.5f;
 
 		// Draw cubemap (this must AFTER all other objects last or it will decrease peformance)
-		cubemap.drawCubemap(&cubeMapShader, &player.camera, view, projection);
+		cubemap.drawCubemap(&cubeMapShader, &player.camera, projection);
 
 		// GLFW: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);

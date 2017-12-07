@@ -28,6 +28,7 @@ int forward = 2;
 int back = 3;
 int left = 4;
 int right = 5;
+int notSolidCollision = 6;
 
 bool collision_detected[6] = { 0,0,0,0,0,0 };
 int numbofEntities = 0;
@@ -42,25 +43,35 @@ void Player::collision(vec3 player_position)
 	{
 		//Down
 #if 1
-		if ((position.y - hitbox.y - 0.1f) < entities[i].position.y &&
+		if (entities[i].exist && !isFlying && (position.y - hitbox.y - 0.2f) < entities[i].position.y &&
 			(position.x + hitbox.x) < entities[i].hitbox.x * entities[i].scale.x * 0.5f &&
 			(position.x - hitbox.x) > -entities[i].hitbox.x * entities[i].scale.x * 0.5f &&
 			(position.z - hitbox.z) > -entities[i].hitbox.z * entities[i].scale.z * 0.5f &&
 			(position.z + hitbox.z) < entities[i].hitbox.z * entities[i].scale.z * 0.5f) {
 
-			collision_detected[down] = true;
+			if(entities[i].isSolid)
+				collision_detected[down] = true;
 		}
 
 		//Forward
-		if ((position.z + hitbox.z) > entities[i].position.z + (entities[i].hitbox.z * entities[i].scale.z - entities[i].scale.z * 2 + 1.0f) &&
+		if (entities[i].exist && !isFlying && (position.z + hitbox.z) > entities[i].position.z + (entities[i].hitbox.z * entities[i].scale.z - entities[i].scale.z * 2 + 1.0f) &&
 			(position.z + hitbox.z) < entities[i].position.z + (entities[i].hitbox.z * entities[i].scale.z) &&
 			(position.y - hitbox.y) < entities[i].position.y + (entities[i].hitbox.y * entities[i].scale.y - 0.1f) &&
 			(position.x - hitbox.x) < entities[i].position.x + (entities[i].hitbox.x * entities[i].scale.x - 1.0f) &&
 			(position.x + hitbox.x) > entities[i].position.x + (entities[i].hitbox.x * entities[i].scale.x - entities[i].scale.x * 2 + 1.0f)
 			)
 		{
-
-			collision_detected[forward] = true;
+			if(entities[i].isSolid)
+				collision_detected[forward] = true;
+			if (!entities[i].isSolid)
+			{
+				collision_detected[notSolidCollision] = true;
+				interactWithEntity = true;
+			}
+		}
+		else
+		{
+			interactWithEntity = false;
 		}
 #endif
 		//Right is the same as forward
@@ -169,43 +180,55 @@ void Player::processInput(GLFWwindow *window, float deltaTime, bool flyingmode)
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && !collision_detected[forward])
 	{
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-			camera.ProcessKeyboard(FORWARD, deltaTime, true, flyingmode);
+			camera.ProcessKeyboard(FORWARD, deltaTime, true, isFlying);
 		else
-			camera.ProcessKeyboard(FORWARD, deltaTime,false, flyingmode);
+			camera.ProcessKeyboard(FORWARD, deltaTime,false, isFlying);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-			camera.ProcessKeyboard(BACKWARD, deltaTime, true, flyingmode);
+			camera.ProcessKeyboard(BACKWARD, deltaTime, true, isFlying);
 		else
-			camera.ProcessKeyboard(BACKWARD, deltaTime,false, flyingmode);
+			camera.ProcessKeyboard(BACKWARD, deltaTime,false, isFlying);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-			camera.ProcessKeyboard(LEFT, deltaTime, true, flyingmode);
+			camera.ProcessKeyboard(LEFT, deltaTime, true, isFlying);
 		else
-			camera.ProcessKeyboard(LEFT, deltaTime,false, flyingmode);
+			camera.ProcessKeyboard(LEFT, deltaTime,false, isFlying);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-			camera.ProcessKeyboard(RIGHT, deltaTime, true, flyingmode);
+			camera.ProcessKeyboard(RIGHT, deltaTime, true, isFlying);
 		else
-			camera.ProcessKeyboard(RIGHT, deltaTime, false, flyingmode);
+			camera.ProcessKeyboard(RIGHT, deltaTime, false, isFlying);
 	}
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !isFlying)
 	{
 		isJumping = true;
 
 	}
+		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && collision_detected[notSolidCollision])
+	{
+		//List of removable entities
+		entities[2].exist = false;
+	}
 
 	if (!collision_detected[down]) {
 
-		if(gravityPlayer < 100.0f)
-			gravityPlayer = gravityPlayer + 0.1f;
+		if (isFlying && gravityPlayer != 0)
+			gravityPlayer == 0;
 
-		camera.ProcessKeyboardJump(deltaTime, -gravityPlayer);
+		if (gravityPlayer < 100.0f && !isFlying)
+		{
+			gravityPlayer = gravityPlayer + 0.1f;
+			camera.ProcessKeyboardJump(deltaTime, -gravityPlayer);
+		}
+		
+
+		
 	}
 	else
 	{
@@ -214,7 +237,7 @@ void Player::processInput(GLFWwindow *window, float deltaTime, bool flyingmode)
 
 
 	//Jumping
-	if (isJumping)
+	if (isJumping && !isFlying)
 	{
 		jumpStrength = jumpStrength - 0.1f;
 		camera.ProcessKeyboardJump(deltaTime, jumpStrength);
@@ -222,8 +245,11 @@ void Player::processInput(GLFWwindow *window, float deltaTime, bool flyingmode)
 
 	if (collision_detected[down])
 	{
-		jumpStrength = 7.0f;
-		isJumping = false;
+		if (!isFlying)
+		{
+			jumpStrength = 7.0f;
+			isJumping = false;
+		}
 	}
 
 	/*

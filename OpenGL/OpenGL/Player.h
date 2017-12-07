@@ -30,6 +30,8 @@ public:
 	vec3 position;
 	vec3 hitbox = vec3();
 	bool isJumping = false;
+	bool isFlying = false;
+	bool interactWithEntity = false;
 	Player();
 	Camera camera = Camera(vec3(0.0f, 2.0f, 2.0f));
 	void processInput(GLFWwindow *window, float deltaTime, bool flyingmode);
@@ -39,9 +41,9 @@ public:
 	std::string consoleOtherTings();
 
 	//Test variabel
-	int numberOfEntities = 2;
+	int numberOfEntities = 3;
 
-	Entity entities[2];
+	Entity entities[3];
 	void addCollidableEntity(Entity entity);
 
 private:

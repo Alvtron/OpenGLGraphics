@@ -195,7 +195,6 @@ void initGLFWindow()
 	if (DEBUG) {
 		printf("OpenGL version %s\n", glGetString(GL_VERSION));
 		printf("Using GLEW %s\n", glewGetString(GLEW_VERSION));
-		printf("Initialation time: %f seconds\n", getTimeSeconds(start_time_init, clock()));
 	}
 }
 

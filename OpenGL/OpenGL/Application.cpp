@@ -71,7 +71,6 @@ void processInput(GLFWwindow *window,float deltaTime);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void applyBloom();
 void renderQuad();
 
 // Timing
@@ -281,7 +280,6 @@ void main()
 	blurShader.setInt("image", 0);
 	bloomShader.use();
 	bloomShader.setInt("HDR_buffer", 0);
-	bloomShader.setInt("cloud_buffer", 3);
 	bloomShader.setInt("bloom_blur", 5);
 
 	// ===========================================================================================
@@ -511,8 +509,6 @@ void main()
 
 		renderQuad();
 
-
-
 		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -705,11 +701,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	player.camera.setFOV((float)yoffset);
-}
-
-void applyBloom() {
-
-
 }
 
 void renderQuad()

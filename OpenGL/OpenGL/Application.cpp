@@ -400,17 +400,19 @@ void main()
 		// -----------------------------------------------
 		// 2. render clouds
 		// -----------------------------------------------
+		
+		if (render_clouds) {
+			// Render clouds with resolve shader
+			cloudFBO.bind();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Render clouds with resolve shader
-		cloudFBO.bind();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			cloudShader.use();
 
-		cloudShader.use();
+			glActiveTexture(GL_TEXTURE10);
+			glBindTexture(GL_TEXTURE_2D, sceneFBO.colorBuffer[0]);
 
-		glActiveTexture(GL_TEXTURE10);
-		glBindTexture(GL_TEXTURE_2D, sceneFBO.colorBuffer[0]);
-
-		renderQuad();
+			renderQuad();
+		}
 
 		// -----------------------------------------------
 		// 3. blur scene
@@ -470,7 +472,7 @@ double getTimeSeconds(clock_t time_begin, clock_t time_end) {
 	return double(time_end - time_begin) / CLOCKS_PER_SEC;
 }
 
-/* DRAW OBJECTS - set up shaders and call mesh draw functions */
+/* DRAW OBJECTS - set up shaders and call vertex draw functions */
 void renderObjects(mat4 projection, mat4 view) {
 	// Activate shader when setting uniforms/drawing objects
 	objectShader.use();
@@ -500,7 +502,7 @@ void renderObjects(mat4 projection, mat4 view) {
 	diamond.drawObject(&objectShader, vec3(0.0f, 3.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), &mixedstone);
 }
 
-/* DRAW LIGHTS - set up light shader and call mesh draw functions */
+/* DRAW LIGHTS - set up light shader and call vertex draw functions */
 void renderLights(mat4 projection, mat4 view) {
 	// Activate light shader and configure it
 	lightShader.use();

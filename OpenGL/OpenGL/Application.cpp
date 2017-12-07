@@ -105,6 +105,8 @@ bool flyingMode = true;
 //Text
 Text text;
 bool playerConsole = true;
+bool holdTab = false;
+std::string keyInputMenu = " 1 = on/off collision and gravity | 2 = on/off ...."; //<-- Legg til her
 
 // Lights
 std::vector<Light> lights;
@@ -462,7 +464,10 @@ void main()
 		{
 			text.RenderText("Press E", WINDOW_WIDTH / 2 - 20.0f, WINDOW_HEIGHT / 2, 0.7f, vec3(1.0f, 0.0f, 0.0f));
 		}
-
+		if(!holdTab)
+			text.RenderText("Hold TAB for key-menu", 20.0f, WINDOW_HEIGHT - 40.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));	
+		else
+			text.RenderText(keyInputMenu, 20.0f, WINDOW_HEIGHT - 40.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));
 		// -----------------------------------------------
 		// 4. blur scene
 		// -----------------------------------------------
@@ -591,20 +596,6 @@ void processInput(GLFWwindow *window, float deltaTime)
 	
 	player.processInput(window, deltaTime, true);
 
-	/*
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
-
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
-
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
-
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
-	*/
-
 	if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS && !bloomKeyPressed)
 	{
 		
@@ -646,6 +637,11 @@ void processInput(GLFWwindow *window, float deltaTime)
 		else
 			cloud_render_distance = 10000.0f;
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
+		holdTab = true;
+	else
+		holdTab = false;
 
 }
 

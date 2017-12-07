@@ -169,12 +169,11 @@ private:
 	{
 		float y = (float)(Yaw * (M_PI / 180.0f));
 		float p = (float)(Pitch * (M_PI / 180.0f));
+
 		// Calculate the new Front vector
-		vec3 front;
-		front.x = cos(y) * cos(p);
-		front.y = sin(p);
-		front.z = sin(y) * cos(p);
+		vec3 front(cos(y) * cos(p), sin(p), sin(y) * cos(p));
 		Front = vec3::normalize(front);
+
 		// Also re-calculate the Right and Up vector
 		Right = vec3::normalize(vec3::cross(Front, WORLD_UP));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
 		Up = vec3::normalize(vec3::cross(Right, Front));

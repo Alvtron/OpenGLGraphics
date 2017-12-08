@@ -162,8 +162,8 @@ bool Vertex::storeOnGPU()
 		glGenBuffers(1, &VBO); // Create VBO that stores vertex data
 		glGenBuffers(1, &EBO); // Create EBO that stores indices
 		glBindVertexArray(VAO); // Bind the VAO before binding and configuring buffers
-		glBindBuffer(GL_ARRAY_BUFFER, VBO); // Bind the VBO to the GL_ARRAY_BUFFER target
-											// Copy vertex data into the VBO currently bound to the GL_ARRAY_BUFFER target
+		glBindBuffer(GL_ARRAY_BUFFER, VBO); // Bind the VBO to the GL_ARRAY_BUFFER target								
+		// Copy vertex data into the VBO currently bound to the GL_ARRAY_BUFFER target
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * dataSize(), data().data(), GL_STATIC_DRAW);
 
 		const unsigned int stride = this->stride() * sizeof(float);

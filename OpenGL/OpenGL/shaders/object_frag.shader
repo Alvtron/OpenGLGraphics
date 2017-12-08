@@ -78,8 +78,6 @@ uniform int lightCount;
 vec3 CalcDirectionLight(DirectionLight light, vec3 normal, vec3 view_direction);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 Point, vec3 view_direction);
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 Point, vec3 view_direction);
-
-
 vec3 CalcNormals(vec3 tangentLightPos);
 
 void main()
@@ -115,11 +113,11 @@ void main()
 // calculates the color when using a directional light.
 vec3 CalcDirectionLight(DirectionLight light, vec3 normal, vec3 view_direction)
 {
-	vec3 lightDir = normalize(-light.direction);
+	vec3 light_direction = normalize(-light.direction);
 	// diffuse shading
-	float angle = max(dot(normal, lightDir), 0.0);
+	float angle = max(dot(normal, light_direction), 0.0);
 	// specular shading
-	vec3 reflect_direction = reflect(-lightDir, normal);
+	vec3 reflect_direction = reflect(-light_direction, normal);
 	float spec = pow(max(dot(view_direction, reflect_direction), 0.0), material.shininess);
 	// combine results
 	vec3 ambient = light.ambient * vec3(texture(material.diffuse, UV));
@@ -131,16 +129,16 @@ vec3 CalcDirectionLight(DirectionLight light, vec3 normal, vec3 view_direction)
 // calculates the color when using a point light.
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 Point, vec3 view_direction)
 {
-	vec3 lightDir = normalize(light.position - Point);
+	vec3 light_direction = normalize(light.position - Point);
 	// diffuse shading
-	float angle = max(dot(normal, lightDir), 0.0);
+	float angle = max(dot(normal, light_direction), 0.0);
 	// specular shading, blinn-pong
-	vec3 reflect_direction = reflect(-lightDir, normal);
+	vec3 reflect_direction = reflect(-light_direction, normal);
 	float spec = pow(max(dot(view_direction, reflect_direction), 0.0), material.shininess);
 	if (blinn)
 	{
-		vec3 halfwayDir = normalize(lightDir + view_direction);
-		spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+		vec3 halfway_direction = normalize(light_direction + view_direction);
+		spec = pow(max(dot(normal, halfway_direction), 0.0), 32.0);
 	}
 	// attenuation
 	float distance = length(light.position - Point);
@@ -156,17 +154,17 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 Point, vec3 view_directi
 // calculates the color when using a spot light.
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 Point, vec3 view_direction)
 {
-	vec3 lightDir = normalize(light.position - Point);
+	vec3 light_direction = normalize(light.position - Point);
 	// diffuse shading
-	float angle = max(dot(normal, lightDir), 0.0);
+	float angle = max(dot(normal, light_direction), 0.0);
 	// specular shading
-	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(view_direction, reflectDir), 0.0), material.shininess);
+	vec3 reflect_direction = reflect(-light_direction, normal);
+	float spec = pow(max(dot(view_direction, reflect_direction), 0.0), material.shininess);
 	// attenuation
 	float distance = length(light.position - Point);
 	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 	// spotlight intensity
-	float theta = dot(lightDir, normalize(-light.direction));
+	float theta = dot(light_direction, normalize(-light.direction));
 	float epsilon = light.cutOff - light.outerCutOff;
 	float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
 	// combine results
@@ -185,8 +183,8 @@ vec3 CalcNormals(vec3 tangentLightPos)
 	// transform normal vector to range [-1,1], normal is in tangent space
 	normal = normalize(normal * 2.0 - 1.0);  
 	// angle
-	vec3 lightDir = normalize(tangentLightPos - TangentPoint);
-	float angle = max(dot(lightDir, normal), 0.0);
+	vec3 light_direction = normalize(tangentLightPos - TangentPoint);
+	float angle = max(dot(light_direction, normal), 0.0);
 	// get diffuse color
 	vec3 color = texture(material.diffuse, UV).rgb;
 	// ambient & diffuse
@@ -194,9 +192,9 @@ vec3 CalcNormals(vec3 tangentLightPos)
 	vec3 diffuse = 0.5 * color;
 	// specular
 	vec3 view_direction = normalize(TangentViewPos - TangentPoint);
-	vec3 reflect_direction = reflect(-lightDir, normal);
-	vec3 halfwayDir = normalize(lightDir + view_direction);
-	float specular = pow(max(dot(normal, halfwayDir), 0.0), 32.0) * 0.2;
+	vec3 reflect_direction = reflect(-light_direction, normal);
+	vec3 halfway_direction = normalize(light_direction + view_direction);
+	float specular = pow(max(dot(normal, halfway_direction), 0.0), 32.0) * 0.2;
 
 	return (ambient + diffuse * angle + specular * angle);
 }

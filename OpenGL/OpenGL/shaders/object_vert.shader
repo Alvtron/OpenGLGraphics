@@ -30,7 +30,8 @@ void main()
     Point = vec3(model * vec4(aPoints, 1.0));
     Normal = mat3(transpose(inverse(model))) * aNormals; 
 	Color = aColors;
-    UV = vec2(aUVs.x * scale.x, aUVs.y * scale.y);
+    
+	UV = vec2(aUVs.x * scale.x, aUVs.y * scale.y);
     
 	mat3 normalMatrix = transpose(inverse(mat3(model)));
 	vec3 T = normalize(normalMatrix * aTangent);

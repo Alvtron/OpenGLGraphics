@@ -134,6 +134,9 @@ Cube cubehit = Cube(boxEnt.scale.x);
 Diamond diamond = Diamond(1.0f);
 Diamond diamondPickUp = Diamond(1.0f);
 Sphere light = Sphere(0.25f, 3);
+Sphere sphere_low = Sphere(1.0f, 1);
+Sphere sphere_medium = Sphere(1.0f, 2);
+Sphere sphere_high = Sphere(1.0f, 4);
 Rect rect = Rect(1.0f, 1.0f);
 
 // Textures & Materials
@@ -321,6 +324,11 @@ void main()
 	diamond.storeOnGPU();
 	diamondPickUp.storeOnGPU();
 	light.storeOnGPU();
+
+	sphere_low.storeOnGPU();
+	sphere_medium.storeOnGPU();
+	sphere_high.storeOnGPU();
+
 	rect.storeOnGPU();
 
 	// ===========================================================================================
@@ -351,7 +359,6 @@ void main()
 	mixedstone.addSpecular(Texture("resources/textures/mixedstones-specular.jpg"));
 	mixedstone.addNormal(Texture("resources/textures/mixedstones-normal.jpg"));
 	mixedstone.addDisplacement(Texture("resources/textures/mixedstones-displace.jpg"));
-
 
 	printf("\nLoading 3D cloud texture...\n");
 	if (createTexture3DFromEX5(&cloud_texture, "resources/textures/noise5.ex5") == false) {
@@ -472,6 +479,7 @@ void main()
 			text.RenderText(keyInputMenu2, 20.0f, WINDOW_HEIGHT - 80.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));
 
 		}
+
 		// -----------------------------------------------
 		// 4. blur scene
 		// -----------------------------------------------
@@ -494,7 +502,6 @@ void main()
 			if (first_iteration)
 				first_iteration = false;
 		}
-
 
 
 		// -----------------------------------------------
@@ -521,10 +528,11 @@ void main()
 
 		renderQuad();
 
+		// -----------------------------------------------
 		// Swap buffers
+		// -----------------------------------------------
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-
 	}
 
 	glfwTerminate();
@@ -540,7 +548,7 @@ void renderObjects(mat4 projection, mat4 view) {
 	// Activate shader when setting uniforms/drawing objects
 	objectShader.use();
 	objectShader.setMat4("projection", projection);
-	objectShader.setMat4("view", view);
+	objectShader.setMat4("view", view); 
 	objectShader.setFloat("material.shininess", 64.0f);
 	objectShader.setVec3("viewPos", player.camera.Position);
 
@@ -560,7 +568,7 @@ void renderObjects(mat4 projection, mat4 view) {
 	cube.drawObject(&objectShader, vec3(0.0f, 5.0f, 0.0f), &metal);
 	cubehit.drawObject(&objectShader, boxEnt.position, &metal);
 	//rect.setScale(gorundEntity.scale);
-	rect.drawObject(&objectShader, gorundEntity.position, gorundEntity.scale, 180, vec3(1.0f,0.0f,0.0f), &tile);
+	rect.drawObject(&objectShader, gorundEntity.position, gorundEntity.scale, &tile);
 
 	diamond.drawObject(&objectShader, vec3(0.0f, 3.0f, -3.0f), vec3(2.0f, 2.0f, 2.0f), &mixedstone);
 
@@ -569,6 +577,10 @@ void renderObjects(mat4 projection, mat4 view) {
 		diamondPickUp.drawObject(&objectShader, dimodEnt.position, vec3(0.5f, 0.5f, 0.5f), rotatingDimond, vec3(0.0f, 1.0f, 0.0f), &metal);
 		rotatingDimond += 0.8;
 	}
+
+	sphere_low.drawObject(&objectShader, vec3(20.0f, 2.0f, 0.0f), &tile);
+	sphere_medium.drawObject(&objectShader, vec3(20.0f, 2.0f, 2.0f), &tile);
+	sphere_high.drawObject(&objectShader, vec3(20.0f, 2.0f, 4.0f), &tile);
 
 }
 

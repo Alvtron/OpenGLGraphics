@@ -649,7 +649,7 @@ void key_callback(GLFWwindow * window, int key, int scancode, int action, int mo
 		render_clouds = !render_clouds;
 	}
 
-	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+	if (key == GLFW_KEY_G && action == GLFW_PRESS)
 	{
 		flyingMode = !flyingMode;
 		player.isFlying = flyingMode;

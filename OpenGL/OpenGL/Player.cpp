@@ -2,11 +2,12 @@
 #include <iostream>
 #include <sstream>
 
-//Prototypes
 
 /*
 
-Collision detection code
+This class contains the camera with collision detection logic.
+
+Collision detection code (not finished)
 Up:			0
 Down:		1
 Forward:	2
@@ -33,6 +34,7 @@ int notSolidCollision = 6;
 bool collision_detected[6] = { 0,0,0,0,0,0 };
 int numbofEntities = 0;
 
+//Collision detection
 void Player::collision(vec3 player_position)
 {
 
@@ -41,19 +43,19 @@ void Player::collision(vec3 player_position)
 
 	for (int i = 0; i < numberOfEntities; i++)
 	{
-		//Down
-#if 1
+		//Check collision under player
 		if (entities[i].exist && !isFlying && (position.y - hitbox.y - 0.2f) < entities[i].position.y &&
 			(position.x + hitbox.x) < entities[i].hitbox.x * entities[i].scale.x * 0.5f &&
 			(position.x - hitbox.x) > -entities[i].hitbox.x * entities[i].scale.x * 0.5f &&
 			(position.z - hitbox.z) > -entities[i].hitbox.z * entities[i].scale.z * 0.5f &&
 			(position.z + hitbox.z) < entities[i].hitbox.z * entities[i].scale.z * 0.5f) {
 
+			//check if collided entity is solid. (if player can move through it)
 			if(entities[i].isSolid)
 				collision_detected[down] = true;
 		}
 
-		//Forward
+		//Check player collision with entity
 		if (entities[i].exist && !isFlying && (position.z + hitbox.z) > entities[i].position.z + (entities[i].hitbox.z * entities[i].scale.z - entities[i].scale.z * 2 + 1.0f) &&
 			(position.z + hitbox.z) < entities[i].position.z + (entities[i].hitbox.z * entities[i].scale.z) &&
 			(position.y - hitbox.y) < entities[i].position.y + (entities[i].hitbox.y * entities[i].scale.y - 0.1f) &&
@@ -73,20 +75,7 @@ void Player::collision(vec3 player_position)
 		{
 			interactWithEntity = false;
 		}
-#endif
-		//Right is the same as forward
 
-		/*
-		if ((position.z + hitbox.z) > entities[i].position.z + (entities[i].hitbox.z * entities[i].scale.z - entities[i].scale.z * 2 + 1.0f) &&
-		(position.z + hitbox.z) < entities[i].position.z + (entities[i].hitbox.z * entities[i].scale.z) &&
-		(position.y - hitbox.y) < entities[i].position.y + (entities[i].hitbox.y * entities[i].scale.y - 0.1f) &&
-		(position.x - hitbox.x) < entities[i].position.x + (entities[i].hitbox.x * entities[i].scale.x - 1.0f) &&
-		(position.x + hitbox.x) > entities[i].position.x + (entities[i].hitbox.x * entities[i].scale.x - entities[i].scale.x * 2 + 1.0f)
-		)
-		{
-		collision_detected[right] = true;
-		}
-		*/
 
 	}
 
@@ -95,11 +84,13 @@ void Player::collision(vec3 player_position)
 
 }
 
+//default contructor
 Player::Player()
 {
 
 }
 
+//Funciton that returns string of information about where the player/camera is in world
 std::string Player::consolePlayerPosition()
 {
 
@@ -111,6 +102,7 @@ std::string Player::consolePlayerPosition()
 
 }
 
+//Function that return string of information about if player/camera collide with something
 std::string Player::consolePlayerCollision()
 {
 	std::ostringstream oss;
@@ -129,6 +121,7 @@ std::string Player::consolePlayerCollision()
 	return oss.str();
 }
 
+//Fuction that return a log of other things if needed.
 std::string Player::consoleOtherTings()
 {
 	std::ostringstream oss;
@@ -138,6 +131,7 @@ std::string Player::consoleOtherTings()
 	return oss.str();
 }
 
+//Bind entities that player can collide with
 void Player::addCollidableEntity(Entity ent)
 {
 
@@ -150,33 +144,9 @@ void Player::addCollidableEntity(Entity ent)
 void Player::processInput(GLFWwindow *window, float deltaTime, bool flyingmode)
 {
 
-	/*
-
-	Quadtrær
-	Octrær
-	BSP
-
-	*/
-
-
-	//Check collision under player test
-	/*
-	if ((position.y - hitbox.y) < entity.position.y &&
-	(position.x + hitbox.x) < entity.hitbox.x * entity.scale.x * 0.5f &&
-	(position.x - hitbox.x) > -entity.hitbox.x * entity.scale.x * 0.5f&&
-	(position.z - hitbox.z) > -entity.hitbox.z * entity.scale.z * 0.5f&&
-	(position.z + hitbox.z) < entity.hitbox.z * entity.scale.z * 0.5f)
-	{
-	collisionDetected = true;
-	}
-	else
-	{
-	collisionDetected = false;
-	}
-	*/
-
 	collision(vec3(0, 0, 0));
 
+	//Update movement of player
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && !collision_detected[forward])
 	{
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
@@ -252,14 +222,8 @@ void Player::processInput(GLFWwindow *window, float deltaTime, bool flyingmode)
 		}
 	}
 
-	/*
-	if ((glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS && !((position.y - hitbox.y) < entity.position.y)))
-	{
-	camera.ProcessKeyboardJump(deltaTime, -jumpStrength);
-	}
-	*/
 
-
+	//Set player entity position equal to camera position
 	position = camera.Position;
 
 }

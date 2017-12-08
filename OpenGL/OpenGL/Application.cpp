@@ -83,8 +83,7 @@ static unsigned int quad_vao = 0;
 static unsigned int quad_vbo = 0;
 
 // Other global variables
-bool bloom = true;
-bool bloomKeyPressed = false, render_clouds = false;
+bool bloom = true, render_clouds = false;
 float exposure = 1.0f;
 float cloud_render_distance = 1000.0f;
 
@@ -101,6 +100,7 @@ double lastX;
 double lastY;
 bool firstMouse = true;
 bool flyingMode = true;
+bool invertedMouse = false;
 
 //Text
 Text text;
@@ -599,21 +599,6 @@ void processInput(GLFWwindow *window, float deltaTime)
 	
 	player.processInput(window, deltaTime, true);
 
-	if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS && !bloomKeyPressed)
-	{
-		
- 	}
-
-	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !bloomKeyPressed)
-	{
-		bloom = !bloom;
-		bloomKeyPressed = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE)
-	{
-		bloomKeyPressed = false;
-	}
-
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
 		if (exposure > 0.0f)
@@ -669,6 +654,13 @@ void key_callback(GLFWwindow * window, int key, int scancode, int action, int mo
 		flyingMode = !flyingMode;
 		player.isFlying = flyingMode;
 	}
+
+	if (key == GLFW_KEY_I && action == GLFW_PRESS)
+		invertedMouse = !invertedMouse;
+
+	if (key == GLFW_KEY_B && action == GLFW_PRESS)
+		bloom = !bloom;
+
 }
 
 /* GLFW: whenever the window size changes, this callback function executes */
@@ -688,7 +680,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	}
 
 	double xoffset = xpos - lastX;
-	double yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	double yoffset;
+
+	if(invertedMouse)
+		yoffset = ypos - lastY; // Inverted mouse controls
+	else
+		yoffset = lastY - ypos; // Not inverted mouse controls
 
 	lastX = (float)xpos;
 	lastY = (float)ypos;

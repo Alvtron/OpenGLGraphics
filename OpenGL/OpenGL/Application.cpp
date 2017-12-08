@@ -30,6 +30,12 @@
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
+
+// Entities
+#include "Player.h"
+#include "Entity.h"
+
+
 // Text renderer by Vegard Strand
 #include "Text.h"
 // General C++ (and C++11) libraries
@@ -56,16 +62,15 @@ bool vsync = true;
 const char window_title[] = "ITF21215 OpenGL group project";
 const int openGL_min = 4, openGL_max = 4;
 GLFWwindow* window;
-unsigned int WINDOW_WIDTH = 1920, WINDOW_HEIGHT = 1080;
+unsigned int WINDOW_WIDTH = 1200, WINDOW_HEIGHT = 700;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void renderObjects(mat4 projection, mat4 view);
 void renderLights(mat4 projection, mat4 view);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window,float deltaTime);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void applyBloom();
 void renderQuad();
 
 // Timing
@@ -78,17 +83,30 @@ static unsigned int quad_vao = 0;
 static unsigned int quad_vbo = 0;
 
 // Other global variables
-bool bloom = true;
-bool bloomKeyPressed = false, render_clouds = true;
+bool bloom = true, render_clouds = false;
 float exposure = 1.0f;
 float cloud_render_distance = 1000.0f;
 
-// Camera
-const vec3 SPAWN_POSITION(0.0f, 2.0f, 0.0f);
-Camera camera(SPAWN_POSITION);
+//Entities for collision and camera
+const vec3 SPAWN_POSITION(0.0f, 10.0f, 0.0f);
+Player player;
+Entity gorundEntity(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0001f, 1.0f), vec3(100.0f, 100.0f, 100.0f), true);
+Entity boxEnt(vec3(0.0f, 1.5f, -20.0f), vec3(1.0f, 1.0f, 1.0f), vec3(3.0f, 3.0f, 3.0f), true);
+Entity dimodEnt(vec3(5.0f, 0.5f, -10.0f), vec3(1.0f, 1.0f, 1.0f), vec3(2.5f, 2.5f, 2.5f), false, true);
+//Rotating dimand degrees
+float rotatingDimond = 0.0f;
+
 double lastX;
 double lastY;
 bool firstMouse = true;
+bool flyingMode = true;
+bool invertedMouse = false;
+
+//Text
+Text text;
+bool playerConsole = true;
+bool holdTab = false;
+std::string keyInputMenu = " 1 = on/off collision and gravity | 2 = on/off | B = on/off bloom | Q/E = increasing/decreasing bloom | SPACE = Jump | WASD = movement"; //<-- Legg til her
 
 // Lights
 std::vector<Light> lights;
@@ -96,7 +114,7 @@ vec3 sunDirection = vec3(-1.0, -1.0, 0.0f);
 vec3 sunPosition = vec3(1000.0f, 1000.0f, 0.0f);
 vec3 sunColor = vec3(1.0f, 1.0f, 0.0f);
 vec3 lightColor = vec3(1.0f, 0.5f, 1.0f);
-SpotLight flashlight = SpotLight(&camera, vec3(1.0f));
+SpotLight flashlight = SpotLight(&player.camera, vec3(1.0f));
 
 // Framebuffers
 Framebuffer cloudFBO;
@@ -111,7 +129,9 @@ CubeMap cubemap = CubeMap();
 
 // Objects
 Cube cube = Cube(1.0f);
+Cube cubehit = Cube(boxEnt.scale.x);
 Diamond diamond = Diamond(1.0f);
+Diamond diamondPickUp = Diamond(1.0f);
 Sphere light = Sphere(0.25f, 3);
 Rect rect = Rect(1.0f, 1.0f);
 
@@ -199,6 +219,13 @@ void main()
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetKeyCallback(window, key_callback);
 
+	//Blending proporties
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//Init fonts
+	text.initFonts("C:/Windows/Fonts/Arial.ttf", WINDOW_HEIGHT, WINDOW_WIDTH);
+
 	// Tell GLFW to capture the players mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -255,7 +282,6 @@ void main()
 	blurShader.setInt("image", 0);
 	bloomShader.use();
 	bloomShader.setInt("HDR_buffer", 0);
-	bloomShader.setInt("cloud_buffer", 3);
 	bloomShader.setInt("bloom_blur", 5);
 
 	// ===========================================================================================
@@ -290,7 +316,9 @@ void main()
 
 	cubemap.storeOnGPU();
 	cube.storeOnGPU();
+	cubehit.storeOnGPU();
 	diamond.storeOnGPU();
+	diamondPickUp.storeOnGPU();
 	light.storeOnGPU();
 	rect.storeOnGPU();
 
@@ -337,6 +365,15 @@ void main()
 	cloudShader.setTexture3D(cloud_texture, "cloud_texture");
 	cloudShader.setTexture3D(cloud_structure_texture, "cloud_structure");
 
+	// ===========================================================================================
+	// ENTITIES / PLAYER
+	// ===========================================================================================
+	player.position = SPAWN_POSITION;
+	player.hitbox = vec3(0.5f, 1.0f, 0.5f);
+	player.camera.SetCameraPosition(player.position);
+	player.addCollidableEntity(gorundEntity);
+	player.addCollidableEntity(boxEnt);
+	player.addCollidableEntity(dimodEnt);
 
 	if (DEBUG) {
 		printf("\n\nInitialization time: %f seconds", getTimeSeconds(start_time_init, clock()));
@@ -353,7 +390,7 @@ void main()
 		lastFrame = currentFrame;
 
 		// Process input (if any)
-		processInput(window);
+		processInput(window, deltaTime);
 
 		increment_0 += 0.05f * deltaTime;
 		increment_1 += 0.15f * deltaTime;
@@ -362,12 +399,12 @@ void main()
 		lightColor = vec3(abs(sin(increment_0)), abs(sin(increment_1)), abs(sin(increment_2)));
 
 		// Background color (world color)
-		sunPosition = camera.Position + vec3(sin(increment_0) * 1000, cos(increment_0) * 1000, 0);
+		sunPosition = player.camera.Position + vec3(sin(increment_0) * 1000, cos(increment_0) * 1000, 0);
 
 		/* Calculate view and projection matrices and send them to shaders */
 
-		mat4 view = camera.GetViewMatrix();
-		mat4 projection = mat4::makePerspective(camera.Fov, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+		mat4 view = player.camera.GetViewMatrix();
+		mat4 projection = mat4::makePerspective(player.camera.Fov, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
 
 		cloudShader.setMat4("view", view);
 		cloudShader.setMat4("proj", projection);
@@ -394,7 +431,8 @@ void main()
 		renderObjects(projection, view);
 
 		// Draw cubemap
-		cubemap.drawCubemap(&cubeMapShader, &camera, projection);
+		cubemap.drawCubemap(&cubeMapShader, &player.camera, projection);
+
 
 		// -----------------------------------------------
 		// 2. render clouds
@@ -412,11 +450,31 @@ void main()
 
 			renderQuad();
 		}
-
+		
 		// -----------------------------------------------
-		// 3. blur scene
+		// 3. render text
+		// -----------------------------------------------
+		if (playerConsole) {
+			text.RenderText(player.consolePlayerPosition(), 20.0f, 20.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));
+			text.RenderText(player.consolePlayerCollision(), 20.0f, 60.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));
+			text.RenderText(player.consoleOtherTings(), 20.0f, 100.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));
+		}
+
+		if (player.interactWithEntity)
+		{
+			text.RenderText("Press E", WINDOW_WIDTH / 2 - 20.0f, WINDOW_HEIGHT / 2, 0.7f, vec3(1.0f, 0.0f, 0.0f));
+		}
+		if(!holdTab)
+			text.RenderText("Hold TAB for key-menu", 20.0f, WINDOW_HEIGHT - 40.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));	
+		else
+			text.RenderText(keyInputMenu, 20.0f, WINDOW_HEIGHT - 40.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));
+		// -----------------------------------------------
+		// 4. blur scene
 		// -----------------------------------------------
 
+		// This code executes the Gaussian blur. Here we blur the image 30 times, the more we iterate the blurring process, the more blur will be on
+		// the image. Each iteration, the boolean horizontal will change, so it blurs horizontally first, then vertically, into alternating framebuffers.
+		//
 		bool horizontal = true, first_iteration = true;
 		unsigned int amount = 30;
 		blurShader.use();
@@ -433,8 +491,10 @@ void main()
 				first_iteration = false;
 		}
 
+
+
 		// -----------------------------------------------
-		// 4. render fbo color buffers
+		// 5. render fbo color buffers
 		// -----------------------------------------------
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -478,7 +538,7 @@ void renderObjects(mat4 projection, mat4 view) {
 	objectShader.setMat4("projection", projection);
 	objectShader.setMat4("view", view);
 	objectShader.setFloat("material.shininess", 64.0f);
-	objectShader.setVec3("viewPos", camera.Position);
+	objectShader.setVec3("viewPos", player.camera.Position);
 
 	// lights
 	objectShader.setInt("directionLightCount", Light::numDirectionalLights());
@@ -494,11 +554,18 @@ void renderObjects(mat4 projection, mat4 view) {
 	flashlight.drawLight(&objectShader);
 
 	cube.drawObject(&objectShader, vec3(0.0f, 5.0f, 0.0f), &metal);
+	cubehit.drawObject(&objectShader, boxEnt.position, &metal);
+	//rect.setScale(gorundEntity.scale);
+	rect.drawObject(&objectShader, gorundEntity.position, gorundEntity.scale, 180, vec3(1.0f,0.0f,0.0f), &tile);
 
-	rect.setScale(vec3(1000.0f, 1000.0f, 1000.0f));
-	rect.drawObject(&objectShader, &tile);
+	diamond.drawObject(&objectShader, vec3(0.0f, 3.0f, -3.0f), vec3(2.0f, 2.0f, 2.0f), &mixedstone);
 
-	diamond.drawObject(&objectShader, vec3(0.0f, 3.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), &mixedstone);
+	//PickUpItems
+	if (player.entities[2].exist) {
+		diamondPickUp.drawObject(&objectShader, dimodEnt.position, vec3(0.5f, 0.5f, 0.5f), rotatingDimond, vec3(0.0f, 1.0f, 0.0f), &metal);
+		rotatingDimond += 0.8;
+	}
+
 }
 
 /* DRAW LIGHTS - set up light shader and call vertex draw functions */
@@ -525,33 +592,12 @@ void renderLights(mat4 projection, mat4 view) {
 // PLAYER INPUTS
 // ===========================================================================================
 /* Process all input: Query GLFW whether relevant keys are pressed/released this frame and react accordingly */
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow *window, float deltaTime)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
-
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
-
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
-
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, deltaTime, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
-
-
-	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !bloomKeyPressed)
-	{
-		bloom = !bloom;
-		bloomKeyPressed = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE)
-	{
-		bloomKeyPressed = false;
-	}
+	
+	player.processInput(window, deltaTime, true);
 
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
@@ -580,6 +626,11 @@ void processInput(GLFWwindow *window)
 			cloud_render_distance = 10000.0f;
 	}
 
+	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
+		holdTab = true;
+	else
+		holdTab = false;
+
 }
 
 /* Process all input: Query GLFW whether relevant keys are pressed. Registers one press. */
@@ -597,6 +648,19 @@ void key_callback(GLFWwindow * window, int key, int scancode, int action, int mo
 	{
 		render_clouds = !render_clouds;
 	}
+
+	if (key == GLFW_KEY_G && action == GLFW_PRESS)
+	{
+		flyingMode = !flyingMode;
+		player.isFlying = flyingMode;
+	}
+
+	if (key == GLFW_KEY_I && action == GLFW_PRESS)
+		invertedMouse = !invertedMouse;
+
+	if (key == GLFW_KEY_B && action == GLFW_PRESS)
+		bloom = !bloom;
+
 }
 
 /* GLFW: whenever the window size changes, this callback function executes */
@@ -616,23 +680,23 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	}
 
 	double xoffset = xpos - lastX;
-	double yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	double yoffset;
+
+	if(invertedMouse)
+		yoffset = ypos - lastY; // Inverted mouse controls
+	else
+		yoffset = lastY - ypos; // Not inverted mouse controls
 
 	lastX = (float)xpos;
 	lastY = (float)ypos;
 
-	camera.ProcessMouseMovement(xoffset, yoffset);
+	player.camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 /* GLFW: whenever the mouse scroll wheel scrolls, this callback is called */
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.setFOV((float)yoffset);
-}
-
-void applyBloom() {
-
-
+	player.camera.setFOV((float)yoffset);
 }
 
 void renderQuad()

@@ -2,6 +2,8 @@
 #include "VegardLevel.h"
 #include "Shader.h"
 
+#if 0
+
 namespace Vegard {
 	//Prototyes
 	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -35,8 +37,7 @@ namespace Vegard {
 	vec3 sunColour(1.0f, 1.0f, 1.0f);
 
 	//Entity
-	Entity gorundEnt(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0001f, 1.0f), vec3(100.0f, 100.0f, 100.0f));
-	Entity boxEnt(vec3(0.0f, 1.5f, -20.0f), vec3(1.0f, 1.0f, 1.0f), vec3(3.0f, 3.0f, 3.0f));
+	Entity gorundEnt(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0001f, 1.0f), vec3(100.0f, 100.0f, 100.0f), true);
 
 	// 3D Objects
 	Cube cube1 = Cube(boxEnt.scale.x);
@@ -296,3 +297,4 @@ namespace Vegard {
 	}
 
 }
+#endif

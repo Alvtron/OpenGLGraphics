@@ -106,7 +106,7 @@ bool flyingMode = true;
 Text text;
 bool playerConsole = true;
 bool holdTab = false;
-std::string keyInputMenu = " 1 = on/off collision and gravity | 2 = on/off ...."; //<-- Legg til her
+std::string keyInputMenu = " 1 = on/off collision and gravity | 2 = on/off | B = on/off bloom | Q/E = increasing/decreasing bloom | SPACE = Jump | WASD = movement"; //<-- Legg til her
 
 // Lights
 std::vector<Light> lights;
@@ -472,6 +472,9 @@ void main()
 		// 4. blur scene
 		// -----------------------------------------------
 
+		// This code executes the Gaussian blur. Here we blur the image 30 times, the more we iterate the blurring process, the more blur will be on
+		// the image. Each iteration, the boolean horizontal will change, so it blurs horizontally first, then vertically, into alternating framebuffers.
+		//
 		bool horizontal = true, first_iteration = true;
 		unsigned int amount = 30;
 		blurShader.use();

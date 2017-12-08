@@ -24,61 +24,43 @@ uniform float coverage = 0.4;
 float PI = 3.1415962;
 float PI_r = 0.3183098;
 
-float HG(float costheta) {
-	float g = 0.4;
-	return 1.25 * PI_r * (1 - pow(g, 2.0)) / pow((1 + pow(g, 2.0) - 2 * g * costheta), 1.5) + 0.5;
-}
+float HG(float costheta);
+float phase(vec3 v1, vec3 v2, float t);
+float cloud_coverage(float t);
+float cloud_sampling_lowres(vec3 v, float delta);
+float cloud_sampling(vec3 v, float delta);
+float cast_scatter_ray(vec3 origin, vec3 dir, float t);
+vec4 cast_ray(vec3 origin, vec3 dir);
+float rand(vec2 co);
 
-float phase(vec3 v1, vec3 v2, float t) {
-	float costheta = dot(v1, v2) / length(v1) / length(v2);
-	return HG(-costheta);
-}
+void main() {
+	// Calculate the ray.  http://antongerdelan.net/opengl/raycasting.html
+	float x = 2.0 * gl_FragCoord.x / window_size.x - 1.0;
+	float y = 2.0 * gl_FragCoord.y / window_size.y - 1.0;
+	vec4 ray_clip = vec4(vec2(x, y), -1.0, 1.0);
+	vec4 ray_view = vec4((inv_proj * ray_clip).xy, -1.0, 0.0);
+	vec3 ray_world = normalize((inv_view * ray_view).xyz);
 
-float cloud_coverage(float t) {
-	return smoothstep(0.35, coverage, t) * t;
-}
+	vec4 cloud_color = cast_ray(camera_position, ray_world);
 
-float cloud_sampling_lowres(vec3 v, float delta) {
-	v.y -= 80;
-	vec4 texture = texture(cloud_structure, v / 800);
-	return texture.r;
-}
+	vec4 diffuse_color = texelFetch(diffuse_buffer, ivec2(gl_FragCoord.xy), 0);
 
-float cloud_sampling(vec3 v, float delta) {
+	fragment_color.a = 0.9;
+	fragment_color.rgb = mix(diffuse_color.rgb, cloud_color.rgb, cloud_color.a)*0.8;
 
-	v.y -= 80;
-
-	vec4 textureA = texture(cloud_texture, v / 800);
-
-	float cloud_coverage = cloud_coverage(textureA.r);
-	float bottom = smoothstep(0, 80, v.y);
-
-	return textureA.r * cloud_coverage * bottom * delta * pow(textureA.b, 0.3) * pow(textureA.a, 0.4);
-}
-
-float cast_scatter_ray(vec3 origin, vec3 dir, float t) {
-	float delta = 10.0;
-
-	vec3 sample_point = vec3(0.0);
-	float inside = 0.0;
-
-	float phase = phase(dir, vec3(camera_position - origin), t);
-
-	for (float t = 0.0; t < end/10; t += delta) {
-		sample_point = origin + dir * t;
-		inside += cloud_sampling(sample_point, delta);
+	if (dot(fragment_color.rgb, vec3(0.1126, 0.3152, 0.0722)) > 500.0) {
+		bright_color = vec4(fragment_color.rgb, 1.0);
 	}
+}
 
-	float scatter = 3 * exp(-0.7 * inside) * (1.0 - exp(-0.8 * inside));
-
-	float result = scatter * phase;
-	return result;
+float rand(vec2 co) {
+	return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 // http://www.iquilezles.org/www/articles/terrainmarching/terrainmarching.htm
 vec4 cast_ray(vec3 origin, vec3 dir) {
-	float delta_large = 10.0;
-	float delta_small = 5.0;
+	float delta_large = 2.0;
+	float delta_small = 1.0;
 	float start = gl_DepthRange.near;
 
 	vec4 result = vec4(0.0);
@@ -106,9 +88,9 @@ vec4 cast_ray(vec3 origin, vec3 dir) {
 		float alpha_lowres = 0.0;
 		if (!inside) {
 			alpha_lowres = cloud_sampling_lowres(sample_point, delta);
-			
+
 			if (alpha_lowres > 0.001) inside = true;
-			
+
 			else looking_for_new_inside = true;
 		}
 
@@ -117,7 +99,7 @@ vec4 cast_ray(vec3 origin, vec3 dir) {
 			if (looking_for_new_inside) {
 				// Move the starting point a large delta backwards
 				t -= delta_large;
-				
+
 				if (t < gl_DepthRange.near) t = gl_DepthRange.near;
 
 				sample_point = origin + dir * t;
@@ -154,22 +136,53 @@ vec4 cast_ray(vec3 origin, vec3 dir) {
 	return result;
 }
 
-void main() {
-	// Calculate the ray.  http://antongerdelan.net/opengl/raycasting.html
-	float x = 2.0 * gl_FragCoord.x / window_size.x - 1.0;
-	float y = 2.0 * gl_FragCoord.y / window_size.y - 1.0;
-	vec4 ray_clip = vec4(vec2(x, y), -1.0, 1.0);
-	vec4 ray_view = vec4((inv_proj * ray_clip).xy, -1.0, 0.0);
-	vec3 ray_world = normalize((inv_view * ray_view).xyz);
+float cast_scatter_ray(vec3 origin, vec3 dir, float t) {
+	float delta = 10.0;
 
-	vec4 cloud_color = cast_ray(camera_position, ray_world);
+	vec3 sample_point = vec3(0.0);
+	float inside = 0.0;
 
-	vec4 diffuse_color = texelFetch(diffuse_buffer, ivec2(gl_FragCoord.xy), 0);
+	float phase = phase(dir, vec3(camera_position - origin), t);
 
-	fragment_color.a = 0.9;
-	fragment_color.rgb = mix(diffuse_color.rgb, cloud_color.rgb, cloud_color.a)*0.8;
-
-	if (dot(fragment_color.rgb, vec3(0.1126, 0.3152, 0.0722)) > 500.0) {
-		bright_color = vec4(fragment_color.rgb, 1.0);
+	for (float t = 0.0; t < end / 10; t += delta) {
+		sample_point = origin + dir * t;
+		inside += cloud_sampling(sample_point, delta);
 	}
+
+	float scatter = 3 * exp(-0.7 * inside) * (1.0 - exp(-0.8 * inside));
+
+	float result = scatter * phase;
+	return result;
+}
+
+float HG(float costheta) {
+	float g = 0.4;
+	return 1.25 * PI_r * (1 - pow(g, 2.0)) / pow((1 + pow(g, 2.0) - 2 * g * costheta), 1.5) + 0.5;
+}
+
+float phase(vec3 v1, vec3 v2, float t) {
+	float costheta = dot(v1, v2) / length(v1) / length(v2);
+	return HG(-costheta);
+}
+
+float cloud_coverage(float t) {
+	return smoothstep(0.35, coverage, t) * t;
+}
+
+float cloud_sampling_lowres(vec3 v, float delta) {
+	v.y -= 80;
+	vec4 texture = texture(cloud_structure, v / 800);
+	return texture.r;
+}
+
+float cloud_sampling(vec3 v, float delta) {
+
+	v.y -= 80;
+
+	vec4 textureA = texture(cloud_texture, v / 800);
+
+	float cloud_coverage = cloud_coverage(textureA.r);
+	float bottom = smoothstep(0, 80, v.y);
+
+	return textureA.r * cloud_coverage * bottom * delta * pow(textureA.b, 0.3) * pow(textureA.a, 0.4);
 }

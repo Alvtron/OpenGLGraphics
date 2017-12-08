@@ -9,35 +9,36 @@
 #include <gtc/type_ptr.hpp>
 // STB: Texture loader for several different types of image files
 #include "stb_image.h"
-// Shader Classes
+
+// Math classes by Vetle Deilkås
+#include <math.h>
+
+// Shader Classes by Thomas Angeland
 #include "Shader.h"
 #include "Framebuffer.h"
-
-
-// 3D Object classes
+// 3D Object classes by Thomas Angeland
 #include "CubeMap.h"
 #include "Rectangle.h"
 #include "Cube.h"
 #include "Sphere.h"
 #include "Triangle.h"
 #include "Diamond.h"
-// Texture Classes
+// Texture Classes by Thomas Angeland
 #include "Texture.h"
 #include "Material.h"
 #include "CloudTexture.h"
-// 3D Light class
+// 3D Light class by Thomas Angeland
 #include "Light.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
 
-// Entities
+// Entities by Vegard Strand
 #include "Player.h"
 #include "Entity.h"
-
-
 // Text renderer by Vegard Strand
 #include "Text.h"
+
 // General C++ (and C++11) libraries
 #include <iostream>
 #include <string>
@@ -269,6 +270,7 @@ void main()
 		printf("Error: Failed to initialize shader in %s at line %d.\n\n", __FILE__, __LINE__);
 	}
 
+	// Set object shader uniforms
 	objectShader.use();
 	objectShader.setInt("material.diffuse", 0);
 	objectShader.setInt("material.specular", 1);
@@ -276,13 +278,16 @@ void main()
 	objectShader.setInt("material.displacement", 3);
 	objectShader.setInt("material.ao", 4);
 
+	// Set cubemap shader uniforms
 	cubeMapShader.use();
 	cubeMapShader.setInt("skybox", 0);
 
+	// Set cloud shader uniforms
 	cloudShader.use();
 	cloudShader.setInt("diffuse_buffer", 10);
 	cloudShader.setInt("depth_buffer", 11);
 
+	// Set blur shader uniforms
 	blurShader.use();
 	blurShader.setInt("image", 0);
 	bloomShader.use();
@@ -308,8 +313,10 @@ void main()
 	// ===========================================================================================
 	printf("\nSetting up lights...\n");
 
+	// Disable flashlight
 	flashlight.disable();
 
+	// Add lights and put them in a list
 	lights.push_back(DirectionalLight(sunColor, sunDirection));
 	lights.push_back(PointLight(vec3(1.0f), vec3(0.0f)));
 	lights.push_back(PointLight(vec3(1.0f), vec3(0.0f)));
@@ -319,17 +326,16 @@ void main()
 	// ===========================================================================================
 	printf("\nSetting up objects...\n");
 
+	// Store all objects on GPU
 	cubemap.storeOnGPU();
 	cube.storeOnGPU();
 	cubehit.storeOnGPU();
 	diamond.storeOnGPU();
 	diamondPickUp.storeOnGPU();
 	light.storeOnGPU();
-
 	sphere_low.storeOnGPU();
 	sphere_medium.storeOnGPU();
 	sphere_high.storeOnGPU();
-
 	rect.storeOnGPU();
 
 	// ===========================================================================================
@@ -337,6 +343,7 @@ void main()
 	// ===========================================================================================
 	printf("\nSetting up textures...\n");
 
+	// Load cubemap textures
 	cubemap.loadCubemapTexture(
 		"resources/skybox/right.jpg",
 		"resources/skybox/left.jpg",
@@ -346,16 +353,19 @@ void main()
 		"resources/skybox/front.jpg"
 	);
 
+	// Load metal textures
 	metal.addDiffuse(Texture("resources/textures/1857-diffuse.jpg"));
 	metal.addSpecular(Texture("resources/textures/1857-specexponent.jpg"));
 	metal.addNormal(Texture("resources/textures/1857-normal.jpg"));
 	metal.addDisplacement(Texture("resources/textures/1857-displacement.jpg"));
 
+	// Load tile textures
 	tile.addDiffuse(Texture("resources/textures/10744-diffuse.jpg"));
 	tile.addSpecular(Texture("resources/textures/10744-specstrength.jpg"));
 	tile.addNormal(Texture("resources/textures/10744-normal.jpg"));
 	tile.addDisplacement(Texture("resources/textures/10744-displacement.jpg"));
 
+	// Load mixedstone textures
 	mixedstone.addDiffuse(Texture("resources/textures/mixedstones-diffuse.jpg"));
 	mixedstone.addSpecular(Texture("resources/textures/mixedstones-specular.jpg"));
 	mixedstone.addNormal(Texture("resources/textures/mixedstones-normal.jpg"));
@@ -443,7 +453,6 @@ void main()
 		// Draw cubemap
 		cubemap.drawCubemap(&cubeMapShader, &player.camera, projection);
 
-
 		// -----------------------------------------------
 		// 2. render clouds
 		// -----------------------------------------------
@@ -453,11 +462,14 @@ void main()
 			cloudFBO.bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			// Use cloud shader
 			cloudShader.use();
 
+			// Set texture 10 as scene colorbuffer.
 			glActiveTexture(GL_TEXTURE10);
 			glBindTexture(GL_TEXTURE_2D, sceneFBO.colorBuffer[0]);
 
+			// Render scene with clouds
 			renderQuad();
 		}
 		
@@ -510,24 +522,32 @@ void main()
 		// 5. render fbo color buffers
 		// -----------------------------------------------
 
+		// Unbind framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// Bind bloom framebuffer
 		bloomShader.use();
+		// Clear framebuffer color and depth
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (render_clouds) {
+			// Set texture 0 as scene from cloud colorbuffer.
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, cloudFBO.colorBuffer[0]);
 		} else {
+			// Set texture 0 as scene from scene colorbuffer.
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, sceneFBO.colorBuffer[0]);
 		}
 
+		// Set texture 5 as bloom from pingpong colorbuffer.
 		glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_2D, pingpongFBO[!horizontal].colorBuffer[0]);
 
+		// Set bloom and expore uniforms
 		bloomShader.setInt("bloom", bloom);
 		bloomShader.setFloat("exposure", exposure);
 
+		// Render scene to screen quad
 		renderQuad();
 
 		// -----------------------------------------------

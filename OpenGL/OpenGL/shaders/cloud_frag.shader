@@ -18,7 +18,7 @@ uniform mat4 proj;
 uniform mat4 inv_view;
 uniform mat4 inv_proj;
 
-uniform float end = 1000.0;
+uniform float end = 500.0;
 uniform float coverage = 0.4;
 
 float PI = 3.1415962;
@@ -34,7 +34,7 @@ vec4 cast_ray(vec3 origin, vec3 dir);
 float rand(vec2 co);
 
 void main() {
-	// Calculate the ray.  http://antongerdelan.net/opengl/raycasting.html
+	// Calculate the ray. based on this: http://antongerdelan.net/opengl/raycasting.html
 	float x = 2.0 * gl_FragCoord.x / window_size.x - 1.0;
 	float y = 2.0 * gl_FragCoord.y / window_size.y - 1.0;
 	vec4 ray_clip = vec4(vec2(x, y), -1.0, 1.0);
@@ -42,7 +42,6 @@ void main() {
 	vec3 ray_world = normalize((inv_view * ray_view).xyz);
 
 	vec4 cloud_color = cast_ray(camera_position, ray_world);
-
 	vec4 diffuse_color = texelFetch(diffuse_buffer, ivec2(gl_FragCoord.xy), 0);
 
 	fragment_color.a = 0.9;
@@ -59,14 +58,13 @@ float rand(vec2 co) {
 
 // http://www.iquilezles.org/www/articles/terrainmarching/terrainmarching.htm
 vec4 cast_ray(vec3 origin, vec3 dir) {
-	float delta_large = 2.0;
+	float delta_large = 3.0;
 	float delta_small = 1.0;
 	float start = gl_DepthRange.near;
 
 	vec4 result = vec4(0.0);
 	vec3 cloud_bright_result = vec3(4.0, 4.0, 4.0);
-	vec3 cloud_dark_result = vec3(0.416, 0.518, 0.694);
-	result.rgb = cloud_dark_result;
+	result.rgb = vec3(0.416, 0.518, 0.694);;
 
 	float length_inside = 0.0;
 	bool inside = false;
@@ -82,7 +80,7 @@ vec4 cast_ray(vec3 origin, vec3 dir) {
 		if (first) delta_small = 1.0;
 
 		// Stop rays that already reached full opacity
-		if (result.a == 1.0) break;
+		if (result.a >= 1.0) break;
 
 		float alpha = 0.0;
 		float alpha_lowres = 0.0;

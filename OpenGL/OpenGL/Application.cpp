@@ -85,7 +85,7 @@ static unsigned int quad_vbo = 0;
 // Other global variables
 bool bloom = false, render_clouds = false;
 float exposure = 1.0f;
-float cloud_render_distance = 1000.0f;
+float cloud_render_distance = 500.0f;
 float cloud_coverage = 0.4;
 
 //Entities for collision and camera

@@ -55,8 +55,7 @@ int CloudTexture::process(Texture * cloud_structure, Texture cloud_texture)
 			new_cloud_structure.at(i + j * cloud_structure->height + k * cloud_structure->height * cloud_structure->depth) = 255;
 	}
 
-	/* Post process -- expanding the structure to reduce artifacts */
-	//GLubyte* post_pixels = (GLubyte*)calloc(cloud_structure->width * cloud_structure->height * cloud_structure->depth, sizeof(GLubyte));
+	// Post processing to reduce artifacts
 	std::vector<GLubyte> post_pixels;
 	post_pixels.resize(cloud_structure->width * cloud_structure->height * cloud_structure->depth);
 

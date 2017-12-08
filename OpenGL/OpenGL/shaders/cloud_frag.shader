@@ -19,6 +19,7 @@ uniform mat4 inv_view;
 uniform mat4 inv_proj;
 
 uniform float end = 1000.0;
+uniform float coverage = 0.4;
 
 float PI = 3.1415962;
 float PI_r = 0.3183098;
@@ -33,13 +34,13 @@ float phase(vec3 v1, vec3 v2, float t) {
 	return HG(-costheta);
 }
 
-float coverage(float t) {
-	return smoothstep(0.35, 0.4, t) * t;
+float cloud_coverage(float t) {
+	return smoothstep(0.35, coverage, t) * t;
 }
 
 float cloud_sampling_lowres(vec3 v, float delta) {
 	v.y -= 80;
-	vec4 texture = texture(cloud_structure, v / 500);
+	vec4 texture = texture(cloud_structure, v / 800);
 	return texture.r;
 }
 
@@ -47,12 +48,12 @@ float cloud_sampling(vec3 v, float delta) {
 
 	v.y -= 80;
 
-	vec4 textureA = texture(cloud_texture, v / 500);
+	vec4 textureA = texture(cloud_texture, v / 800);
 
-	float coverage = coverage(textureA.r);
+	float cloud_coverage = cloud_coverage(textureA.r);
 	float bottom = smoothstep(0, 80, v.y);
 
-	return textureA.r * coverage * bottom * delta * pow(textureA.b, 0.3) * pow(textureA.a, 0.4);
+	return textureA.r * cloud_coverage * bottom * delta * pow(textureA.b, 0.3) * pow(textureA.a, 0.4);
 }
 
 float cast_scatter_ray(vec3 origin, vec3 dir, float t) {

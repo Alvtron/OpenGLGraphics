@@ -86,6 +86,7 @@ static unsigned int quad_vbo = 0;
 bool bloom = false, render_clouds = false;
 float exposure = 1.0f;
 float cloud_render_distance = 1000.0f;
+float cloud_coverage = 0.4;
 
 //Entities for collision and camera
 const vec3 SPAWN_POSITION(0.0f, 10.0f, 0.0f);
@@ -419,9 +420,10 @@ void main()
 		cloudShader.setMat4("inv_view", mat4::inverse(view));
 		cloudShader.setMat4("inv_proj", mat4::inverse(projection));
 		cloudShader.setVec2("window_size", vec2(WINDOW_WIDTH, WINDOW_HEIGHT));
-		cloudShader.setVec3("camera_position", vec3(0.0f, -100.0f, increment_2 * 10));
+		cloudShader.setVec3("camera_position", vec3(0.0f, 0.0f, increment_2 * 10));
 		cloudShader.setVec3("sun_position", sunPosition);
 		cloudShader.setFloat("end", cloud_render_distance);
+		cloudShader.setFloat("coverage", cloud_coverage);
 
 		/*** OpenGL rendering ***/
 
@@ -622,7 +624,8 @@ void processInput(GLFWwindow *window, float deltaTime)
 		else
 			exposure = 0.0f;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
 		exposure += 0.01f;
 	}
@@ -634,13 +637,31 @@ void processInput(GLFWwindow *window, float deltaTime)
 		else
 			cloud_render_distance = 0.0f;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+	
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
 	{
 		if (cloud_render_distance < 10000.0f)
 			cloud_render_distance += 1.0f;
 		else
 			cloud_render_distance = 10000.0f;
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+	{
+		if (cloud_coverage < 1.0f)
+			cloud_coverage += 0.001f;
+		else
+			cloud_coverage = 1.0f;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+	{
+		if (cloud_coverage > 0.35f)
+			cloud_coverage -= 0.001f;
+		else
+			cloud_coverage = 0.35f;
+	}
+
 
 	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
 		holdTab = true;

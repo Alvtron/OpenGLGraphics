@@ -2,7 +2,7 @@
 
 /*
 
-	TextRendering from https://learnopengl.com/#!In-Practice/Text-Rendering
+	TextRendering code from https://learnopengl.com/#!In-Practice/Text-Rendering
 	and library: https://www.freetype.org/
 
 */
@@ -17,7 +17,6 @@ void Text::initFonts(std::string fontPath, int WINDOW_HEIGHT, int WINDOW_WIDTH)
 
 
 	textShader.setMat4("projection", projection);
-	//glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
 
 	FT_Library ft;

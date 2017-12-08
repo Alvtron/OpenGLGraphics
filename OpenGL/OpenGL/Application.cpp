@@ -12,8 +12,8 @@
 // Shader Classes
 #include "Shader.h"
 #include "Framebuffer.h"
-// Shaders and camera class, based on Joey de Vries' camera and shader class from learnOpenGL.com.
-#include "Camera.h"
+
+
 // 3D Object classes
 #include "CubeMap.h"
 #include "Rectangle.h"
@@ -83,7 +83,7 @@ static unsigned int quad_vao = 0;
 static unsigned int quad_vbo = 0;
 
 // Other global variables
-bool bloom = true, render_clouds = false;
+bool bloom = false, render_clouds = false;
 float exposure = 1.0f;
 float cloud_render_distance = 1000.0f;
 
@@ -99,14 +99,15 @@ float rotatingDimond = 0.0f;
 double lastX;
 double lastY;
 bool firstMouse = true;
-bool flyingMode = true;
+bool flyingMode = false;
 bool invertedMouse = false;
 
 //Text
 Text text;
 bool playerConsole = true;
 bool holdTab = false;
-std::string keyInputMenu = " 1 = on/off collision and gravity | 2 = on/off | B = on/off bloom | Q/E = increasing/decreasing bloom | SPACE = Jump | WASD = movement"; //<-- Legg til her
+std::string keyInputMenu = "WASD = movement | SPACE = Jump | I = inverted mouse controls | F1 = on/off clouds | 1/2 = clouds render distance"; //<-- Legg til her
+std::string keyInputMenu2 = "B = on/off Bloom | Q/E = increasing/decreasing bloom | G = on/off collision and gravity ";
 
 // Lights
 std::vector<Light> lights;
@@ -223,7 +224,7 @@ void main()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//Init fonts
+	//Init fonts and gets native fonts from windows
 	text.initFonts("C:/Windows/Fonts/Arial.ttf", WINDOW_HEIGHT, WINDOW_WIDTH);
 
 	// Tell GLFW to capture the players mouse
@@ -466,8 +467,11 @@ void main()
 		}
 		if(!holdTab)
 			text.RenderText("Hold TAB for key-menu", 20.0f, WINDOW_HEIGHT - 40.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));	
-		else
+		else {
 			text.RenderText(keyInputMenu, 20.0f, WINDOW_HEIGHT - 40.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));
+			text.RenderText(keyInputMenu2, 20.0f, WINDOW_HEIGHT - 80.0f, 0.4f, vec3(1.0f, 0.0f, 0.0f));
+
+		}
 		// -----------------------------------------------
 		// 4. blur scene
 		// -----------------------------------------------

@@ -112,7 +112,7 @@ std::string keyInputMenu = " 1 = on/off collision and gravity | 2 = on/off | B =
 std::vector<Light> lights;
 vec3 sunDirection = vec3(-1.0, -1.0, 0.0f);
 vec3 sunPosition = vec3(1000.0f, 1000.0f, 0.0f);
-vec3 sunColor = vec3(1.0f, 1.0f, 0.0f);
+vec3 sunColor = vec3(1.0f, 1.0f, 0.5f);
 vec3 lightColor = vec3(1.0f, 0.5f, 1.0f);
 SpotLight flashlight = SpotLight(&player.camera, vec3(1.0f));
 
@@ -399,7 +399,7 @@ void main()
 		lightColor = vec3(abs(sin(increment_0)), abs(sin(increment_1)), abs(sin(increment_2)));
 
 		// Background color (world color)
-		sunPosition = player.camera.Position + vec3(sin(increment_0) * 1000, cos(increment_0) * 1000, 0);
+		sunPosition = player.camera.Position + vec3(1337, 1337, 1337);
 
 		/* Calculate view and projection matrices and send them to shaders */
 

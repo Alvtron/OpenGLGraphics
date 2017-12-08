@@ -1,13 +1,12 @@
 #version 450 core
 
-layout(location = 0) in vec3 vertex_pos;
+layout(location = 0) in vec3 vertex_position;
 
-layout(location = 0) out vec4 fcolor;
+layout(location = 0) out vec4 fragment_color;
 layout(location = 1) out vec4 bright_color;
 
 uniform sampler3D cloud_texture;
 uniform sampler3D cloud_structure;
-
 uniform sampler2D diffuse_buffer;
 
 uniform vec2 window_size;
@@ -24,12 +23,8 @@ uniform float end = 1000.0;
 float PI = 3.1415962;
 float PI_r = 0.3183098;
 
-float random(vec2 co) {
-	return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
-}
-
 float HG(float costheta) {
-	float g = 0.5;
+	float g = 0.4;
 	return 1.25 * PI_r * (1 - pow(g, 2.0)) / pow((1 + pow(g, 2.0) - 2 * g * costheta), 1.5) + 0.5;
 }
 
@@ -39,7 +34,6 @@ float phase(vec3 v1, vec3 v2, float t) {
 }
 
 float coverage(float t) {
-	/* The lower level must be same as the result in the preprocessors structure function */
 	return smoothstep(0.35, 0.4, t) * t;
 }
 
@@ -63,14 +57,13 @@ float cloud_sampling(vec3 v, float delta) {
 
 float cast_scatter_ray(vec3 origin, vec3 dir, float t) {
 	float delta = 10.0;
-	float end = 150.0;
 
 	vec3 sample_point = vec3(0.0);
 	float inside = 0.0;
 
 	float phase = phase(dir, vec3(camera_position - origin), t);
 
-	for (float t = 0.0; t < end; t += delta) {
+	for (float t = 0.0; t < end/10; t += delta) {
 		sample_point = origin + dir * t;
 		inside += cloud_sampling(sample_point, delta);
 	}
@@ -105,7 +98,7 @@ vec4 cast_ray(vec3 origin, vec3 dir) {
 
 		if (first) delta_small = 1.0;
 
-		/* Stop rays that already reached full opacity */
+		// Stop rays that already reached full opacity
 		if (result.a == 1.0) break;
 
 		float alpha = 0.0;
@@ -119,9 +112,9 @@ vec4 cast_ray(vec3 origin, vec3 dir) {
 		}
 
 		if (inside) {
-			/* Start of a new inside session? */
+			// Start of a new inside session?
 			if (looking_for_new_inside) {
-				/* Move the starting point a large delta backwards */
+				// Move the starting point a large delta backwards
 				t -= delta_large;
 				
 				if (t < gl_DepthRange.near) t = gl_DepthRange.near;
@@ -133,18 +126,19 @@ vec4 cast_ray(vec3 origin, vec3 dir) {
 				first = true;
 			}
 
-			alpha = cloud_sampling(sample_point, delta); /* Comment this line to see cloud structure */
+			// Comment this line to see cloud structure
+			alpha = cloud_sampling(sample_point, delta);
 			result.a += alpha;
 			result.a = clamp(result.a, 0.0, 1.0);
 			points_inside += 1;
 
-			/* Calculate the shadows and the scattering */
+			// Calculate the shadows and the scattering
 			float energy = cast_scatter_ray(sample_point, normalize(sun_position - sample_point), t);
 			float inside_weight = smoothstep(5, 0, points_inside);
 			result.rgb += cloud_bright_result * energy * alpha;
 		}
 
-		/* Check next structure block if we are still inside */
+		// Check next structure block if we are still inside
 		if (inside && (points_inside * delta_small) > delta_large) {
 			alpha_lowres = cloud_sampling_lowres(sample_point, delta);
 			if (alpha_lowres == 0.0) {
@@ -160,25 +154,21 @@ vec4 cast_ray(vec3 origin, vec3 dir) {
 }
 
 void main() {
-	/* Calculate the ray */
-	// http://antongerdelan.net/opengl/raycasting.html
+	// Calculate the ray.  http://antongerdelan.net/opengl/raycasting.html
 	float x = 2.0 * gl_FragCoord.x / window_size.x - 1.0;
 	float y = 2.0 * gl_FragCoord.y / window_size.y - 1.0;
-	vec2 ray_nds = vec2(x, y);
-	vec4 ray_clip = vec4(ray_nds, -1.0, 1.0);
-	vec4 ray_view = inv_proj * ray_clip;
-	ray_view = vec4(ray_view.xy, -1.0, 0.0);
-	vec3 ray_world = (inv_view * ray_view).xyz;
-	ray_world = normalize(ray_world);
+	vec4 ray_clip = vec4(vec2(x, y), -1.0, 1.0);
+	vec4 ray_view = vec4((inv_proj * ray_clip).xy, -1.0, 0.0);
+	vec3 ray_world = normalize((inv_view * ray_view).xyz);
 
 	vec4 cloud_color = cast_ray(camera_position, ray_world);
 
 	vec4 diffuse_color = texelFetch(diffuse_buffer, ivec2(gl_FragCoord.xy), 0);
 
-	fcolor.a = 0.9;
-	fcolor.rgb = mix(diffuse_color.rgb, cloud_color.rgb, cloud_color.a);
+	fragment_color.a = 0.9;
+	fragment_color.rgb = mix(diffuse_color.rgb, cloud_color.rgb, cloud_color.a)*0.8;
 
-	if (dot(fcolor.rgb, vec3(0.1126, 0.3152, 0.0722)) > 500.0) {
-		bright_color = vec4(fcolor.rgb, 1.0);
+	if (dot(fragment_color.rgb, vec3(0.1126, 0.3152, 0.0722)) > 500.0) {
+		bright_color = vec4(fragment_color.rgb, 1.0);
 	}
 }

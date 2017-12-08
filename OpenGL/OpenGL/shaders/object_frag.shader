@@ -51,9 +51,9 @@ struct SpotLight {
 #define MAX_DIRECTIONAL_LIGHTS 20
 #define MAX_POINT_LIGHTS 20
 #define MAX_SPOT_LIGHTS 20
-#define DIRLIGHT_STRENGTH 0.5
-#define POINTLIGHT_STRENGTH 0.5
-#define SPOTLIGHT_STRENGTH 0.5
+#define DIRLIGHT_STRENGTH 1.0
+#define POINTLIGHT_STRENGTH 1.0
+#define SPOTLIGHT_STRENGTH 1.0
 #define NORMAL_STRENGTH 0.5
 #define blinn true
 
@@ -177,27 +177,26 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 Point, vec3 view_direction
 	return (ambient + diffuse + specular);
 }
 
+// calculates the normal from normal texture (if any)
 vec3 CalcNormals(vec3 tangentLightPos)
 {
 	// obtain normal from normal map in range [0,1]
 	vec3 normal = texture(material.normal, UV).rgb;
-	// transform normal vector to range [-1,1]
-	// this normal is in tangent space
+	// transform normal vector to range [-1,1], normal is in tangent space
 	normal = normalize(normal * 2.0 - 1.0);  
-	// get diffuse color
-	vec3 color = texture(material.diffuse, UV).rgb;
-	// ambient
-	vec3 ambient = 0.1 * color;
-	// diffuse
+	// angle
 	vec3 lightDir = normalize(tangentLightPos - TangentPoint);
 	float angle = max(dot(lightDir, normal), 0.0);
-	vec3 diffuse = angle * color;
+	// get diffuse color
+	vec3 color = texture(material.diffuse, UV).rgb;
+	// ambient & diffuse
+	vec3 ambient = 0.1 * color;
+	vec3 diffuse = 0.5 * color;
 	// specular
 	vec3 view_direction = normalize(TangentViewPos - TangentPoint);
 	vec3 reflect_direction = reflect(-lightDir, normal);
 	vec3 halfwayDir = normalize(lightDir + view_direction);
-	float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+	float specular = pow(max(dot(normal, halfwayDir), 0.0), 32.0) * 0.2;
 
-	vec3 specular = vec3(0.2) * spec;
-	return (ambient + 0.5*diffuse + specular);
+	return (ambient + diffuse * angle + specular * angle);
 }

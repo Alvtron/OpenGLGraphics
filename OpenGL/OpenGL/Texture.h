@@ -25,19 +25,6 @@ public:
 void activateTexture(Texture * t);
 
 /*
-Author: Rikard Olajos. Texture from phase file from MiePlot v4609
-https://github.com/rikardolajos/clouds/blob/master/src/texture.cpp
-*/
-bool createTexture1DFromPhase(Texture * t, const char * file_path);
-
-/*
-Author: Rikard Olajos. Texture from noise file generated Rikard Olajos
-https://github.com/rikardolajos/clouds/blob/master/src/texture.cpp
-https://github.com/rikardolajos/noisegen/tree/master/NoiseGen
-*/
-bool createTexture2DFromEX5(Texture * t, const char * file_path);
-
-/*
 Author: Rikard Olajos. Texture from noise file generated Rikard Olajos
 https://github.com/rikardolajos/clouds/blob/master/src/texture.cpp
 https://github.com/rikardolajos/noisegen/tree/master/NoiseGen

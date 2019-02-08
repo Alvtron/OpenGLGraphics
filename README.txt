@@ -1,22 +1,15 @@
-Installasjonsveiledning
+How to install
 
-For kjøre prosjektet må Visual Studio Community 2017 installeres (https://www.visualstudio.com/downloads/).
+In order to run this project you have to install Visual Studio Community 2017 (https://www.visualstudio.com/downloads/).
 
-Prosjektet er testet på flere datamaskiner med Windows 10 installert. Det kan hende prosjektet kjører på andre versjoner av Windows, men dette kan ikke garanteres.
+This project was tested on multiple computers with Windows 10, but your mileage may vary.
 
-Åpne prosjektetfilen OpenGL.snl i Visual Studio.
+Change the Windows SDK Version to the one you have:
+1. Open the file 'OpenGL.snl' in Visual Studio.
+2. Locate 'Project' in Solution Explorer.
+3. Right-click and click on 'Properties'.
+4. Locate "Configuration Properties" --> 'General'.
+5. Change the current Windows SDK Version to the one you have.
+6. Hit Apply, then OK.
 
-Først må du endre Windows SDK Version til den versjonen du har:
-Åpne prosjektet i Visual Studio.
-Gå til "Project"
-Gå til "OpenGL Properties…"
-Gå til "Configuration Properties"
-På "Windows SDK Version" velger du den Windows versjonen du har.
-Trykk Apply og OK.
-
-Så pass på at prosjektet kjører i "Debug" modus. Dette velges øverst i Visual Studio, mot midten. Pass på at prosjektet kjører i x86 (32-bit), ikke x64 (64-bit).
-
-Da skal prosjektet kjøre uten problemer.
-
-Hvis du får problemer, ta gjerne kontakt (+47 418 54 806).
-
+Make sure to run the project in 32-bit Debug mode.

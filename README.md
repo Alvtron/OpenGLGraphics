@@ -1,4 +1,4 @@
-How to install
+## How to install
 
 In order to run this project you have to install Visual Studio Community 2017 (https://www.visualstudio.com/downloads/).
 
